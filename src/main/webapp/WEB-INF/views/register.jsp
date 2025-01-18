@@ -3,26 +3,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-	crossorigin="anonymous">
-    <style>
-        #content{
-            padding :20px;
-            font-weight: bold;
-        }
-    </style>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	
+	<link
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+		rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+		crossorigin="anonymous">
+	 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	<link href="<c:url value="/resources/css/register.css" />" rel="stylesheet">
 </head>
 <body>
-
-
-
-
 	<div class="header">
         <a href="/autopart">
             <img src="https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m2ko7nkbfksm02_tn.webp" alt="Home" woidth="100" height="100">

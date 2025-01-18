@@ -7,45 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automobile Product Detail</title>
     <link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-	crossorigin="anonymous">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        }
-        header img {
-            border-radius: 50%;
-        }
-        .container {
-            display: flex;
-            margin-top: 20px;
-        }
-        .product-details {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .product-details h2 {
-            color: #dc3545;
-        }
-        .product-details ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .product-details ul li {
-            background: #e9ecef;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        footer {
-            background: #343a40;
-        }
-    </style>
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+		rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+		crossorigin="anonymous">
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	<link href="<c:url value="/resources/css/detailProduct.css" />" rel="stylesheet">
 </head>
 <body>
     <header class="bg-danger text-white py-3">
