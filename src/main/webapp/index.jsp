@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,19 +29,21 @@
 				</div>
 
 				<div class="header_search">
-					<input 
+				   <form action="/autopart/search.htm" method ="get">
+				   		<input 
 						type="text" 
-						name="search"
+						name="keyword"
 						placeholder="Tên sản phẩm..."
 						autocomplete="false"
-					/>
-					<span>
-						<button type="submit" class="search-btn">
-							<i class="fa fa-search"></i>
-						</button>
-					</span>	
+						/>
+						<span>
+							<button type="submit" class="search-btn">
+								<i class="fa fa-search"></i>
+							</button>
+						</span>	
+				   </form>
+
 				</div>
-				<form action="/" method="get" id="form-search"></form>
 
 				<div class="header-right">
 					<div class="header_account">
@@ -65,7 +66,7 @@
 					</div>
 
 					<div class="header_cart">
-						<a href="#" class="nav-link active" aria-current="page" href="/autopart/login.htm">
+						<a href="/autopart/cart.htm" class="nav-link active" aria-current="page">
 							<button type="button" class="header-right_cart btn btn-warning">
 								<i class="fa fa-shopping-cart"></i> Cart
 							</button>
