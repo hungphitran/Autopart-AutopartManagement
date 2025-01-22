@@ -15,7 +15,7 @@
 	<link href="<c:url value="/resources/css/register.css" />" rel="stylesheet">
 </head>
 <body>
-	<div class="header">
+	<!-- <div class="header">
         <a href="/autopart">
             <img src="https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m2ko7nkbfksm02_tn.webp" alt="Home" woidth="100" height="100">
         </a>
@@ -77,6 +77,54 @@
                   </div><aside id="column-left" class="col-3">
             </aside>
           </div>
+	</div> -->
+	
+	<div class="wrapper">
+		<form id="register-login" action="/autopart/register.htm" method="post" data-oc-toggle="ajax">
+			<h2>Đăng ký</h2>
+
+            <div class="container_register">
+                <div class="container_left">
+                    <div class="input-field">
+                        <input type="text" name="cus_name" required>
+                        <label>Nhập Họ và Tên</label>
+                    </div>
+        
+                    <div class="input-field">
+                        <input type="text" name="cus_address" required>
+                        <label>Nhập địa chỉ</label>
+                    </div>
+        
+                    <div class="input-field">
+                        <input type="text" name="cus_phone" required>
+                        <label>Nhập số điện thoại</label>
+                    </div>
+                </div>
+    
+                <div class="container_right">
+                    <div class="input-field">
+                        <input type="text" name="cus_email" required>
+                        <label>Nhập email</label>
+                    </div>
+        
+                    <div class="input-field">
+                        <input type="password" name="cus_password" required>
+                        <label>Nhập mật khẩu</label>
+                    </div>
+        
+                    <div class="input-field">
+                        <input type="password" name="cus_repassword" required>
+                        <label>Nhập lại mật khẩu</label>
+                    </div>
+                </div>
+            </div>
+
+			<button type="submit">Đăng ký</button>
+
+			<div class="register">
+				<p>Đã có tài khoản? <a href="/autopart/login.htm">Đăng nhập</a></p>
+			</div>
+		</form>
 	</div>
 
 </body>
