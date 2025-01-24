@@ -2,26 +2,24 @@ package com.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import com.connectDB.ConnectDB;
 import com.entity.Product;
 import java.util.List;
 
 
 public class Product_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public Product_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public Product_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     public ArrayList<Product> getAll() {
-        String query = "SELECT * FROM Products WHERE Status = 'Active'";
+        String query = "SELECT * FROM Product WHERE Status = 'Active'";
         ArrayList<Product> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String productId = rs.getString("ProductId");
                 String productName = rs.getString("ProductName");
@@ -50,10 +48,10 @@ public class Product_DAO {
     }
 
     public Product getById(String productId) {
-        String query = "SELECT * FROM Products WHERE ProductId = ?";
+        String query = "SELECT * FROM Product WHERE ProductId = ?";
         Product temp = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, productId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -84,10 +82,10 @@ public class Product_DAO {
 
     public boolean add(Product product) {
         boolean result = false;
-        String query = "INSERT INTO Products (ProductId, ProductName, GroupName, BrandName, SalePrice, CostPrice, " +
+        String query = "INSERT INTO Product (ProductId, ProductName, GroupName, BrandName, SalePrice, CostPrice, " +
                 "Stock, Unit, ImageUrls, Weight, Status, DeletedAt, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, product.getProductId());
             stmt.setString(2, product.getProductName());
             stmt.setString(3, product.getGroupName());
@@ -115,7 +113,7 @@ public class Product_DAO {
         String query = "UPDATE Product SET ProductName = ?, GroupName = ?, BrandName = ?, SalePrice = ?, CostPrice = ?, " +
                 "Stock = ?, Unit = ?, ImageUrls = ?, Weight = ?, Status = ?, DeletedAt = ?, Description = ? WHERE ProductId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getGroupName());
             stmt.setString(3, product.getBrandName());
@@ -140,9 +138,9 @@ public class Product_DAO {
 
     public boolean delete(String productId) {
         boolean result = false;
-        String query = "UPDATE Products SET Status = 'Deleted', DeletedAt = GETDATE() WHERE ProductId = ?";
+        String query = "UPDATE Product SET Status = 'Deleted', DeletedAt = GETDATE() WHERE ProductId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, productId);
 
             result = stmt.executeUpdate() >= 1;
@@ -154,10 +152,10 @@ public class Product_DAO {
     }
 
     public boolean checkExistById(String productId) {
-        String query = "SELECT * FROM Products WHERE ProductId = ?";
+        String query = "SELECT * FROM Product WHERE ProductId = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, productId);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
@@ -169,8 +167,8 @@ public class Product_DAO {
     }
     
     public String generateNextProductId() {
-        String query = "SELECT MAX(ProductId) FROM Products WHERE ProductId LIKE 'PROD%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        String query = "SELECT MAX(ProductId) FROM Product WHERE ProductId LIKE 'PROD%'";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

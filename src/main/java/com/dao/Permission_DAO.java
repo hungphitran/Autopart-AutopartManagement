@@ -1,6 +1,7 @@
 package com.dao;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,24 +9,22 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.connectDB.ConnectDB;
 import com.entity.Permission;
 
 public class Permission_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public Permission_DAO() {
-        db.connect();
-        this.con = ConnectDB.getConnection();
+    public Permission_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     public ArrayList<Permission> getAll() {
-        String query = "SELECT * FROM Permissions WHERE Status = 'Active'";
+        String query = "SELECT * FROM Permission WHERE Status = 'Active'";
         ArrayList<Permission> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String permissionId = rs.getString("PermissionId");
                 String permissionName = rs.getString("PermissionName");
@@ -44,10 +43,10 @@ public class Permission_DAO {
     }
 
     public Permission getById(String permissionId) {
-        String query = "SELECT * FROM Permissions WHERE PermissionID = ?";
+        String query = "SELECT * FROM Permission WHERE PermissionID = ?";
         Permission temp = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, permissionId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -68,9 +67,9 @@ public class Permission_DAO {
 
     public boolean add(Permission permission) {
         boolean result = false;
-        String query = "INSERT INTO Permissions (PermissionID, PermissionName, Description, Status, DeletedAt) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Permission (PermissionID, PermissionName, Description, Status, DeletedAt) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, permission.getPermissionId());
             stmt.setString(2, permission.getPermissionName());
             stmt.setString(3, permission.getDescription());
@@ -87,9 +86,9 @@ public class Permission_DAO {
 
     public boolean update(Permission permission) {
         boolean result = false;
-        String query = "UPDATE Permissions SET PermissionName = ?, Description = ?, Status = ?, DeletedAt = ? WHERE PermissionID = ?";
+        String query = "UPDATE Permission SET PermissionName = ?, Description = ?, Status = ?, DeletedAt = ? WHERE PermissionID = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, permission.getPermissionName());
             stmt.setString(2, permission.getDescription());
             stmt.setString(3, permission.getStatus());
@@ -106,9 +105,9 @@ public class Permission_DAO {
 
     public boolean delete(String permissionId) {
         boolean result = false;
-        String query = "UPDATE Permissions SET Status = 'Deleted', DeletedAt = GETDATE() WHERE PermissionID = ?";
+        String query = "UPDATE Permission SET Status = 'Deleted', DeletedAt = GETDATE() WHERE PermissionID = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, permissionId);
 
             result = stmt.executeUpdate() >= 1;
@@ -120,10 +119,10 @@ public class Permission_DAO {
     }
 
     public boolean checkExistById(String permissionId) {
-        String query = "SELECT * FROM Permissions WHERE PermissionID = ?";
+        String query = "SELECT * FROM Permission WHERE PermissionID = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, permissionId);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
@@ -135,8 +134,8 @@ public class Permission_DAO {
     }
 
     public String generateNextPermissionId() {
-        String query = "SELECT MAX(PermissionID) FROM Permissions WHERE PermissionID LIKE 'PER%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        String query = "SELECT MAX(PermissionID) FROM Permission WHERE PermissionID LIKE 'PER%'";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

@@ -2,17 +2,15 @@ package com.dao;
 
 import java.sql.*;
 import java.util.HashMap;
-import com.connectDB.ConnectDB;
 import com.entity.Cart;
 
 public class Cart_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public Cart_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public Cart_DAO() throws SQLException, ClassNotFoundException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     // Retrieve a cart by its ID
@@ -21,8 +19,8 @@ public class Cart_DAO {
         String queryProducts = "SELECT ProductId, Amount FROM ProductsInCart WHERE CartId = ?";
         Cart cart = null;
 
-        try (PreparedStatement stmtCart = con.prepareStatement(queryCart);
-             PreparedStatement stmtProducts = con.prepareStatement(queryProducts)) {
+        try (PreparedStatement stmtCart = connection.prepareStatement(queryCart);
+             PreparedStatement stmtProducts = connection.prepareStatement(queryProducts)) {
             stmtCart.setString(1, cartId);
             ResultSet rsCart = stmtCart.executeQuery();
 
@@ -52,8 +50,8 @@ public class Cart_DAO {
         String queryCart = "INSERT INTO Cart (CartId, Status) VALUES (?, ?)";
         String queryProducts = "INSERT INTO ProductsInCart (CartId, ProductId, Amount) VALUES (?, ?, ?)";
 
-        try (PreparedStatement stmtCart = con.prepareStatement(queryCart);
-             PreparedStatement stmtProducts = con.prepareStatement(queryProducts)) {
+        try (PreparedStatement stmtCart = connection.prepareStatement(queryCart);
+             PreparedStatement stmtProducts = connection.prepareStatement(queryProducts)) {
             // Insert cart
             stmtCart.setString(1, cart.getCartId());
             stmtCart.setString(2, cart.getStatus());
@@ -80,9 +78,9 @@ public class Cart_DAO {
         String deleteProductsQuery = "DELETE FROM ProductsInCart WHERE CartId = ?";
         String insertProductsQuery = "INSERT INTO ProductsInCart (CartId, ProductId, Amount) VALUES (?, ?, ?)";
 
-        try (PreparedStatement updateCartStmt = con.prepareStatement(updateCartQuery);
-             PreparedStatement deleteProductsStmt = con.prepareStatement(deleteProductsQuery);
-             PreparedStatement insertProductsStmt = con.prepareStatement(insertProductsQuery)) {
+        try (PreparedStatement updateCartStmt = connection.prepareStatement(updateCartQuery);
+             PreparedStatement deleteProductsStmt = connection.prepareStatement(deleteProductsQuery);
+             PreparedStatement insertProductsStmt = connection.prepareStatement(insertProductsQuery)) {
             // Update cart status
             updateCartStmt.setString(1, cart.getStatus());
             updateCartStmt.setString(2, cart.getCartId());
@@ -112,7 +110,7 @@ public class Cart_DAO {
         boolean result = false;
         String updateStatusQuery = "UPDATE Cart SET Status = 'Deleted', DeletedAt = GETDATE() WHERE CartId = ?";
 
-        try (PreparedStatement updateStatusStmt = con.prepareStatement(updateStatusQuery)) {
+        try (PreparedStatement updateStatusStmt = connection.prepareStatement(updateStatusQuery)) {
             // Update the status of the cart to 'Deleted'
             updateStatusStmt.setString(1, cartId);
             result = updateStatusStmt.executeUpdate() >= 1;
@@ -129,7 +127,7 @@ public class Cart_DAO {
         String query = "SELECT * FROM Cart WHERE CartId = ?";
         boolean exists = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, cartId);
             ResultSet rs = stmt.executeQuery();
             exists = rs.next();
@@ -143,7 +141,7 @@ public class Cart_DAO {
     // Generate the next cart ID
     public String generateNextCartId() {
         String query = "SELECT MAX(CartId) FROM Cart WHERE CartId LIKE 'CART%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

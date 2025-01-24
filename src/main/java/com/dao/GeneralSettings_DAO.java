@@ -2,17 +2,15 @@ package com.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import com.connectDB.ConnectDB;
 import com.entity.GeneralSettings;
 
 public class GeneralSettings_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public GeneralSettings_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public GeneralSettings_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     // Retrieve all general settings
@@ -20,7 +18,7 @@ public class GeneralSettings_DAO {
         String query = "SELECT * FROM GeneralSettings";
         ArrayList<GeneralSettings> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String websiteName = rs.getString("WebsiteName");
                 String logo = rs.getString("Logo");
@@ -44,7 +42,7 @@ public class GeneralSettings_DAO {
         String query = "SELECT * FROM GeneralSettings WHERE WebsiteName = ?";
         GeneralSettings settings = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, websiteName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -68,7 +66,7 @@ public class GeneralSettings_DAO {
         boolean result = false;
         String query = "INSERT INTO GeneralSettings (WebsiteName, Logo, Phone, Email, Address, Copyright) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, settings.getWebsiteName());
             stmt.setString(2, settings.getLogo());
             stmt.setString(3, settings.getPhone());
@@ -89,7 +87,7 @@ public class GeneralSettings_DAO {
         boolean result = false;
         String query = "UPDATE GeneralSettings SET Logo = ?, Phone = ?, Email = ?, Address = ?, Copyright = ? WHERE WebsiteName = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, settings.getLogo());
             stmt.setString(2, settings.getPhone());
             stmt.setString(3, settings.getEmail());
@@ -110,7 +108,7 @@ public class GeneralSettings_DAO {
         boolean result = false;
         String query = "DELETE FROM GeneralSettings WHERE WebsiteName = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, websiteName);
 
             result = stmt.executeUpdate() >= 1;
@@ -126,7 +124,7 @@ public class GeneralSettings_DAO {
         String query = "SELECT * FROM GeneralSettings WHERE WebsiteName = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, websiteName);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();

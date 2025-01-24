@@ -4,24 +4,22 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.connectDB.ConnectDB;
 import com.entity.ProductGroup;
 
 public class ProductGroup_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public ProductGroup_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public ProductGroup_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     public ArrayList<ProductGroup> getAll() {
         String query = "SELECT * FROM ProductGroup WHERE Status = 'Active'";
         ArrayList<ProductGroup> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String groupName = rs.getString("GroupName");
                 String parentGroup = rs.getString("ParentGroup");
@@ -43,7 +41,7 @@ public class ProductGroup_DAO {
         String query = "SELECT * FROM ProductGroup WHERE GroupName = ?";
         ProductGroup temp = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, groupName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -66,7 +64,7 @@ public class ProductGroup_DAO {
         boolean result = false;
         String query = "INSERT INTO ProductGroup (GroupName, ParentGroup, Status, CreatedBy, DeletedAt) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, productGroup.getGroupName());
             stmt.setString(2, productGroup.getParentGroup());
             stmt.setString(3, productGroup.getStatus());
@@ -85,7 +83,7 @@ public class ProductGroup_DAO {
         boolean result = false;
         String query = "UPDATE ProductGroup SET ParentGroup = ?, Status = ?, CreatedBy = ?, DeletedAt = ? WHERE GroupName = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, productGroup.getParentGroup());
             stmt.setString(2, productGroup.getStatus());
             stmt.setString(3, productGroup.getCreatedBy());
@@ -104,7 +102,7 @@ public class ProductGroup_DAO {
         boolean result = false;
         String query = "UPDATE ProductGroup SET Status = 'Deleted', DeletedAt = GETDATE() WHERE GroupName = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, groupName);
 
             result = stmt.executeUpdate() >= 1;
@@ -119,7 +117,7 @@ public class ProductGroup_DAO {
         String query = "SELECT 1 FROM ProductGroup WHERE GroupName = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, groupName);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();

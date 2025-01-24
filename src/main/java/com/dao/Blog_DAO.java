@@ -2,17 +2,15 @@ package com.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import com.connectDB.ConnectDB;
 import com.entity.Blog;
 
 public class Blog_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public Blog_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public Blog_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     // Retrieve all active blogs
@@ -20,7 +18,7 @@ public class Blog_DAO {
         String query = "SELECT * FROM Blog WHERE Status = 'Active'";
         ArrayList<Blog> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String blogId = rs.getString("BlogId");
                 String groupName = rs.getString("GroupName");
@@ -44,7 +42,7 @@ public class Blog_DAO {
         String query = "SELECT * FROM Blog WHERE BlogId = ?";
         Blog temp = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, blogId);
             ResultSet rs = stmt.executeQuery();
 
@@ -69,7 +67,7 @@ public class Blog_DAO {
         boolean result = false;
         String query = "INSERT INTO Blog (BlogId, GroupName, Title, Description, Status, DeletedAt) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, blog.getBlogId());
             stmt.setString(2, blog.getGroupName());
             stmt.setString(3, blog.getTitle());
@@ -90,7 +88,7 @@ public class Blog_DAO {
         boolean result = false;
         String query = "UPDATE Blog SET GroupName = ?, Title = ?, Description = ?, Status = ?, DeletedAt = ? WHERE BlogId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, blog.getGroupName());
             stmt.setString(2, blog.getTitle());
             stmt.setString(3, blog.getDescription());
@@ -111,7 +109,7 @@ public class Blog_DAO {
         boolean result = false;
         String query = "UPDATE Blog SET Status = 'Deleted', DeletedAt = GETDATE() WHERE BlogId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, blogId);
 
             result = stmt.executeUpdate() >= 1;
@@ -127,7 +125,7 @@ public class Blog_DAO {
         String query = "SELECT * FROM Blog WHERE BlogId = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, blogId);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
@@ -141,7 +139,7 @@ public class Blog_DAO {
     // Generate the next blog ID
     public String generateNextBlogId() {
         String query = "SELECT MAX(BlogId) FROM Blog WHERE BlogId LIKE 'BLOG%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

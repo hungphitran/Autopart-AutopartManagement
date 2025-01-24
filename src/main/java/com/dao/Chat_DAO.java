@@ -3,17 +3,15 @@ package com.dao;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import com.connectDB.ConnectDB;
 import com.entity.Chat;
 
 public class Chat_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the database connection
-    public Chat_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection();
+    public Chat_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     // Retrieve all active chats
@@ -21,7 +19,7 @@ public class Chat_DAO {
         String query = "SELECT * FROM Chat WHERE Status = 'Active'";
         ArrayList<Chat> chats = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String userEmail = rs.getString("UserEmail");
                 String chatRoomId = rs.getString("ChatRoomId");
@@ -45,7 +43,7 @@ public class Chat_DAO {
         String query = "SELECT * FROM Chat WHERE ChatRoomId = ?";
         Chat chat = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, chatRoomId);
             ResultSet rs = stmt.executeQuery();
 
@@ -70,7 +68,7 @@ public class Chat_DAO {
         boolean result = false;
         String query = "INSERT INTO Chat (UserEmail, ChatRoomId, Content, Status, DeletedAt) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, chat.getUserEmail());
             stmt.setString(2, chat.getChatRoomId());
             stmt.setString(3, chat.getContent());
@@ -94,7 +92,7 @@ public class Chat_DAO {
         boolean result = false;
         String query = "UPDATE Chat SET UserEmail = ?, Content = ?, Status = ?, DeletedAt = ? WHERE ChatRoomId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, chat.getUserEmail());
             stmt.setString(2, chat.getContent());
             stmt.setString(3, chat.getStatus());
@@ -118,7 +116,7 @@ public class Chat_DAO {
         boolean result = false;
         String query = "UPDATE Chat SET Status = 'Deleted', DeletedAt = GETDATE() WHERE ChatRoomId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, chatRoomId);
 
             result = stmt.executeUpdate() >= 1;
@@ -134,7 +132,7 @@ public class Chat_DAO {
         String query = "SELECT Images FROM ChatRoomImages WHERE ChatRoomId = ?";
         ArrayList<String> images = new ArrayList<>();
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, chatRoomId);
             ResultSet rs = stmt.executeQuery();
 
@@ -159,7 +157,7 @@ public class Chat_DAO {
                        "WHEN MATCHED THEN UPDATE SET Images = source.Images " +
                        "WHEN NOT MATCHED THEN INSERT (ChatRoomId, Images) VALUES (source.ChatRoomId, source.Images);";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             String imagesString = String.join(";", images);
             stmt.setString(1, chatRoomId);
             stmt.setString(2, imagesString);
@@ -171,7 +169,7 @@ public class Chat_DAO {
     
     public String generateNextChatId() {
         String query = "SELECT MAX(ChatRoomId) FROM Chat WHERE ChatRoomId LIKE 'CHAT%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

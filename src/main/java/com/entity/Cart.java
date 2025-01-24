@@ -9,15 +9,7 @@ public class Cart {
 
     // Default constructor
     public Cart() {
-        this.products = new HashMap<>();
-        this.status = "Active"; // Default status
-    }
-
-    // Parameterized constructor
-    public Cart(String cartId) {
-        this.cartId = cartId;
-        this.products = new HashMap<>();
-        this.status = "Active"; // Default status
+        
     }
 
     // Parameterized constructor with status

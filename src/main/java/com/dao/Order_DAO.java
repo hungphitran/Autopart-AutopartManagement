@@ -4,27 +4,24 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.sql.Timestamp;
 
-import com.connectDB.ConnectDB;
 import com.entity.Order;
 
 public class Order_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
+    private final Connection connection;
 
     // Constructor to initialize the connection
-    public Order_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    public Order_DAO() throws ClassNotFoundException, SQLException {
+    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
     }
 
     // Retrieve all active orders
     public ArrayList<Order> getAll() {
-        String query = "SELECT * FROM Orders WHERE Status = 'Active'";
+        String query = "SELECT * FROM Order WHERE Status = 'Active'";
         ArrayList<Order> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 String orderId = rs.getString("OrderId");
                 String cartId = rs.getString("CartId");
@@ -47,10 +44,10 @@ public class Order_DAO {
 
     // Retrieve an order by its ID
     public Order getById(String orderId) {
-        String query = "SELECT * FROM Orders WHERE OrderId = ?";
+        String query = "SELECT * FROM Order WHERE OrderId = ?";
         Order temp = null;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, orderId);
             ResultSet rs = stmt.executeQuery();
 
@@ -75,9 +72,9 @@ public class Order_DAO {
     // Add a new order
     public boolean add(Order order) {
         boolean result = false;
-        String query = "INSERT INTO Orders (OrderId, CartId, UserEmail, TotalCost, Status, DeletedAt) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Order (OrderId, CartId, UserEmail, TotalCost, Status, DeletedAt) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, order.getOrderId());
             stmt.setString(2, order.getCartId());
             stmt.setString(3, order.getUserEmail());
@@ -98,9 +95,9 @@ public class Order_DAO {
     // Update an existing order
     public boolean update(Order order) {
         boolean result = false;
-        String query = "UPDATE Orders SET CartId = ?, UserEmail = ?, TotalCost = ?, Status = ?, DeletedAt = ? WHERE OrderId = ?";
+        String query = "UPDATE Order SET CartId = ?, UserEmail = ?, TotalCost = ?, Status = ?, DeletedAt = ? WHERE OrderId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, order.getCartId());
             stmt.setString(2, order.getUserEmail());
             stmt.setBigDecimal(3, order.getTotalCost());
@@ -121,9 +118,9 @@ public class Order_DAO {
     // Soft delete an order
     public boolean delete(String orderId) {
         boolean result = false;
-        String query = "UPDATE Orders SET Status = 'Deleted', DeletedAt = GETDATE() WHERE OrderId = ?";
+        String query = "UPDATE Order SET Status = 'Deleted', DeletedAt = GETDATE() WHERE OrderId = ?";
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, orderId);
 
             result = stmt.executeUpdate() >= 1;
@@ -136,10 +133,10 @@ public class Order_DAO {
 
     // Check if an order exists by its ID
     public boolean checkExistById(String orderId) {
-        String query = "SELECT * FROM Orders WHERE OrderId = ?";
+        String query = "SELECT * FROM Order WHERE OrderId = ?";
         boolean result = false;
 
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, orderId);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
@@ -152,8 +149,8 @@ public class Order_DAO {
 
     // Generate the next order ID
     public String generateNextOrderId() {
-        String query = "SELECT MAX(OrderId) FROM Orders WHERE OrderId LIKE 'ORDER%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        String query = "SELECT MAX(OrderId) FROM Order WHERE OrderId LIKE 'ORDER%'";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
                 String maxId = rs.getString(1);
                 if (maxId == null) {

@@ -11,10 +11,10 @@ public class Employee extends Account {
     }
 
     // Parameterized constructor
-    public Employee(String fullName, String email, String password, String token, String phone,
+    public Employee(String fullName, String email, String password, String token, String phone, String address,
                     String avatar, String cartId, String status, LocalDateTime deletedAt, String roleGroupId) {
         // Initialize fields from the Account class
-        super(fullName, email, password, token, phone, avatar, cartId, status, deletedAt);
+        super(fullName, email, password, token, phone, address, avatar, cartId, status, deletedAt);
         this.roleGroupId = roleGroupId;
     }
 
