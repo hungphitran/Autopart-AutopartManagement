@@ -1,154 +1,143 @@
 package com.dao;
 
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
-import com.connectDB.ConnectDB;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
+
 import com.entity.RoleGroup;
 
 public class RoleGroup_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
 
-    // Constructor to initialize the connection
-    public RoleGroup_DAO() {
-        db.connect();  // Initialize the database connection
-        this.con = ConnectDB.getConnection();  // Get the connection object
+    private final SessionFactory factory;
+
+    public RoleGroup_DAO(SessionFactory factory) {
+        this.factory = factory;
     }
 
-    public ArrayList<RoleGroup> getAll() {
-        String query = "SELECT * FROM RoleGroups WHERE Status = 'Active'";
-        ArrayList<RoleGroup> list = new ArrayList<>();
-
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                String roleGroupId = rs.getString("RoleGroupId");
-                String roleGroupName = rs.getString("RoleGroupName");
-                String status = rs.getString("Status");
-                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-
-                RoleGroup temp = new RoleGroup(roleGroupId, roleGroupName, status, deletedAt);
-                list.add(temp);
-            }
-        } catch (SQLException e) {
+    public List<RoleGroup> getAll() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM RoleGroup rg WHERE rg.status = 'Active'";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
             e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
         }
-
-        return list;
     }
 
     public RoleGroup getById(String roleGroupId) {
-        String query = "SELECT * FROM RoleGroups WHERE RoleGroupID = ?";
-        RoleGroup temp = null;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, roleGroupId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-            	String id = rs.getString("RoleGroupId");
-                String roleGroupName = rs.getString("RoleGroupName");
-                String status = rs.getString("Status");
-                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-
-                temp = new RoleGroup(id, roleGroupName, status, deletedAt);
-            }
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM RoleGroup rg WHERE rg.roleGroupId = :roleGroupId";
+            Query query = session.createQuery(hql);
+            query.setParameter("roleGroupId", roleGroupId);
+            return (RoleGroup) query.uniqueResult();
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return temp;
     }
 
     public boolean add(RoleGroup roleGroup) {
-        boolean result = false;
-        String query = "INSERT INTO RoleGroups (RoleGroupID, RoleGroupName, Status, DeletedAt) VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, roleGroup.getRoleGroupId());
-            stmt.setString(2, roleGroup.getRoleGroupName());
-            stmt.setString(3, roleGroup.getStatus());
-            stmt.setTimestamp(4, roleGroup.getDeletedAt() != null ? Timestamp.valueOf(roleGroup.getDeletedAt()) : null);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.save(roleGroup);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public boolean update(RoleGroup roleGroup) {
-        boolean result = false;
-        String query = "UPDATE RoleGroups SET RoleGroupName = ?, Status = ?, DeletedAt = ? WHERE RoleGroupID = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, roleGroup.getRoleGroupName());
-            stmt.setString(2, roleGroup.getStatus());
-            stmt.setTimestamp(3, roleGroup.getDeletedAt() != null ? Timestamp.valueOf(roleGroup.getDeletedAt()) : null);
-            stmt.setString(4, roleGroup.getRoleGroupId());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(roleGroup);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public boolean delete(String roleGroupId) {
-        boolean result = false;
-        String query = "UPDATE RoleGroups SET Status = 'Deleted', deletedAt = GETDATE() WHERE RoleGroupID = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, roleGroupId);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "UPDATE RoleGroup rg SET rg.status = 'Deleted', rg.deletedAt = current_timestamp() WHERE rg.roleGroupId = :roleGroupId";
+            Query query = session.createQuery(hql);
+            query.setParameter("roleGroupId", roleGroupId);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-
     public boolean checkExistById(String roleGroupId) {
-        String query = "SELECT * FROM RoleGroups WHERE RoleGroupID = ?";
-        boolean result = false;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, roleGroupId);
-            ResultSet rs = stmt.executeQuery();
-            result = rs.next();
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT 1 FROM RoleGroup rg WHERE rg.roleGroupId = :roleGroupId";
+            Query query = session.createQuery(hql);
+            query.setParameter("roleGroupId", roleGroupId);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public String generateNextRoleGroupId() {
-        String query = "SELECT MAX(RoleGroupID) FROM RoleGroups WHERE RoleGroupID LIKE 'RG%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            if (rs.next()) {
-                String maxId = rs.getString(1);
-                if (maxId == null) {
-                    return "RG001";
-                }
-
-                if (maxId.length() >= 2) {
-                    try {
-                        int currentNum = Integer.parseInt(maxId.substring(2).trim());
-                        return String.format("RG%03d", currentNum + 1);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        return "RG001";
-                    }
-                }
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT MAX(rg.roleGroupId) FROM RoleGroup rg WHERE rg.roleGroupId LIKE 'RG%'";
+            Query query = session.createQuery(hql);
+            String maxId = (String) query.uniqueResult();
+            if (maxId == null) {
+                return "RG001";
             }
-        } catch (SQLException e) {
+            int currentNum = Integer.parseInt(maxId.substring(2));
+            return String.format("RG%03d", currentNum + 1);
+        } catch (Exception e) {
             e.printStackTrace();
+            return "RG001";
+        } finally {
+            if (session != null) session.close();
         }
-        return "RG000";
     }
 }

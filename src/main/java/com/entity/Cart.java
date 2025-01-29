@@ -1,29 +1,35 @@
 package com.entity;
 
+import javax.persistence.*;
 import java.util.HashMap;
+import java.util.Map;
 
+@Entity
+@Table(name = "Cart")
 public class Cart {
-    private String cartId;                 // ID of the cart
-    private HashMap<String, Integer> products; // HashMap of ProductId and Amount
-    private String status;                // Status of the cart (e.g., 'Active', 'Inactive')
+
+    @Id
+    @Column(name = "cartId", nullable = false, length = 50)
+    private String cartId; // ID của giỏ hàng
+
+    @ElementCollection
+    @CollectionTable(
+        name = "ProductsInCart", 
+        joinColumns = @JoinColumn(name = "cartId", referencedColumnName = "cartId")
+    )
+    @MapKeyColumn(name = "productId")
+    @Column(name = "amount", nullable = false)
+    private Map<String, Integer> products = new HashMap<>(); // Map của ProductId và số lượng
+
+    @Column(name = "status", nullable = false, length = 50)
+    private String status = "Active"; // Trạng thái của giỏ hàng (mặc định: 'Active')
 
     // Default constructor
-    public Cart() {
-        this.products = new HashMap<>();
-        this.status = "Active"; // Default status
-    }
+    public Cart() {}
 
     // Parameterized constructor
-    public Cart(String cartId) {
-        this.cartId = cartId;
-        this.products = new HashMap<>();
-        this.status = "Active"; // Default status
-    }
-
-    // Parameterized constructor with status
     public Cart(String cartId, String status) {
         this.cartId = cartId;
-        this.products = new HashMap<>();
         this.status = status;
     }
 
@@ -36,11 +42,11 @@ public class Cart {
         this.cartId = cartId;
     }
 
-    public HashMap<String, Integer> getProducts() {
+    public Map<String, Integer> getProducts() {
         return products;
     }
 
-    public void setProducts(HashMap<String, Integer> products) {
+    public void setProducts(Map<String, Integer> products) {
         this.products = products;
     }
 

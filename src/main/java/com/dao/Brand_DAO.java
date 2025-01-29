@@ -1,127 +1,124 @@
 package com.dao;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
-import com.connectDB.ConnectDB;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
+
 import com.entity.Brand;
 
 public class Brand_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
 
-    public Brand_DAO() {
-        db.connect();
-        this.con = ConnectDB.getConnection();
+    private final SessionFactory factory;
+
+    public Brand_DAO(SessionFactory factory) {
+        this.factory = factory;
     }
 
-    public ArrayList<Brand> getAll() {
-        String query = "SELECT * FROM Brand WHERE Status = 'Active'";
-        ArrayList<Brand> list = new ArrayList<>();
-
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                String brandName = rs.getString("BrandName");
-                String status = rs.getString("Status");
-                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-
-                list.add(new Brand(brandName, status, deletedAt));
-            }
-        } catch (SQLException e) {
+    public List<Brand> getAll() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Brand b WHERE b.status = 'Active'";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
             e.printStackTrace();
+            return new ArrayList<>();
+        } finally {
+            if (session != null) session.close();
         }
-
-        return list;
     }
 
     public Brand getByBrandName(String brandName) {
-        String query = "SELECT * FROM Brand WHERE BrandName = ?";
-        Brand brand = null;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, brandName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String name = rs.getString("BrandName");
-                String status = rs.getString("Status");
-                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-
-                brand = new Brand(name, status, deletedAt);
-            }
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Brand b WHERE b.brandName = :brandName";
+            Query query = session.createQuery(hql);
+            query.setParameter("brandName", brandName);
+            return (Brand) query.uniqueResult();
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return brand;
     }
 
     public boolean add(Brand brand) {
-        boolean result = false;
-        String query = "INSERT INTO Brand (BrandName, Status, DeletedAt) VALUES (?, ?, ?)";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, brand.getBrandName());
-            stmt.setString(2, brand.getStatus());
-            stmt.setTimestamp(3, brand.getDeletedAt() != null ? java.sql.Timestamp.valueOf(brand.getDeletedAt()) : null);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.save(brand);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public boolean update(Brand brand) {
-        boolean result = false;
-        String query = "UPDATE Brand SET Status = ?, DeletedAt = ? WHERE BrandName = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, brand.getStatus());
-            stmt.setTimestamp(2, brand.getDeletedAt() != null ? java.sql.Timestamp.valueOf(brand.getDeletedAt()) : null);
-            stmt.setString(3, brand.getBrandName());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(brand);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public boolean delete(String brandName) {
-        boolean result = false;
-        String query = "UPDATE Brand SET Status = 'Deleted', DeletedAt = GETDATE() WHERE BrandName = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, brandName);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "UPDATE Brand b SET b.status = 'Deleted', b.deletedAt = current_timestamp() WHERE b.brandName = :brandName";
+            Query query = session.createQuery(hql);
+            query.setParameter("brandName", brandName);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
     public boolean checkExistByBrandName(String brandName) {
-        String query = "SELECT * FROM Brand WHERE BrandName = ?";
-        boolean exists = false;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, brandName);
-            ResultSet rs = stmt.executeQuery();
-            exists = rs.next();
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Brand b WHERE b.brandName = :brandName";
+            Query query = session.createQuery(hql);
+            query.setParameter("brandName", brandName);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return exists;
     }
 }

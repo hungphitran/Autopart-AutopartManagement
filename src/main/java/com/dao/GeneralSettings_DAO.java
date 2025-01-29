@@ -1,139 +1,125 @@
 package com.dao;
 
-import java.sql.*;
 import java.util.ArrayList;
-import com.connectDB.ConnectDB;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
+
 import com.entity.GeneralSettings;
 
 public class GeneralSettings_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
 
-    // Constructor to initialize the connection
-    public GeneralSettings_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
+    private final SessionFactory factory;
+
+    // Constructor to initialize the SessionFactory
+    public GeneralSettings_DAO(SessionFactory factory) {
+        this.factory = factory;
     }
 
-    // Retrieve all general settings
-    public ArrayList<GeneralSettings> getAll() {
-        String query = "SELECT * FROM GeneralSettings";
-        ArrayList<GeneralSettings> list = new ArrayList<>();
-
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                String websiteName = rs.getString("WebsiteName");
-                String logo = rs.getString("Logo");
-                String phone = rs.getString("Phone");
-                String email = rs.getString("Email");
-                String address = rs.getString("Address");
-                String copyright = rs.getString("Copyright");
-
-                GeneralSettings settings = new GeneralSettings(websiteName, logo, phone, email, address, copyright);
-                list.add(settings);
-            }
-        } catch (SQLException e) {
+    public List<GeneralSettings> getAll() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM GeneralSettings";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
             e.printStackTrace();
+            return new ArrayList<>(); // Return an empty list in case of error
+        } finally {
+            if (session != null) session.close();
         }
-
-        return list;
     }
 
-    // Retrieve general settings by website name
     public GeneralSettings getByWebsiteName(String websiteName) {
-        String query = "SELECT * FROM GeneralSettings WHERE WebsiteName = ?";
-        GeneralSettings settings = null;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, websiteName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String logo = rs.getString("Logo");
-                String phone = rs.getString("Phone");
-                String email = rs.getString("Email");
-                String address = rs.getString("Address");
-                String copyright = rs.getString("Copyright");
-
-                settings = new GeneralSettings(websiteName, logo, phone, email, address, copyright);
-            }
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM GeneralSettings gs WHERE gs.websiteName = :websiteName";
+            Query query = session.createQuery(hql);
+            query.setParameter("websiteName", websiteName);
+            return (GeneralSettings) query.uniqueResult();
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return settings;
     }
 
-    // Add new general settings
-    public boolean add(GeneralSettings settings) {
-        boolean result = false;
-        String query = "INSERT INTO GeneralSettings (WebsiteName, Logo, Phone, Email, Address, Copyright) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, settings.getWebsiteName());
-            stmt.setString(2, settings.getLogo());
-            stmt.setString(3, settings.getPhone());
-            stmt.setString(4, settings.getEmail());
-            stmt.setString(5, settings.getAddress());
-            stmt.setString(6, settings.getCopyright());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+    public boolean add(GeneralSettings generalSettings) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.save(generalSettings);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Update existing general settings
-    public boolean update(GeneralSettings settings) {
-        boolean result = false;
-        String query = "UPDATE GeneralSettings SET Logo = ?, Phone = ?, Email = ?, Address = ?, Copyright = ? WHERE WebsiteName = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, settings.getLogo());
-            stmt.setString(2, settings.getPhone());
-            stmt.setString(3, settings.getEmail());
-            stmt.setString(4, settings.getAddress());
-            stmt.setString(5, settings.getCopyright());
-            stmt.setString(6, settings.getWebsiteName());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+    public boolean update(GeneralSettings generalSettings) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(generalSettings);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Delete general settings by website name
     public boolean delete(String websiteName) {
-        boolean result = false;
-        String query = "DELETE FROM GeneralSettings WHERE WebsiteName = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, websiteName);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "DELETE FROM GeneralSettings gs WHERE gs.websiteName = :websiteName";
+            Query query = session.createQuery(hql);
+            query.setParameter("websiteName", websiteName);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Check if a general settings entry exists by website name
     public boolean checkExistByWebsiteName(String websiteName) {
-        String query = "SELECT * FROM GeneralSettings WHERE WebsiteName = ?";
-        boolean result = false;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, websiteName);
-            ResultSet rs = stmt.executeQuery();
-            result = rs.next();
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM GeneralSettings gs WHERE gs.websiteName = :websiteName";
+            Query query = session.createQuery(hql);
+            query.setParameter("websiteName", websiteName);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 }

@@ -1,168 +1,149 @@
-package com.dao;
-
-import java.sql.*;
-import java.util.HashMap;
-import com.connectDB.ConnectDB;
-import com.entity.Cart;
-
-public class Cart_DAO {
-    private final ConnectDB db = ConnectDB.getInstance();
-    private final Connection con;
-
-    // Constructor to initialize the connection
-    public Cart_DAO() {
-        db.connect(); // Initialize the database connection
-        this.con = ConnectDB.getConnection(); // Get the connection object
-    }
-
-    // Retrieve a cart by its ID
-    public Cart getById(String cartId) {
-        String queryCart = "SELECT * FROM Cart WHERE CartId = ?";
-        String queryProducts = "SELECT ProductId, Amount FROM ProductsInCart WHERE CartId = ?";
-        Cart cart = null;
-
-        try (PreparedStatement stmtCart = con.prepareStatement(queryCart);
-             PreparedStatement stmtProducts = con.prepareStatement(queryProducts)) {
-            stmtCart.setString(1, cartId);
-            ResultSet rsCart = stmtCart.executeQuery();
-
-            if (rsCart.next()) {
-                String status = rsCart.getString("Status");
-                cart = new Cart(cartId, status);
-
-                stmtProducts.setString(1, cartId);
-                ResultSet rsProducts = stmtProducts.executeQuery();
-
-                while (rsProducts.next()) {
-                    String productId = rsProducts.getString("ProductId");
-                    int amount = rsProducts.getInt("Amount");
-                    cart.getProducts().put(productId, amount);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return cart;
-    }
-
-    // Add a new cart
-    public boolean add(Cart cart) {
-        boolean result = false;
-        String queryCart = "INSERT INTO Cart (CartId, Status) VALUES (?, ?)";
-        String queryProducts = "INSERT INTO ProductsInCart (CartId, ProductId, Amount) VALUES (?, ?, ?)";
-
-        try (PreparedStatement stmtCart = con.prepareStatement(queryCart);
-             PreparedStatement stmtProducts = con.prepareStatement(queryProducts)) {
-            // Insert cart
-            stmtCart.setString(1, cart.getCartId());
-            stmtCart.setString(2, cart.getStatus());
-            result = stmtCart.executeUpdate() >= 1;
-
-            // Insert products
-            for (String productId : cart.getProducts().keySet()) {
-                stmtProducts.setString(1, cart.getCartId());
-                stmtProducts.setString(2, productId);
-                stmtProducts.setInt(3, cart.getProducts().get(productId));
-                stmtProducts.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    // Update cart and products
-    public boolean update(Cart cart) {
-        boolean result = false;
-        String updateCartQuery = "UPDATE Cart SET Status = ? WHERE CartId = ?";
-        String deleteProductsQuery = "DELETE FROM ProductsInCart WHERE CartId = ?";
-        String insertProductsQuery = "INSERT INTO ProductsInCart (CartId, ProductId, Amount) VALUES (?, ?, ?)";
-
-        try (PreparedStatement updateCartStmt = con.prepareStatement(updateCartQuery);
-             PreparedStatement deleteProductsStmt = con.prepareStatement(deleteProductsQuery);
-             PreparedStatement insertProductsStmt = con.prepareStatement(insertProductsQuery)) {
-            // Update cart status
-            updateCartStmt.setString(1, cart.getStatus());
-            updateCartStmt.setString(2, cart.getCartId());
-            updateCartStmt.executeUpdate();
-
-            // Remove existing products
-            deleteProductsStmt.setString(1, cart.getCartId());
-            deleteProductsStmt.executeUpdate();
-
-            // Insert updated products
-            for (String productId : cart.getProducts().keySet()) {
-                insertProductsStmt.setString(1, cart.getCartId());
-                insertProductsStmt.setString(2, productId);
-                insertProductsStmt.setInt(3, cart.getProducts().get(productId));
-                insertProductsStmt.executeUpdate();
-            }
-            result = true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    // Delete a cart by ID
-    public boolean delete(String cartId) {
-        boolean result = false;
-        String updateStatusQuery = "UPDATE Cart SET Status = 'Deleted', DeletedAt = GETDATE() WHERE CartId = ?";
-
-        try (PreparedStatement updateStatusStmt = con.prepareStatement(updateStatusQuery)) {
-            // Update the status of the cart to 'Deleted'
-            updateStatusStmt.setString(1, cartId);
-            result = updateStatusStmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-
-    // Check if a cart exists by its ID
-    public boolean checkExistById(String cartId) {
-        String query = "SELECT * FROM Cart WHERE CartId = ?";
-        boolean exists = false;
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, cartId);
-            ResultSet rs = stmt.executeQuery();
-            exists = rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return exists;
-    }
-
-    // Generate the next cart ID
-    public String generateNextCartId() {
-        String query = "SELECT MAX(CartId) FROM Cart WHERE CartId LIKE 'CART%'";
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            if (rs.next()) {
-                String maxId = rs.getString(1);
-                if (maxId == null) {
-                    return "CART001";
-                }
-
-                if (maxId.length() >= 4) {
-                    try {
-                        int currentNum = Integer.parseInt(maxId.substring(4).trim());
-                        return String.format("CART%03d", currentNum + 1);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        return "CART001";
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "CART000";
-    }
-}
+//package com.dao;
+//
+//import java.util.List;
+//import org.hibernate.Session;
+//import org.hibernate.SessionFactory;
+//import org.hibernate.query.Query;
+//import com.entity.Cart;
+//
+//public class Cart_DAO {
+//
+//    private final SessionFactory factory;
+//
+//    public Cart_DAO(SessionFactory factory) {
+//        this.factory = factory;
+//    }
+//
+//    // Retrieve a cart by its ID
+//    public Cart getById(String cartId) {
+//        try (Session session = factory.openSession()) {
+//            String hqlCart = "FROM Cart c WHERE c.cartId = :cartId";
+//            Query<Cart> queryCart = session.createQuery(hqlCart, Cart.class);
+//            queryCart.setParameter("cartId", cartId);
+//            Cart cart = queryCart.uniqueResult();
+//
+//            if (cart != null) {
+//                String hqlProducts = "SELECT p.productId, p.amount FROM ProductsInCart p WHERE p.cartId = :cartId";
+//                Query<Object[]> queryProducts = session.createQuery(hqlProducts, Object[].class);
+//                queryProducts.setParameter("cartId", cartId);
+//
+//                for (Object[] row : queryProducts.getResultList()) {
+//                    String productId = (String) row[0];
+//                    int amount = (int) row[1];
+//                    cart.getProducts().put(productId, amount);
+//                }
+//            }
+//            return cart;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    // Add a new cart
+//    public boolean add(Cart cart) {
+//        try (Session session = factory.openSession()) {
+//            session.beginTransaction();
+//
+//            // Save cart
+//            session.save(cart);
+//
+//            // Save products
+//            cart.getProducts().forEach((productId, amount) -> {
+//                String hql = "INSERT INTO ProductsInCart (cartId, productId, amount) VALUES (:cartId, :productId, :amount)";
+//                Query<?> query = session.createNativeQuery(hql);
+//                query.setParameter("cartId", cart.getCartId());
+//                query.setParameter("productId", productId);
+//                query.setParameter("amount", amount);
+//                query.executeUpdate();
+//            });
+//
+//            session.getTransaction().commit();
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    // Update cart and products
+//    public boolean update(Cart cart) {
+//        try (Session session = factory.openSession()) {
+//            session.beginTransaction();
+//
+//            // Update cart
+//            session.update(cart);
+//
+//            // Remove old products
+//            String hqlDelete = "DELETE FROM ProductsInCart p WHERE p.cartId = :cartId";
+//            Query<?> deleteQuery = session.createQuery(hqlDelete);
+//            deleteQuery.setParameter("cartId", cart.getCartId());
+//            deleteQuery.executeUpdate();
+//
+//            // Insert new products
+//            cart.getProducts().forEach((productId, amount) -> {
+//                String hqlInsert = "INSERT INTO ProductsInCart (cartId, productId, amount) VALUES (:cartId, :productId, :amount)";
+//                Query<?> insertQuery = session.createNativeQuery(hqlInsert);
+//                insertQuery.setParameter("cartId", cart.getCartId());
+//                insertQuery.setParameter("productId", productId);
+//                insertQuery.setParameter("amount", amount);
+//                insertQuery.executeUpdate();
+//            });
+//
+//            session.getTransaction().commit();
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    // Delete a cart by ID
+//    public boolean delete(String cartId) {
+//        try (Session session = factory.openSession()) {
+//            session.beginTransaction();
+//
+//            String hql = "UPDATE Cart c SET c.status = 'Deleted', c.deletedAt = current_timestamp() WHERE c.cartId = :cartId";
+//            Query<?> query = session.createQuery(hql);
+//            query.setParameter("cartId", cartId);
+//
+//            int rowsAffected = query.executeUpdate();
+//            session.getTransaction().commit();
+//            return rowsAffected > 0;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    // Check if a cart exists by its ID
+//    public boolean checkExistById(String cartId) {
+//        try (Session session = factory.openSession()) {
+//            String hql = "SELECT 1 FROM Cart c WHERE c.cartId = :cartId";
+//            Query<?> query = session.createQuery(hql);
+//            query.setParameter("cartId", cartId);
+//            return query.uniqueResult() != null;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    // Generate the next cart ID
+//    public String generateNextCartId() {
+//        try (Session session = factory.openSession()) {
+//            String hql = "SELECT MAX(c.cartId) FROM Cart c WHERE c.cartId LIKE 'CART%'";
+//            Query<String> query = session.createQuery(hql, String.class);
+//            String maxId = query.uniqueResult();
+//
+//            if (maxId == null) {
+//                return "CART001";
+//            }
+//            int currentNum = Integer.parseInt(maxId.substring(4));
+//            return String.format("CART%03d", currentNum + 1);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return "CART001";
+//        }
+//    }
+//}

@@ -1,24 +1,34 @@
 package com.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "ProductGroup") // Ánh xạ với bảng ProductGroup trong database
 public class ProductGroup {
-    private String groupName;       // Primary key: Group name
-    private String parentGroup;     // Foreign key: Parent group name
-    private String status;          // Status of the group (default: 'Active')
-    private String createdBy;       // Foreign key: Creator's email (from Employees table)
-    private LocalDateTime deletedAt;       // Timestamp for when the group was deleted
+
+    @Id
+    @Column(name = "groupName", length = 50) // Khóa chính: groupName
+    private String groupName;
+
+    @Column(name = "parentGroup") // Khóa ngoại: parentGroup
+    private String parentGroup;
+
+    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
+    private String status;
+
+
+    @Column(name = "deletedAt") // Thời điểm bị xóa
+    private LocalDateTime deletedAt;
 
     // Default constructor
     public ProductGroup() {}
 
     // Parameterized constructor
-    public ProductGroup(String groupName, String parentGroup, 
-                        String status, String createdBy, LocalDateTime deletedAt) {
+    public ProductGroup(String groupName, String parentGroup, String status, LocalDateTime deletedAt) {
         this.groupName = groupName;
         this.parentGroup = parentGroup;
         this.status = status;
-        this.createdBy = createdBy;
         this.deletedAt = deletedAt;
     }
 
@@ -47,13 +57,6 @@ public class ProductGroup {
         this.status = status;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
 
     public LocalDateTime getDeletedAt() {
         return deletedAt;
@@ -68,10 +71,9 @@ public class ProductGroup {
     public String toString() {
         return "ProductGroup{" +
                 "groupName='" + groupName + '\'' +
-                ", parentGroup='" + parentGroup + '\'' +
+                ", parentGroup=" + parentGroup  +
                 ", status='" + status + '\'' +
-                ", createdBy='" + createdBy + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
+                ", deletedAt=" + deletedAt +
                 '}';
     }
 }
