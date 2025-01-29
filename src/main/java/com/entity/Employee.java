@@ -1,9 +1,17 @@
 package com.entity;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-public class Employee extends Account {
-    private String roleGroupId; // Role group ID (foreign key)
+@Entity
+@Table(name = "Employee")
+public class Employee {
+	@Id
+	@Column(name = "email")
+    private String email;
+
+    @Column(name = "roleGroupId")
+    private String roleGroupId;
 
     // Default constructor
     public Employee() {
@@ -11,10 +19,7 @@ public class Employee extends Account {
     }
 
     // Parameterized constructor
-    public Employee(String fullName, String email, String password, String token, String phone, String address,
-                    String avatar, String cartId, String status, LocalDateTime deletedAt, String roleGroupId) {
-        // Initialize fields from the Account class
-        super(fullName, email, password, token, phone, address, avatar, cartId, status, deletedAt);
+    public Employee(String email, String roleGroupId) {
         this.roleGroupId = roleGroupId;
     }
 
@@ -27,20 +32,18 @@ public class Employee extends Account {
         this.roleGroupId = roleGroupId;
     }
 
-    // Override toString for debugging
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "roleGroupId='" + roleGroupId + '\'' +
-                ", fullName='" + getFullName() + '\'' +
-                ", email='" + getEmail() + '\'' +
-                ", password='" + getPassword() + '\'' +
-                ", token='" + getToken() + '\'' +
-                ", phone='" + getPhone() + '\'' +
-                ", avatar='" + getAvatar() + '\'' +
-                ", cartId='" + getCartId() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                ", deletedAt='" + getDeletedAt() + '\'' +
-                '}';
-    }
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [email=" + email + ", roleGroupId=" + roleGroupId + "]";
+	}
+    
+   
 }

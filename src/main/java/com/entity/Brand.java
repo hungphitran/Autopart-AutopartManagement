@@ -1,11 +1,21 @@
 package com.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Brand") // Ánh xạ class với bảng Brand trong cơ sở dữ liệu
 public class Brand {
-    private String brandName;   // Primary key: Brand name
-    private String status;      // Status of the brand (default: 'Active')
-    private LocalDateTime deletedAt;   // Timestamp for when the brand was deleted
+
+    @Id
+    @Column(name = "brandName", length = 255) // Khóa chính: Tên thương hiệu
+    private String brandName;
+
+    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
+    private String status;
+
+    @Column(name = "deletedAt") // Thời điểm bị xóa
+    private LocalDateTime deletedAt;
 
     // Default constructor
     public Brand() {}
@@ -48,8 +58,7 @@ public class Brand {
         return "Brand{" +
                 "brandName='" + brandName + '\'' +
                 ", status='" + status + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
+                ", deletedAt=" + deletedAt +
                 '}';
     }
 }
-

@@ -1,31 +1,61 @@
 package com.entity;
 
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "Product")  // Đánh dấu lớp này là thực thể JPA, ánh xạ với bảng "Product"
 public class Product {
-    private String productId;         // Primary key: Product ID
-    private String productName;       // Product name
-    private String groupName;         // Foreign key: Group name (references ProductGroup)
-    private String brandName;         // Foreign key: Brand name (references Brand)
-    private double salePrice;         // Sale price
-    private double costPrice;         // Cost price
-    private int stock;                // Stock quantity
-    private String unit;              // Unit of measurement
-    private ArrayList<String> imageUrls; // List of image URLs
-    private double weight;            // Weight
-    private String status;            // Status (default: 'Active')
-    private String deletedAt;         // Deletion timestamp
-    private String description;       // Description
+
+    @Id
+    @Column(name = "productId")  // Khóa chính
+    private String productId; // Primary key: Product ID
+
+    @Column(name = "productName", nullable = false)  // Ánh xạ với cột "productName" trong bảng
+    private String productName; // Product name
+
+    @Column(name = "groupName")
+    private String groupName; // Foreign key: Group name (references ProductGroup)
+
+    
+    @Column(name = "brandName")
+    private String brandName; // Foreign key: Brand name (references Brand)
+
+    @Column(name = "salePrice")  // Ánh xạ với cột "salePrice" trong bảng
+    private double salePrice; // Sale price
+
+    @Column(name = "costPrice")  // Ánh xạ với cột "costPrice" trong bảng
+    private double costPrice; // Cost price
+
+    @Column(name = "stock")  // Ánh xạ với cột "stock" trong bảng
+    private int stock; // Stock quantity
+
+    @Column(name = "unit")  // Ánh xạ với cột "unit" trong bảng
+    private String unit; // Unit of measurement
+
+    @Column(name = "imageUrls")  // Lưu trữ danh sách URL hình ảnh
+    private String imageUrls; // List of image URLs
+
+    @Column(name = "weight")  // Ánh xạ với cột "weight" trong bảng
+    private double weight; // Weight
+
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'Active'")  // Trạng thái mặc định 'Active'
+    private String status; // Status (default: 'Active')
+
+    @Column(name = "deletedAt")  // Ánh xạ với cột "deletedAt" trong bảng
+    private String deletedAt; // Deletion timestamp
+
+    @Column(name = "description")  // Ánh xạ với cột "description" trong bảng
+    private String description; // Description
 
     // Default constructor
-    public Product() {
-        this.imageUrls = new ArrayList<>(); // Initialize the ArrayList
-    }
+    public Product() {}
 
     // Parameterized constructor
     public Product(String productId, String productName, String groupName, String brandName,
                    double salePrice, double costPrice, int stock, String unit,
-                   ArrayList<String> imageUrls, double weight, String status,
+                   String imageUrls, double weight, String status,
                    String deletedAt, String description) {
         this.productId = productId;
         this.productName = productName;
@@ -35,7 +65,7 @@ public class Product {
         this.costPrice = costPrice;
         this.stock = stock;
         this.unit = unit;
-        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
+        this.imageUrls = imageUrls;
         this.weight = weight;
         this.status = status;
         this.deletedAt = deletedAt;
@@ -107,11 +137,11 @@ public class Product {
         this.unit = unit;
     }
 
-    public ArrayList<String> getImageUrls() {
+    public String getImageUrls() {
         return imageUrls;
     }
 
-    public void setImageUrls(ArrayList<String> imageUrls) {
+    public void setImageUrls(String imageUrls) {
         this.imageUrls = imageUrls;
     }
 

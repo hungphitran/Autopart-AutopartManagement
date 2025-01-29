@@ -1,164 +1,141 @@
 package com.dao;
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
 import com.entity.Blog;
 
 public class Blog_DAO {
-    private final Connection connection;
 
-    // Constructor to initialize the connection
-    public Blog_DAO() throws ClassNotFoundException, SQLException {
-    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
+    private final SessionFactory factory;
+
+    public Blog_DAO(SessionFactory factory) {
+        this.factory = factory;
     }
 
-    // Retrieve all active blogs
-    public ArrayList<Blog> getAll() {
-        String query = "SELECT * FROM Blog WHERE Status = 'Active'";
-        ArrayList<Blog> list = new ArrayList<>();
-
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                String blogId = rs.getString("BlogId");
-                String groupName = rs.getString("GroupName");
-                String title = rs.getString("Title");
-                String description = rs.getString("Description");
-                String status = rs.getString("Status");
-                String deletedAt = rs.getString("DeletedAt");
-
-                Blog temp = new Blog(blogId, groupName, title, description, status, deletedAt);
-                list.add(temp);
-            }
-        } catch (SQLException e) {
+    public List<Blog> getAll() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Blog b WHERE b.status = 'Active'";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
             e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
         }
-
-        return list;
     }
 
-    // Retrieve a blog by its ID
     public Blog getById(String blogId) {
-        String query = "SELECT * FROM Blog WHERE BlogId = ?";
-        Blog temp = null;
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, blogId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                String groupName = rs.getString("GroupName");
-                String title = rs.getString("Title");
-                String description = rs.getString("Description");
-                String status = rs.getString("Status");
-                String deletedAt = rs.getString("DeletedAt");
-
-                temp = new Blog(blogId, groupName, title, description, status, deletedAt);
-            }
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Blog b WHERE b.blogId = :blogId";
+            Query query = session.createQuery(hql);
+            query.setParameter("blogId", blogId);
+            return (Blog) query.uniqueResult();
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return temp;
     }
 
-    // Add a new blog
     public boolean add(Blog blog) {
-        boolean result = false;
-        String query = "INSERT INTO Blog (BlogId, GroupName, Title, Description, Status, DeletedAt) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, blog.getBlogId());
-            stmt.setString(2, blog.getGroupName());
-            stmt.setString(3, blog.getTitle());
-            stmt.setString(4, blog.getDescription());
-            stmt.setString(5, blog.getStatus());
-            stmt.setString(6, blog.getDeletedAt());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.save(blog);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Update an existing blog
     public boolean update(Blog blog) {
-        boolean result = false;
-        String query = "UPDATE Blog SET GroupName = ?, Title = ?, Description = ?, Status = ?, DeletedAt = ? WHERE BlogId = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, blog.getGroupName());
-            stmt.setString(2, blog.getTitle());
-            stmt.setString(3, blog.getDescription());
-            stmt.setString(4, blog.getStatus());
-            stmt.setString(5, blog.getDeletedAt());
-            stmt.setString(6, blog.getBlogId());
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(blog);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Soft delete a blog
     public boolean delete(String blogId) {
-        boolean result = false;
-        String query = "UPDATE Blog SET Status = 'Deleted', DeletedAt = GETDATE() WHERE BlogId = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, blogId);
-
-            result = stmt.executeUpdate() >= 1;
-        } catch (SQLException e) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "UPDATE Blog b SET b.status = 'Deleted', b.deletedAt = current_timestamp() WHERE b.blogId = :blogId";
+            Query query = session.createQuery(hql);
+            query.setParameter("blogId", blogId);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Check if a blog exists by its ID
     public boolean checkExistById(String blogId) {
-        String query = "SELECT * FROM Blog WHERE BlogId = ?";
-        boolean result = false;
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, blogId);
-            ResultSet rs = stmt.executeQuery();
-            result = rs.next();
-        } catch (SQLException e) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT 1 FROM Blog b WHERE b.blogId = :blogId";
+            Query query = session.createQuery(hql);
+            query.setParameter("blogId", blogId);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
         }
-
-        return result;
     }
 
-    // Generate the next blog ID
     public String generateNextBlogId() {
-        String query = "SELECT MAX(BlogId) FROM Blog WHERE BlogId LIKE 'BLOG%'";
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            if (rs.next()) {
-                String maxId = rs.getString(1);
-                if (maxId == null) {
-                    return "BLOG001";
-                }
-
-                if (maxId.length() >= 4) {
-                    try {
-                        int currentNum = Integer.parseInt(maxId.substring(4).trim());
-                        return String.format("BLOG%03d", currentNum + 1);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        return "BLOG001";
-                    }
-                }
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT MAX(b.blogId) FROM Blog b WHERE b.blogId LIKE 'BLOG%'";
+            Query query = session.createQuery(hql);
+            String maxId = (String) query.uniqueResult();
+            if (maxId == null) {
+                return "BLOG001";
             }
-        } catch (SQLException e) {
+            int currentNum = Integer.parseInt(maxId.substring(4));
+            return String.format("BLOG%03d", currentNum + 1);
+        } catch (Exception e) {
             e.printStackTrace();
+            return "BLOG001";
+        } finally {
+            if (session != null) session.close();
         }
-        return "BLOG000";
     }
 }

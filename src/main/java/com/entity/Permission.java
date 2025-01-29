@@ -1,13 +1,26 @@
 package com.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Permission") // Tên bảng trong database
 public class Permission {
-    private String permissionId;      // ID quyền
-    private String permissionName;    // Tên quyền
-    private String description;       // Mô tả quyền
-    private String status;            // Trạng thái (Active, Inactive, etc.)
-    private LocalDateTime deletedAt;  // Thời điểm bị xóa
+    @Id
+    @Column(name = "permissionId", length = 50) // Cột permissionId
+    private String permissionId;
+
+    @Column(name = "permissionName", nullable = false, length = 255) // Cột permissionName
+    private String permissionName;
+
+    @Column(name = "description", length = 255) // Cột description
+    private String description;
+
+    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Cột status với giá trị mặc định
+    private String status;
+
+    @Column(name = "deletedAt") // Cột deletedAt
+    private LocalDateTime deletedAt;
 
     // Default constructor
     public Permission() {}

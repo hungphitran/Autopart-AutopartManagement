@@ -1,13 +1,27 @@
 package com.entity;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "BlogGroup")
 public class BlogGroup {
-    private String groupName;       // Primary key: Group name
-    private String parentGroup;     // Foreign key: Parent group name
-    private String status;          // Status of the group (default: 'Active')
-    private String createdBy;       // Foreign key: Creator's email (from Employees table)
-    private LocalDateTime deletedAt;       // Timestamp for when the group was deleted
+
+    @Id
+    @Column(name = "groupName", nullable = false, length = 50)
+    private String groupName; // Primary key: Group name
+
+    @Column(name = "parentGroup")
+    private String parentGroup; // Foreign key: Parent group name (self-referencing)
+
+    @Column(name = "status", length = 50, nullable = false)
+    private String status = "Active"; // Status of the group (default: 'Active')
+
+    @Column(name = "createdBy")
+    private String createdBy; // Foreign key: Creator's email (from Employees table)
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt; // Timestamp for when the group was deleted
 
     // Default constructor
     public BlogGroup() {}
@@ -68,11 +82,10 @@ public class BlogGroup {
     public String toString() {
         return "BlogGroup{" +
                 "groupName='" + groupName + '\'' +
-                ", parentGroup='" + parentGroup + '\'' +
+                ", parentGroup=" + parentGroup +
                 ", status='" + status + '\'' +
-                ", createdBy='" + createdBy + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
+                ", createdBy=" + createdBy  +
+                ", deletedAt=" + deletedAt +
                 '}';
     }
 }
-

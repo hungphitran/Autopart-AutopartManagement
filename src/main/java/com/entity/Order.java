@@ -1,25 +1,41 @@
 package com.entity;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "[Order]")
 public class Order {
-    private String orderId;          // Primary key: Order ID
-    private String cartId;           // Foreign key: Cart ID
-    private String userEmail;        // Foreign key: User email
-    private BigDecimal totalCost;    // Total cost of the order
-    private String status;           // Status of the order (default: 'Active')
+
+    @Id
+    @Column(name = "orderId", nullable = false, length = 50)
+    private String orderId; // Primary key: Order ID
+
+    @Column(name = "cartId", nullable = false)
+    private String cart; // Foreign key: Cart ID (references Cart)
+
+    @Column(name = "userEmail", nullable = false)
+    private String user; // Foreign key: User email (references Accounts)
+
+    @Column(name = "totalCost", precision = 18, scale = 2)
+    private BigDecimal totalCost; // Total cost of the order
+
+    @Column(name = "status", length = 50, nullable = false)
+    private String status = "Active"; // Status of the order (default: 'Active')
+
+    @Column(name = "deletedAt")
     private LocalDateTime deletedAt; // Timestamp for when the order was deleted
 
     // Default constructor
     public Order() {}
 
     // Parameterized constructor
-    public Order(String orderId, String cartId, String userEmail, 
+    public Order(String orderId, String cart, String user, 
                  BigDecimal totalCost, String status, LocalDateTime deletedAt) {
         this.orderId = orderId;
-        this.cartId = cartId;
-        this.userEmail = userEmail;
+        this.cart = cart;
+        this.user = user;
         this.totalCost = totalCost;
         this.status = status;
         this.deletedAt = deletedAt;
@@ -34,20 +50,20 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public String getCartId() {
-        return cartId;
+    public String getCart() {
+        return cart;
     }
 
-    public void setCartId(String cartId) {
-        this.cartId = cartId;
+    public void setCart(String cart) {
+        this.cart = cart;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public BigDecimal getTotalCost() {
@@ -79,8 +95,8 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "orderId='" + orderId + '\'' +
-                ", cartId='" + cartId + '\'' +
-                ", userEmail='" + userEmail + '\'' +
+                ", cart=" + cart +
+                ", user=" + user +
                 ", totalCost=" + totalCost +
                 ", status='" + status + '\'' +
                 ", deletedAt=" + deletedAt +

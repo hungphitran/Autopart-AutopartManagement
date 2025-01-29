@@ -1,19 +1,37 @@
 package com.entity;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "Blog")
 public class Blog {
-    private String blogId;        // Primary key: Blog ID
-    private String groupName;     // Foreign key: Group name (references BlogGroup)
-    private String title;         // Title of the blog
-    private String description;   // Description of the blog
-    private String status;        // Status of the blog (default: 'Active')
-    private String deletedAt;     // Timestamp for when the blog was deleted
+
+    @Id
+    @Column(name = "blogId", nullable = false, length = 50)
+    private String blogId; // Primary key: Blog ID
+ 
+    @Column(name = "groupName")
+    private String groupName; // Foreign key: Group name (references BlogGroup)
+
+    @Column(name = "title", nullable = false, length = 255)
+    private String title; // Title of the blog
+
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    private String description; // Description of the blog
+
+    @Column(name = "status", length = 50, nullable = false)
+    private String status = "Active"; // Status of the blog (default: 'Active')
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt; // Timestamp for when the blog was deleted
 
     // Default constructor
     public Blog() {}
 
     // Parameterized constructor
     public Blog(String blogId, String groupName, String title, 
-                String description, String status, String deletedAt) {
+                String description, String status, LocalDateTime deletedAt) {
         this.blogId = blogId;
         this.groupName = groupName;
         this.title = title;
@@ -63,11 +81,11 @@ public class Blog {
         this.status = status;
     }
 
-    public String getDeletedAt() {
+    public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
+    public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 
@@ -76,12 +94,11 @@ public class Blog {
     public String toString() {
         return "Blog{" +
                 "blogId='" + blogId + '\'' +
-                ", groupName='" + groupName + '\'' +
+                ", groupName=" + groupName +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
+                ", deletedAt=" + deletedAt +
                 '}';
     }
 }
-

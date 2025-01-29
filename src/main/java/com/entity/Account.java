@@ -1,44 +1,67 @@
 package com.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED) // Define inheritance strategy
+@Table(name = "Account")
 public class Account {
-    private String fullName;     // Full name of the account holder
-    private String email;        // Email (Primary Key)
-    private String password;     // Password
-    private String token;        // Token for authentication
-    private String phone;        // Phone number
+    @Column(name = "fullName")
+    private String fullName;
+
+    @Id
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "token")
+    private String token;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address")
     private String address;
-    private String avatar;       // Avatar URL
-    private String cartId;       // Cart ID (foreign key)
-    private String status;       // Status (default: 'Active')
-    private LocalDateTime deletedAt;    // Deletion timestamp
+
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "cartId")
+    private String cartId;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt;
 
     // Default constructor
     public Account() {}
 
     // Parameterized constructor
-    public Account(String fullName, String email, String password, String token, String phone, String address,
-			String avatar, String cartId, String status, LocalDateTime deletedAt) {
-		super();
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-		this.token = token;
-		this.phone = phone;
-		this.address = address;
-		this.avatar = avatar;
-		this.cartId = cartId;
-		this.status = status;
-		this.deletedAt = deletedAt;
-	}
+    public Account(String fullName, String email, String password, String token, String phone,
+                   String address, String avatar, String cartId, String status, LocalDateTime deletedAt) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.token = token;
+        this.phone = phone;
+        this.address = address;
+        this.avatar = avatar;
+        this.cartId = cartId;
+        this.status = status;
+        this.deletedAt = deletedAt;
+    }
 
-    // Getters and Setters
+    // Getters and setters
     public String getFullName() {
         return fullName;
     }
 
-	public void setFullName(String fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
@@ -74,16 +97,15 @@ public class Account {
         this.phone = phone;
     }
 
-    
     public String getAddress() {
-		return address;
-	}
+        return address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public String getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
@@ -115,7 +137,6 @@ public class Account {
         this.deletedAt = deletedAt;
     }
 
-    // Override toString for debugging
     @Override
     public String toString() {
         return "Account{" +
@@ -124,12 +145,11 @@ public class Account {
                 ", password='" + password + '\'' +
                 ", token='" + token + '\'' +
                 ", phone='" + phone + '\'' +
-                 ", address='" + address + '\'' +
+                ", address='" + address + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", cartId='" + cartId + '\'' +
                 ", status='" + status + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
+                ", deletedAt=" + deletedAt +
                 '}';
     }
 }
-
