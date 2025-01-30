@@ -301,9 +301,9 @@
 .header__cart-list::after {
     content: "";
     position: absolute;
-    right: 1px;
+    right: 10px;
     top: -24px;
-    border-width: 16px 22px;
+    border-width: 16px 50px;
     border-style: solid;
     border-color: transparent transparent var(--white-color) transparent;
     cursor: pointer;

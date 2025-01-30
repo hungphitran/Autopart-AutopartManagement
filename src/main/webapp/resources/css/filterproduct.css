@@ -1,20 +1,5 @@
-@charset "UTF-8";
-header {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 1;
-	background-color: #ff6f61;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px;
-}
-
-header .logo {
-	display: inline-block;
-	border-radius: 50%;
+.container_filter {
+	margin-top: 150px;
 }
 
 .search-form {
