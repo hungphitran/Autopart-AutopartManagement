@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+	 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div class="header">
 	<div class="header_container header-inner">
@@ -35,17 +36,8 @@
 						<div class="header-account_button">
 							<i class="fa-solid fa-circle-user logo-account"></i>
 							<span class="title-account">
-								<%
-								if (session.getAttribute("user") != null) {
-								%>
-									<%=session.getAttribute("user").toString()%>
-								<%
-								} else {
-								%>
-									Tài khoản
-								<%
-								}
-								%>
+							<c:if test="${user==null}">Tài khoản</c:if>
+							<c:if test="${user!=null }">${user.fullName}</c:if>
 							</span>
 						</div>
 					</button>

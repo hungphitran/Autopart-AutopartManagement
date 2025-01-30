@@ -182,8 +182,4 @@
 		<jsp:include page="/WEB-INF/mixins/footer.jsp" />
 	</div>
 </body>
-
-<script type="text/javascript">
-	window.location.href="/autopart/index.htm";
-</script>
 </html>
