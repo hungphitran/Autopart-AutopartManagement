@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.dao.*;
+import com.entity.Account;
 
 @Controller
 public class LoginController {
@@ -60,35 +61,44 @@ public class LoginController {
 		String email= req.getParameter("email");
 		String pass = req.getParameter("password");
 		
-		System.out.println(rgdao.getById("RG001"));
-		System.out.println(pdao.getById("PER001"));
-		System.out.println(accountDao.getByEmail("johndoe@example.com"));
-		System.out.println(blogDao.getById("BLOG001"));
-		System.out.println(productGroupDao.getByGroupName("Electronics"));
-		System.out.println(brandDao.getByBrandName("SuperTech"));
-		System.out.println(orderDao.getById("ORD001"));
-		System.out.println(productDao.getById("PROD001"));
-		System.out.println(employeeDao.getByEmail("johndoe@example.com"));
-		System.out.println(gsdao.getByWebsiteName("SuperStore"));
+//		System.out.println(rgdao.getById("RG001"));
+//		System.out.println(pdao.getById("PER001"));
+//		System.out.println(accountDao.getByEmail("johndoe@example.com"));
+//		System.out.println(blogDao.getById("BLOG001"));
+//		System.out.println(productGroupDao.getByGroupName("Electronics"));
+//		System.out.println(brandDao.getByBrandName("SuperTech"));
+//		System.out.println(orderDao.getById("ORD001"));
+//		System.out.println(productDao.getById("PROD001"));
+//		System.out.println(employeeDao.getByEmail("johndoe@example.com"));
+//		System.out.println(gsdao.getByWebsiteName("SuperStore"));
 
+		Account acc = accountDao.getByEmail(email);
+		
 
-
-		if(pass.length()<4) {//check valid password and
-			req.setAttribute("message", "password is incorrect");
+		if(pass==null||email==null||pass.length()<4) {//check valid password
+			req.setAttribute("message", "dữ liệu không hợp lệ");
 			return "login";			
 		}
-		
-		// add user info to session
-		req.getSession().setAttribute("email",email);
-		req.getSession().setAttribute("user", "Hung");
-		return "redirect:/";////
+		else if(acc==null) {
+			req.setAttribute("message", "không tìm thấy tài khoản");
+			return "login";	
+		}
+		else if(pass.equals(acc.getPassword())) {
+			// add user info to session
+			req.getSession().setAttribute("user", acc);
+			return "redirect:/";
+		}
+		else {
+			req.setAttribute("message", "sai email hoặc mật khẩu");
+			return "login";		
+		}
+
 	}
 	
 	@RequestMapping(value="/login",method=RequestMethod.GET)
-	public String getLogin(HttpServletRequest req,Model  model) {
+	public String getLogin(HttpServletRequest req) {
 		HttpSession session = req.getSession();
-		if(session.getAttribute("email")!=null) {
-			model.addAttribute("email", session.getAttribute("email"));
+		if(session.getAttribute("user")!=null) {
 			return "profile";
 		}
 		return "login";
@@ -98,7 +108,6 @@ public class LoginController {
 	public String logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		session.removeAttribute("user");
-		session.removeAttribute("email");
 		return "login";
 	}
 }

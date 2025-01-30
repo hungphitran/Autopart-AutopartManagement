@@ -12,5 +12,9 @@ public class AdminController {
 	public String showLogin() {
 		return "adminview/login";
 	}
-
+	
+	@RequestMapping(value = "/login", method= RequestMethod.POST)
+	public String login() {
+		return "adminview/statistic";
+	}
 }

@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
+	<title>Login</title>
 	
 	<link
 		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
@@ -21,21 +21,23 @@
 			<h2>Đăng nhập</h2>
 
 			<div class="input-field">
-				<input type="text" required>
+				<input type="text" name="email" required>
 				<label>Nhập email</label>
 			</div>
 
 			<div class="input-field">
-				<input type="password" required>
+				<input type="password" name="password" required>
 				<label>Nhập mật khẩu</label>
 			</div>
+			
+			<span style="color:red;"> ${message} </span>
 
 			<div class="forget">
 				<label for="remember">
 					<input type="checkbox" id="remember">
 					<p>Remember me</p>
 				</label>
-				<a href="forgot.html">Quên mật khẩu?</a>
+				<a href="/autopart/forgot.htm">Quên mật khẩu?</a>
 			</div>
 
 			<button type="submit">Đăng nhập</button>
