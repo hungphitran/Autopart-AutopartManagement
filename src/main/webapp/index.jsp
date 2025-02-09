@@ -86,7 +86,7 @@
 				
 				<div class="products_list">
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -99,7 +99,7 @@
 					</div>
 	
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -112,7 +112,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -125,7 +125,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -138,7 +138,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -151,7 +151,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -164,7 +164,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 

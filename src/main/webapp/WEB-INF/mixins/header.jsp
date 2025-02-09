@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="header_search">
-		   <form action="/autopart/search.htm" method ="get">
+		   <form action="/autopart/product/search.htm" method ="get">
 		   		<input 
 					type="text" 
 					name="keyword"
@@ -232,7 +232,7 @@
 							</li>
 						</ul>
 	
-						<a href="/autopart/cart.htm" class="btn btn--primary header__cart-view-cart">Xem giỏ hàng</a>
+						<a href="/autopart/product/cart.htm" class="btn btn--primary header__cart-view-cart">Xem giỏ hàng</a>
 					</div>
 				</div>
 			</div>

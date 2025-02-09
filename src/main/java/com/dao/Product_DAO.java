@@ -15,7 +15,7 @@ public class Product_DAO {
         this.factory = factory;
     }
 
-    public List<Product> getAll() {
+	public List<Product> getAll() {
         Session session = null;
         try {
             session = factory.openSession();
