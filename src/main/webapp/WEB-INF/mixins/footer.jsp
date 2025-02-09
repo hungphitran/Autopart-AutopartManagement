@@ -41,7 +41,7 @@
 			  <a href="" class="footer-item__link">Động cơ</a>
 			</li>
 			<li class="footer-item">
-			  <a href="" class="footer-item__link">Động cơ</a>
+			  <a href="/autopart/admin/login.htm" class="footer-item__link">Trang quản lý</a>
 			</li>
 		  </ul>
 		</div>

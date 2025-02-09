@@ -17,6 +17,8 @@
 		crossorigin="anonymous">
 	<link href="<c:url value='/resources/css/dashboard.css'/>" rel="stylesheet">
 	<link href="<c:url value="/resources/css/base.css" />" rel="stylesheet">
+		  <link rel="icon" type="image/x-icon" href="https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m2ko7nkbfksm02_tn.webp">
+	
 </head>
 <body>
 	<div class="wrapper">
@@ -86,7 +88,7 @@
 				
 				<div class="products_list">
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -99,7 +101,7 @@
 					</div>
 	
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -112,7 +114,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -125,7 +127,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -138,7 +140,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -151,7 +153,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 
@@ -164,7 +166,7 @@
 					</div>
 
 					<div class="card" style="width: 18rem;">
-						<a href="/autopart/detailproduct.htm"><img
+						<a href="/autopart/product/detailproduct.htm"><img
 							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 							class="card-img-top" alt="..."></a>
 

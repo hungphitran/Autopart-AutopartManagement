@@ -33,7 +33,7 @@
 			</div>
 	
 			<div class="filter-form">
-				<form action="/autopart/search.htm" method="get">
+				<form action="/autopart/product/search.htm" method="get">
 					<div class="search-form">
 						<input type="text" name="keyword" placeholder="Search...">
 					</div>
@@ -41,7 +41,7 @@
 					<div class="form-group">
 						<label for="brand">Hãng</label> <select id="brand" name="brand"
 							class="form-control">
-							<option value="">Tất cả</option>
+							<option value="All">Tất cả</option>
 							<c:forEach var="name" items="${brands}">
 								<c:choose>
 									<c:when test="${name.equals(brand)}">
@@ -57,7 +57,7 @@
 					<div class="form-group">
 						<label for="category">Loại hàng</label> <select id="category"
 							name="category" class="form-control">
-							<option value="">Tất cả</option>
+							<option value="All">Tất cả</option>
 							<c:forEach var="name" items="${categories}">
 								<c:choose>
 									<c:when test="${name.equals(category)}">
@@ -80,7 +80,7 @@
 	
 			<div class="list-card">
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 						class="card-img-top" alt="..."></a>
 	
@@ -93,7 +93,7 @@
 				</div>
 	
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://html.themability.com/autoelite/assets/images/products/13.jpg"
 						class="card-img-top" alt="..."></a>
 	
@@ -106,7 +106,7 @@
 				</div>
 	
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://html.themability.com/autoelite/assets/images/products/9.jpg"
 						class="card-img-top" alt="..."></a>
 	
@@ -119,7 +119,7 @@
 				</div>
 	
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://html.themability.com/autoelite/assets/images/products/4.jpg"
 						class="card-img-top" alt="..."></a>
 	
@@ -132,7 +132,7 @@
 				</div>
 	
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 						class="card-img-top" alt="..."></a>
 	
@@ -145,7 +145,7 @@
 				</div>
 	
 				<div class="card" style="width: 18rem;">
-					<a href="/autopart/detailproduct.htm"><img
+					<a href="/autopart/product/detailproduct.htm"><img
 						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
 						class="card-img-top" alt="..."></a>
 	
