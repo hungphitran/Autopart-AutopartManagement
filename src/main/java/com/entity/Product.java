@@ -1,0 +1,199 @@
+package com.entity;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "Product")  // Đánh dấu lớp này là thực thể JPA, ánh xạ với bảng "Product"
+public class Product {
+
+    @Id
+    @Column(name = "productId")  // Khóa chính
+    private String productId; // Primary key: Product ID
+
+    @Column(name = "productName", nullable = false)  // Ánh xạ với cột "productName" trong bảng
+    private String productName; // Product name
+
+    @Column(name = "groupName")
+    private String groupName; // Foreign key: Group name (references ProductGroup)
+
+    
+    @Column(name = "brandName")
+    private String brandName; // Foreign key: Brand name (references Brand)
+
+    @Column(name = "salePrice")  // Ánh xạ với cột "salePrice" trong bảng
+    private double salePrice; // Sale price
+
+    @Column(name = "costPrice")  // Ánh xạ với cột "costPrice" trong bảng
+    private double costPrice; // Cost price
+
+    @Column(name = "stock")  // Ánh xạ với cột "stock" trong bảng
+    private int stock; // Stock quantity
+
+    @Column(name = "unit")  // Ánh xạ với cột "unit" trong bảng
+    private String unit; // Unit of measurement
+
+    @Column(name = "imageUrls")  // Lưu trữ danh sách URL hình ảnh
+    private String imageUrls; // List of image URLs
+
+    @Column(name = "weight")  // Ánh xạ với cột "weight" trong bảng
+    private double weight; // Weight
+
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'Active'")  // Trạng thái mặc định 'Active'
+    private String status; // Status (default: 'Active')
+
+    @Column(name = "deletedAt")  // Ánh xạ với cột "deletedAt" trong bảng
+    private String deletedAt; // Deletion timestamp
+
+    @Column(name = "description")  // Ánh xạ với cột "description" trong bảng
+    private String description; // Description
+
+    // Default constructor
+    public Product() {}
+
+    // Parameterized constructor
+    public Product(String productId, String productName, String groupName, String brandName,
+                   double salePrice, double costPrice, int stock, String unit,
+                   String imageUrls, double weight, String status,
+                   String deletedAt, String description) {
+        this.productId = productId;
+        this.productName = productName;
+        this.groupName = groupName;
+        this.brandName = brandName;
+        this.salePrice = salePrice;
+        this.costPrice = costPrice;
+        this.stock = stock;
+        this.unit = unit;
+        this.imageUrls = imageUrls;
+        this.weight = weight;
+        this.status = status;
+        this.deletedAt = deletedAt;
+        this.description = description;
+    }
+
+    // Getters and Setters
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(double salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public double getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(double costPrice) {
+        this.costPrice = costPrice;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(String imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(String deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    // Override toString for better representation
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId='" + productId + '\'' +
+                ", productName='" + productName + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", brandName='" + brandName + '\'' +
+                ", salePrice=" + salePrice +
+                ", costPrice=" + costPrice +
+                ", stock=" + stock +
+                ", unit='" + unit + '\'' +
+                ", imageUrls=" + imageUrls +
+                ", weight=" + weight +
+                ", status='" + status + '\'' +
+                ", deletedAt='" + deletedAt + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
+}

@@ -1,0 +1,58 @@
+.container_filter {
+	margin-top: 150px;
+}
+
+.search-form {
+	display: flex;
+	align-items: center;
+	border: 1px solid whitesmoke; /* Đường viền xung quanh */
+	overflow: hidden; /* Ẩn đi phần thừa */
+	font-size: 18px;
+}
+
+.search-form input[type="text"] {
+	flex: 1; /* Chiếm hết không gian còn lại */
+	border: none; /* Không có đường viền riêng */
+}
+
+.search-form input[type="text"]:focus {
+	outline: none;
+}
+
+.list-card {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.card {
+	display: flex;
+	padding: 20px;
+	border: none;
+}
+
+.sidebar {
+	background-color: whitesmoke;
+	position: fixed;
+	top: 130px;
+	left: 0px;
+	bottom: 0;
+	width: 300px;
+	z-index: 2;
+	/* Các thuộc tính style khác cho sidebar */
+}
+
+.sidebar * {
+	margin: 5px;
+}
+
+select {
+	flex: 1; /* Chiếm hết không gian còn lại */
+	border: none; /* Không có đường viền riêng */
+}
+
+.content {
+	margin-top: 110px;
+	margin-left: 300px;
+	/* Adjust this value based on the width of the sidebar */
+	padding-right: 20px;
+}
