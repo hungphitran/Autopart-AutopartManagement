@@ -91,6 +91,11 @@ public class AdminController {
 		List<Product> products = productDao.getAll();
 		req.setAttribute("products", products);
 		req.setAttribute("title","Sản phẩm");
-		return "adminview/product";
+		return "adminview/product/index";
+	}
+	
+	@RequestMapping("/product/add")
+	public String addProducts(HttpServletRequest req) {
+		return "adminview/product/add";
 	}
 }
