@@ -42,13 +42,13 @@
 						<label for="brand">Hãng</label> <select id="brand" name="brand"
 							class="form-control">
 							<option value="All">Tất cả</option>
-							<c:forEach var="name" items="${brands}">
+							<c:forEach var="brand" items="${brands}">
 								<c:choose>
-									<c:when test="${name.equals(brand)}">
-										<option value="${name}" selected>${name}</option>
+									<c:when test="${brand.brandName.equals(brand)}">
+										<option value="${brand.brandName}" selected>${brand.brandName}</option>
 									</c:when>
 									<c:otherwise>
-										<option value="${name}">${name}</option>									
+										<option value="${brand.brandName}">${brand.brandName}</option>									
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
@@ -58,13 +58,13 @@
 						<label for="category">Loại hàng</label> <select id="category"
 							name="category" class="form-control">
 							<option value="All">Tất cả</option>
-							<c:forEach var="name" items="${categories}">
+							<c:forEach var="group" items="${categories}">
 								<c:choose>
-									<c:when test="${name.equals(category)}">
-										<option value="${name}" selected>${name}</option>
+									<c:when test="${group.groupName.equals(category)}">
+										<option value="${group.groupName}" selected>${group.groupName}</option>
 									</c:when>
 									<c:otherwise>
-										<option value="${name}">${name}</option>									
+										<option value="${group.groupName}">${group.groupName}</option>									
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
@@ -79,83 +79,18 @@
 			<!-- show products -->
 	
 			<div class="list-card">
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$1</p>
-					</div>
-				</div>
-	
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://html.themability.com/autoelite/assets/images/products/13.jpg"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$2</p>
-					</div>
-				</div>
-	
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://html.themability.com/autoelite/assets/images/products/9.jpg"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$3</p>
-					</div>
-				</div>
-	
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://html.themability.com/autoelite/assets/images/products/4.jpg"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$4</p>
-					</div>
-				</div>
-	
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$5</p>
-					</div>
-				</div>
-	
-				<div class="card" style="width: 18rem;">
-					<a href="/autopart/product/detailproduct.htm"><img
-						src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-						class="card-img-top" alt="..."></a>
-	
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<p>$$$$$$$$$$$$$$6</p>
-					</div>
-				</div>
+					<c:forEach items="${products}" var="product">
+						<div class="card" style="width: 18rem;">
+							<a href="/autopart/product/detailproduct.htm?productId=${product.productId}"><img
+							src="${product.imageUrls}"
+							class="card-img-top" ></a>
+							<div class="card-body">
+								<h5 class="card-title">${product.productName}</h5>
+								<p class="card-text">${product.description}</p>
+								<p>Giá bán: ${product.salePrice }đ</p>
+							</div>
+						</div>
+					</c:forEach>
 			</div>
 		</div>
 	</div>
