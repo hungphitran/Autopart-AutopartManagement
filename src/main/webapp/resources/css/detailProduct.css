@@ -21,13 +21,35 @@ header img {
 .product-details ul {
     list-style-type: none;
     padding: 0;
+
 }
+
+.image-item{
+	margin:5px;
+	padding:1px;
+}
+
+.image-item.active{
+	margin:5px;
+	padding:1px;
+	border: solid 3px;
+	border-color: gray;
+	border-radius: 3px;
+}
+
+
 .product-details ul li {
     background: #e9ecef;
     margin: 5px 0;
     padding: 10px;
     border-radius: 5px;
 }
+
+form .input-group{
+	padding: 10px;
+}
+
+
 footer {
     background: #343a40;
 }

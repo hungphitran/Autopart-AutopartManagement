@@ -87,96 +87,18 @@
 				</div>
 				
 				<div class="products_list">
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
+					<c:forEach items="${products}" var="product">
+						<div class="card" style="width: 18rem;">
+							<a href="/autopart/product/detailproduct.htm?productId=${product.productId}"><img
+							src="${product.imageUrls}"
 							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
+							<div class="card-body">
+								<h5 class="card-title">${product.productName}</h5>
+								<p class="card-text">${product.description}</p>
+								<p>Giá bán: ${product.salePrice }đ</p>
+							</div>
 						</div>
-					</div>
-	
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
-
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
-
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
-
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
-
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
-
-					<div class="card" style="width: 18rem;">
-						<a href="/autopart/product/detailproduct.htm"><img
-							src="https://cf.shopee.vn/file/sg-11134201-7rfha-m4fpfp46y804d8"
-							class="card-img-top" alt="..."></a>
-
-						<div class="card-body">
-							<h5 class="card-title">Card title</h5>
-							<p class="card-text">Some quick example text to build on the
-								card title and make up the bulk of the card's content.</p>
-							<p>$$$$$$$$$$$$$$</p>
-						</div>
-					</div>
+					</c:forEach>
 				</div>
 			</div>
 		</div>
