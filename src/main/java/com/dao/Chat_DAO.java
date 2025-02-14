@@ -1,194 +1,151 @@
-//package com.dao;
-//
-//import java.sql.*;
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import com.entity.Chat;
-//
-//public class Chat_DAO {
-//    private final Connection connection;
-//
-//    // Constructor to initialize the database connection
-//    public Chat_DAO() throws ClassNotFoundException, SQLException {
-//    	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-//    	connection = DriverManager.getConnection("jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=ProductDB;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;", "sa", "10802");
-//    }
-//
-//    // Retrieve all active chats
-//    public ArrayList<Chat> getAll() {
-//        String query = "SELECT * FROM Chat WHERE Status = 'Active'";
-//        ArrayList<Chat> chats = new ArrayList<>();
-//
-//        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-//            while (rs.next()) {
-//                String userEmail = rs.getString("UserEmail");
-//                String chatRoomId = rs.getString("ChatRoomId");
-//                String content = rs.getString("Content");
-//                String status = rs.getString("Status");
-//                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-//
-//                ArrayList<String> images = getImagesByChatRoomId(chatRoomId);
-//                Chat chat = new Chat(userEmail, chatRoomId, content, images, status, deletedAt);
-//                chats.add(chat);
+package com.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.entity.Brand;
+import com.entity.Cart;
+import com.entity.Chat;
+import com.entity.Product;
+
+public class Chat_DAO {
+
+    private final SessionFactory factory;
+
+    public Chat_DAO(SessionFactory factory) {
+        this.factory = factory;
+    }
+
+
+    @Transactional
+    public Chat getById(String chatRoomId) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT c FROM Chat c LEFT JOIN FETCH c.images WHERE c.chatRoomId = :chatRoomId";
+            Query query = session.createQuery(hql);
+            query.setParameter("chatRoomId", chatRoomId);
+            return (Chat) query.uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean add(Chat chat) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+
+            // Save the cart
+            session.save(chat);
+            session.flush();
+
+            
+//            // For ProductsInCart, use SQL with createSQLQuery()
+//            for (Map.Entry<Product, Integer> entry : cart.getProducts().entrySet()) {
+//                String sql = "INSERT INTO ProductsInCart (cartId, productId, amount) VALUES (?, ?, ?)";
+//                session.createSQLQuery(sql)
+//                      .setParameter(0, cart.getCartId())
+//                      .setParameter(1, entry.getKey().getProductId())
+//                      .setParameter(2, entry.getValue())
+//                      .executeUpdate();
 //            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
 //
-//        return chats;
-//    }
-//
-//    // Retrieve chat by chatRoomId
-//    public Chat getByChatRoomId(String chatRoomId) {
-//        String query = "SELECT * FROM Chat WHERE ChatRoomId = ?";
-//        Chat chat = null;
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, chatRoomId);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                String userEmail = rs.getString("UserEmail");
-//                String content = rs.getString("Content");
-//                String status = rs.getString("Status");
-//                LocalDateTime deletedAt = rs.getTimestamp("DeletedAt") != null ? rs.getTimestamp("DeletedAt").toLocalDateTime() : null;
-//
-//                ArrayList<String> images = getImagesByChatRoomId(chatRoomId);
-//                chat = new Chat(userEmail, chatRoomId, content, images, status, deletedAt);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return chat;
-//    }
-//
-//    // Add a new chat
-//    public boolean add(Chat chat) {
-//        boolean result = false;
-//        String query = "INSERT INTO Chat (UserEmail, ChatRoomId, Content, Status, DeletedAt) VALUES (?, ?, ?, ?, ?)";
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, chat.getUserEmail());
-//            stmt.setString(2, chat.getChatRoomId());
-//            stmt.setString(3, chat.getContent());
-//            stmt.setString(4, chat.getStatus());
-//            stmt.setTimestamp(5, chat.getDeletedAt() != null ? Timestamp.valueOf(chat.getDeletedAt()) : null);
-//
-//            result = stmt.executeUpdate() >= 1;
-//
-//            if (result) {
-//                saveImages(chat.getChatRoomId(), chat.getImages());
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return result;
-//    }
-//
-//    // Update an existing chat
-//    public boolean update(Chat chat) {
-//        boolean result = false;
-//        String query = "UPDATE Chat SET UserEmail = ?, Content = ?, Status = ?, DeletedAt = ? WHERE ChatRoomId = ?";
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, chat.getUserEmail());
-//            stmt.setString(2, chat.getContent());
-//            stmt.setString(3, chat.getStatus());
-//            stmt.setTimestamp(4, chat.getDeletedAt() != null ? Timestamp.valueOf(chat.getDeletedAt()) : null);
-//            stmt.setString(5, chat.getChatRoomId());
-//
-//            result = stmt.executeUpdate() >= 1;
-//
-//            if (result) {
-//                saveImages(chat.getChatRoomId(), chat.getImages());
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return result;
-//    }
-//
-//    // Delete a chat (soft delete)
-//    public boolean delete(String chatRoomId) {
-//        boolean result = false;
-//        String query = "UPDATE Chat SET Status = 'Deleted', DeletedAt = GETDATE() WHERE ChatRoomId = ?";
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, chatRoomId);
-//
-//            result = stmt.executeUpdate() >= 1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return result;
-//    }
-//
-//    // Retrieve images associated with a chat room
-//    private ArrayList<String> getImagesByChatRoomId(String chatRoomId) {
-//        String query = "SELECT Images FROM ChatRoomImages WHERE ChatRoomId = ?";
-//        ArrayList<String> images = new ArrayList<>();
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, chatRoomId);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                String[] imageArray = rs.getString("Images").split(";");
-//                for (String image : imageArray) {
-//                    images.add(image.trim());
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return images;
-//    }
-//
-//    // Save images associated with a chat room
-//    private void saveImages(String chatRoomId, ArrayList<String> images) {
-//        String query = "MERGE INTO ChatRoomImages AS target " +
-//                       "USING (VALUES (?, ?)) AS source (ChatRoomId, Images) " +
-//                       "ON target.ChatRoomId = source.ChatRoomId " +
-//                       "WHEN MATCHED THEN UPDATE SET Images = source.Images " +
-//                       "WHEN NOT MATCHED THEN INSERT (ChatRoomId, Images) VALUES (source.ChatRoomId, source.Images);";
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            String imagesString = String.join(";", images);
-//            stmt.setString(1, chatRoomId);
-//            stmt.setString(2, imagesString);
-//            stmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    
-//    public String generateNextChatId() {
-//        String query = "SELECT MAX(ChatRoomId) FROM Chat WHERE ChatRoomId LIKE 'CHAT%'";
-//        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-//            if (rs.next()) {
-//                String maxId = rs.getString(1);
-//                if (maxId == null) {
-//                    return "CHAT001";
-//                }
-//
-//                if (maxId.length() >= 3) {
-//                    try {
-//                        int currentNum = Integer.parseInt(maxId.substring(3).trim());
-//                        return String.format("CHAT%03d", currentNum + 1);
-//                    } catch (NumberFormatException e) {
-//                        e.printStackTrace();
-//                        return "CHAT001";
-//                    }
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return "CHAT000";
-//    }
-//}
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean update(Chat chat) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(chat);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean delete(String chatRoomId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "UPDATE Cart c SET c.status = 'Deleted' WHERE c.chatRoomId = :chatRoomId";
+            Query query = session.createQuery(hql);
+            query.setParameter("chatRoomId", chatRoomId);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean checkExistById(String chatRoomId) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT 1 FROM Chat c WHERE c.chatRoomId = :chatRoomId AND status ='Active'";
+            Query query = session.createQuery(hql);
+            query.setParameter("chatRoomId", chatRoomId);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public String generateNextBlogId() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT MAX(c.chatRoomId) FROM Chat c WHERE c.chatRoomId LIKE 'CHAT%'";
+            Query query = session.createQuery(hql);
+            String maxId = (String) query.uniqueResult();
+            if (maxId == null) {
+                return "CHAT001";
+            }
+            int currentNum = Integer.parseInt(maxId.substring(4));
+            return String.format("CHAT%03d", currentNum + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "CHAT001";
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+}

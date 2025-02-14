@@ -11,26 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.entity.Brand;
 import com.entity.Cart;
+import com.entity.Discount;
 import com.entity.Product;
 
-public class Cart_DAO {
+public class Discount_DAO {
 
     private final SessionFactory factory;
 
-    public Cart_DAO(SessionFactory factory) {
+    public Discount_DAO(SessionFactory factory) {
         this.factory = factory;
     }
 
 
     @Transactional
-    public Cart getById(String cartId) {
+    public Discount getById(String discountId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT c FROM Cart c LEFT JOIN FETCH c.products WHERE c.cartId = :cartId";
+            String hql = "SELECT d FROM Discount d LEFT JOIN FETCH d.userEmails WHERE d.discountId = :discountId";
             Query query = session.createQuery(hql);
-            query.setParameter("cartId", cartId);
-            return (Cart) query.uniqueResult();
+            query.setParameter("discountId", discountId);
+            return (Discount) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -39,7 +40,7 @@ public class Cart_DAO {
         }
     }
 
-    public boolean add(Cart cart) {
+    public boolean add(Discount discount) {
         Session session = null;
         Transaction transaction = null;
         try {
@@ -47,7 +48,7 @@ public class Cart_DAO {
             transaction = session.beginTransaction();
 
             // Save the cart
-            session.save(cart);
+            session.save(discount);
             session.flush();
 
             
@@ -72,13 +73,13 @@ public class Cart_DAO {
         }
     }
     
-    public boolean update(Cart cart) {
+    public boolean update(Discount discount) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            session.update(cart);
+            session.update(discount);
             transaction.commit();
             return true;
         } catch (Exception e) {
@@ -90,15 +91,15 @@ public class Cart_DAO {
         }
     }
 
-    public boolean delete(String cartId) {
+    public boolean delete(String discountId) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Cart c SET c.status = 'Deleted' WHERE c.cartId = :cartId";
+            String hql = "UPDATE Discount d SET d.status = 'Deleted' WHERE d.discountId = :discountId";
             Query query = session.createQuery(hql);
-            query.setParameter("cartId", cartId);
+            query.setParameter("discountId", discountId);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -111,13 +112,13 @@ public class Cart_DAO {
         }
     }
     
-    public boolean checkExistById(String cartId) {
+    public boolean checkExistById(String discountId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT 1 FROM Cart c WHERE c.cartId = :cartId AND status ='Active'";
+            String hql = "SELECT 1 FROM Discount d WHERE d.discountId = :discountId AND status ='Active'";
             Query query = session.createQuery(hql);
-            query.setParameter("cartId", cartId);
+            query.setParameter("discountId", discountId);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,24 +128,25 @@ public class Cart_DAO {
         }
     }
 
-    public String generateNextBlogId() {
+    public String generateNextDiscountId() {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT MAX(c.cartId) FROM Cart c WHERE c.cartId LIKE 'CART%'";
+            String hql = "SELECT MAX(d.discountId) FROM Discount d WHERE d.discountId LIKE 'DIS%'";
             Query query = session.createQuery(hql);
             String maxId = (String) query.uniqueResult();
             if (maxId == null) {
-                return "CART001";
+                return "DIST001";
             }
             int currentNum = Integer.parseInt(maxId.substring(4));
-            return String.format("CART%03d", currentNum + 1);
+            return String.format("DIS%03d", currentNum + 1);
         } catch (Exception e) {
             e.printStackTrace();
-            return "CART001";
+            return "DIS001";
         } finally {
             if (session != null) session.close();
         }
     }
     
 }
+

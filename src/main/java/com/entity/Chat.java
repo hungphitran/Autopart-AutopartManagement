@@ -3,7 +3,9 @@ package com.entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "Chat")
@@ -20,12 +22,11 @@ public class Chat {
     private String content; // Message content
 
     @ElementCollection
-    @CollectionTable(
-        name = "ChatRoomImages", 
-        joinColumns = @JoinColumn(name = "chatRoomId", referencedColumnName = "chatRoomId")
-    )
-    @Column(name = "images", nullable = false, columnDefinition = "NVARCHAR(MAX)")
-    private List<String> images = new ArrayList<>(); // List of image URLs
+    @CollectionTable(name = "ChatRoomImages", 
+    joinColumns = @JoinColumn(name = "chatRoomId"))
+    @MapKeyColumn(name = "imageId") 
+    @Column(name = "images")
+    private Map<String, String> images = new HashMap<>(); // List of image URLs
 
     @Column(name = "status", length = 50, nullable = false)
     private String status = "Active"; // Status of the chat (default: 'Active')
@@ -37,12 +38,11 @@ public class Chat {
     public Chat() {}
 
     // Parameterized constructor
-    public Chat(String userEmail, String chatRoomId, String content, List<String> images, 
+    public Chat(String userEmail, String chatRoomId, String content, 
                 String status, LocalDateTime deletedAt) {
         this.userEmail = userEmail;
         this.chatRoomId = chatRoomId;
         this.content = content;
-        this.images = images != null ? images : new ArrayList<>();
         this.status = status;
         this.deletedAt = deletedAt;
     }
@@ -72,11 +72,11 @@ public class Chat {
         this.content = content;
     }
 
-    public List<String> getImages() {
+    public Map<String, String> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(Map<String, String> images) {
         this.images = images;
     }
 
