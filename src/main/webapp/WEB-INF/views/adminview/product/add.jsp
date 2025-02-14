@@ -56,16 +56,16 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="productID">Mã sản phẩm</label>
-                                            <input type="text" class="form-control" id="productID" name="productID" placeholder="Nhập mã sản phẩm">
+                                            <label for="productId">Mã sản phẩm</label>
+                                            <input type="text" class="form-control" id="productId" name="productId" placeholder="Nhập mã sản phẩm">
                                         </div>
                                         <div class="form-group">
                                             <label for="productName">Tên sản phẩm</label>
                                             <input type="text" class="form-control" id="productName" name="productName" placeholder="Nhập tên sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="productBrand">Nhãn hàng sản phẩm</label>
-                                            <select class="form-control mb-3" id="productBrand" name="productBrand">
+                                            <label for="brandName">Nhãn hàng sản phẩm</label>
+                                            <select class="form-control mb-3" id="brandName" name="brandName">
                                                 <option disabled>-- Chọn nhãn hàng của sản phẩm --</option>
                                                 <option>Toyota</option>
                                                 <option>ABC</option>
@@ -73,8 +73,8 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productGroup">Danh mục sản phẩm</label>
-                                            <select class="form-control mb-3" id="productGroup" name="productGroup">
+                                            <label for="groupName">Danh mục sản phẩm</label>
+                                            <select class="form-control mb-3" id="groupName" name="groupName">
                                                 <option disabled>-- Chọn danh mục của sản phẩm --</option>
                                                 <option>Ống xả</option>
                                                 <option>Nhớt</option>
@@ -82,31 +82,32 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productCostPrice">Giá gốc</label>
-                                            <input type="number" class="form-control" id="productCostPrice" name="productCostPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
+                                            <label for="costPrice">Giá gốc</label>
+                                            <input type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="productSalePrice">Giá bán</label>
-                                            <input type="number" class="form-control" id="productSalePrice" name="productSalePrice" placeholder="Nhập giá tiền bán của sản phẩm">
+                                            <label for="salePrice">Giá bán</label>
+                                            <input type="number" class="form-control" id="salePrice" name="salePrice" placeholder="Nhập giá tiền bán của sản phẩm">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="productStock">Số lượng</label>
-                                            <input type="text" class="form-control" id="productStock" name="productStock" placeholder="Nhập số lượng sản phẩm">
+                                            <label for="stock">Số lượng</label>
+                                            <input type="text" class="form-control" id="stock" name="stock" placeholder="Nhập số lượng sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="productUnit">Đơn vị</label>
-                                            <select class="form-control mb-3" id="productUnit" name="productUnit">
+                                            <label for="unit">Đơn vị</label>
+                                            <select class="form-control mb-3" id="unit" name="unit">
                                                 <option disabled>-- Chọn đơn vị của sản phẩm --</option>
                                                 <option>Bình</option>
                                                 <option>Cái</option>
+                                                <option>Bộ</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productImage">Ảnh sản phẩm</label>
+                                            <label for="imageUrls">Ảnh sản phẩm</label>
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" name="productImage" id="customFile" accept="image/*" onchange="previewImage(this)">
+                                                <input type="file" class="custom-file-input" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)">
                                                 <label class="custom-file-label" for="customFile">Chọn ảnh</label>
                                             </div>
                                             <div class="mt-3">
@@ -114,23 +115,23 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productWeight">Khối lượng</label>
+                                            <label for="weight">Khối lượng</label>
                                             <div class="input-group mb-3">
-                                                <input type="number" class="form-control" name="productWeight" placeholder="Nhập khối lượng sản phẩm">
+                                                <input type="number" class="form-control" name="weight" placeholder="Nhập khối lượng sản phẩm">
                                                 <div class="input-group-append">
                                                   <span class="input-group-text">kg</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productDescription">Mô tả sản phẩm</label>
-                                            <textarea class="form-control" id="productDescription" name="productDescription" rows="3"></textarea>
+                                            <label for="description">Mô tả sản phẩm</label>
+                                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                                         </div>
                                         <div class="form-group d-flex">
-                                            <label for="customSwitch1" class="mr-4">Trạng thái hoạt động</label>
+                                            <label for="status" class="mr-4">Trạng thái hoạt động</label>
                                             <div class="custom-control custom-switch ml-4">
-                                                <input type="checkbox" class="custom-control-input" id="customSwitch1" checked>
-                                                <label class="custom-control-label" for="customSwitch1">Hoạt động</label>
+                                                <input type="checkbox" class="custom-control-input" name="status" id="status" checked>
+                                                <label class="custom-control-label" for="status">Hoạt động</label>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end">

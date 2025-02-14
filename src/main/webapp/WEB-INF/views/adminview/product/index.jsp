@@ -55,17 +55,21 @@
 											<td>
 												<c:choose>
 												    <c:when test="${product.status == 'Active'}">
-												        <span class="badge badge-success">Hoạt động</span>
+												    	<a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
+													        <span class="badge badge-success">Hoạt động</span>											    	
+												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <span class="badge badge-danger">Ngừng hoạt động</span>
+												        <a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
+													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
+												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td>
-												<a href="#" class="btn btn-sm btn-danger">Xóa</a>
-												<a href="#" class="btn btn-sm btn-dark">Sửa</a>
-												<a href="#" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="javascript:void(0);" data-product-id="${product.productId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
+												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -75,27 +79,48 @@
 						</div>
 					</div>
 		
-				  <!-- Modal Logout -->
-				  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-					aria-hidden="true">
-					<div class="modal-dialog" role="document">
-					  <div class="modal-content">
-						<div class="modal-header">
-						  <h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
-						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						  </button>
+					<!-- Modal Logout -->
+					<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<p>Bạn có muốn đăng xuất không?</p>
+							</div>
+							<div class="modal-footer">
+							<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
+							<a href="login.html" class="btn btn-primary">Đăng xuất</a>
+							</div>
 						</div>
-						<div class="modal-body">
-						  <p>Bạn có muốn đăng xuất không?</p>
 						</div>
-						<div class="modal-footer">
-						  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-						  <a href="login.html" class="btn btn-primary">Đăng xuất</a>
-						</div>
-					  </div>
 					</div>
-				  </div>
+					
+					<!-- Modal Delete Item -->
+					<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabelLogout">Xóa sản phẩm</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<p>Bạn chắc chắn muốn xóa sản phẩm này không?</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
+								<a href="#" id="delete-link" class="btn btn-primary">Xóa</a>
+							</div>
+						</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
@@ -127,7 +152,42 @@
 					}
 				}
 			}); 
+			
+			$('.change-status-link').click(function(event) {
+			      event.preventDefault(); 
+
+			      var productId = $(this).data('product-id');
+			      var productStatus = $(this).data('product-status');
+
+			      $.ajax({
+			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
+			        type: 'POST',
+			        success: function(response) {
+			          var badge = $(event.target).closest('.change-status-link').find('.badge');
+			          var link = $(event.target).closest('.change-status-link');
+			          
+			          if (productStatus === "Inactive") { 
+			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
+			              link.data('product-status', 'Active');
+			          } else {
+			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
+			              link.data('product-status', 'Inactive');
+			          }
+
+			        },
+			        error: function(error) {
+			          console.error("Error changing status:", error);
+			          alert("Lỗi khi thay đổi trạng thái.");
+			        }
+				});
+		    });
 		});
+		
+		$('.delete-btn').click(function() {
+		    var productId = $(this).data('product-id');
+		    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/product/delete.htm?productId=' + productId);
+	  	});
+		
   	</script>
 </body>
 </html>
