@@ -49,10 +49,10 @@
 											<td>
 												<img alt="" src="${product.imageUrls}" style="max-width: 100px; max-height: 100px; display: block;">
 											</td>
-											<td>${product.productName}</td>
-											<td>${product.groupName}</td>
-											<td><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
-											<td>
+											<td class="align-middle">${product.productName}</td>
+											<td class="align-middle">${product.groupName}</td>
+											<td class="align-middle"><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
+											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${product.status == 'Active'}">
 												    	<a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
@@ -66,7 +66,7 @@
 												    </c:otherwise>
 												</c:choose>
 											</td>
-											<td>
+											<td class="align-middle">
 												<a href="javascript:void(0);" data-product-id="${product.productId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
 												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
 												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
