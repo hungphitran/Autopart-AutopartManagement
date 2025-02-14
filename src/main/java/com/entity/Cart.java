@@ -4,30 +4,31 @@ import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
+
 @Entity
 @Table(name = "Cart")
 public class Cart {
 
     @Id
-    @Column(name = "cartId", nullable = false, length = 50)
-    private String cartId; // ID của giỏ hàng
+    @Column(name = "cartId", length = 50)
+    private String cartId;
+
+    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'")
+    private String status;
 
     @ElementCollection
-    @CollectionTable(
-        name = "ProductsInCart", 
-        joinColumns = @JoinColumn(name = "cartId", referencedColumnName = "cartId")
-    )
-    @MapKeyColumn(name = "productId")
-    @Column(name = "amount", nullable = false)
-    private Map<String, Integer> products = new HashMap<>(); // Map của ProductId và số lượng
+    @CollectionTable(name = "ProductsInCart", 
+                     joinColumns = @JoinColumn(name = "cartId"))
+    @MapKeyColumn(name = "productId") 
+    @Column(name = "amount")
+    private Map<String, Integer> products = new HashMap<>();
 
-    @Column(name = "status", nullable = false, length = 50)
-    private String status = "Active"; // Trạng thái của giỏ hàng (mặc định: 'Active')
-
-    // Default constructor
+    // Constructors
     public Cart() {}
 
-    // Parameterized constructor
     public Cart(String cartId, String status) {
         this.cartId = cartId;
         this.status = status;
@@ -42,14 +43,6 @@ public class Cart {
         this.cartId = cartId;
     }
 
-    public Map<String, Integer> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Map<String, Integer> products) {
-        this.products = products;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -58,37 +51,22 @@ public class Cart {
         this.status = status;
     }
 
-    // Add a product to the cart
-    public void addProduct(String productId, int amount) {
-        this.products.put(productId, this.products.getOrDefault(productId, 0) + amount);
+    public Map<String, Integer> getProducts() {
+        return products;
     }
 
-    // Remove a product from the cart
-    public void removeProduct(String productId) {
-        this.products.remove(productId);
+    public void setProducts(Map<String, Integer> products) {
+        this.products = products;
     }
 
-    // Update the amount of a product in the cart
-    public void updateProductAmount(String productId, int amount) {
-        if (this.products.containsKey(productId)) {
-            this.products.put(productId, amount);
-        } else {
-            throw new IllegalArgumentException("Product not found in cart: " + productId);
-        }
-    }
-
-    // Clear the cart
-    public void clearCart() {
-        this.products.clear();
-    }
-
-    // Override toString for easy debugging
+    // Override toString for better debugging
     @Override
     public String toString() {
         return "Cart{" +
                 "cartId='" + cartId + '\'' +
-                ", products=" + products +
                 ", status='" + status + '\'' +
+                ", products=" + products +
                 '}';
     }
 }
+

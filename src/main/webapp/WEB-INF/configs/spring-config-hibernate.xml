@@ -20,7 +20,7 @@
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433;databaseName = ProductDB;encrypt=true;trustServerCertificate=true;"
 			p:username="sa"
-			p:password="1111">
+			p:password="10802">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
@@ -73,6 +73,18 @@
 </bean>
 
 <bean id="RoleGroup_DAO" class="com.dao.RoleGroup_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+<bean id="Cart_DAO" class="com.dao.Cart_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+<bean id="Chat_DAO" class="com.dao.Chat_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+<bean id="Discount_DAO" class="com.dao.Discount_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
 	
