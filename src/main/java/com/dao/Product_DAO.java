@@ -15,16 +15,50 @@ public class Product_DAO {
         this.factory = factory;
     }
 
-	public List<Product> getAll() {
+    public List<Product> getAll() {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Product p WHERE p.status = 'Active'";
+            String hql = "FROM Product p WHERE p.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
             return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean changeStatus(String productId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            // Lấy sản phẩm hiện tại
+            String getStatusHql = "SELECT p.status FROM Product p WHERE p.productId = :productId";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("productId", productId);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            // Xác định trạng thái mới
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            // Cập nhật trạng thái
+            String updateHql = "UPDATE Product p SET p.status = :newStatus WHERE p.productId = :productId";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("productId", productId);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }
