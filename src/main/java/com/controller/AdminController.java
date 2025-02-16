@@ -91,6 +91,7 @@ public class AdminController {
 		return "adminview/blog";
 	}
 	
+	// -- Product --
 	@RequestMapping("/product")
 	public String showProducts(HttpServletRequest req) {
 		List<Product> products = productDao.getAll();
@@ -99,26 +100,49 @@ public class AdminController {
 		return "adminview/product/index";
 	}
 	
-	@RequestMapping("/product/add")
-	public String addProducts(HttpServletRequest req) {
+	@RequestMapping(value = "/product/add", method= RequestMethod.GET)
+	public String addProduct(Model model, HttpServletRequest req) {
+		model.addAttribute("product", new Product());
+		
+		List<Brand> brandList = brandDao.getAll();
+		List<ProductGroup> productGroupList = productGroupDao.getAll();
+		req.setAttribute("brandList", brandList);
+		req.setAttribute("productGroupList", productGroupList);
+		
 		return "adminview/product/add";
+	}
+	
+	@RequestMapping(value = "/product/add", method= RequestMethod.POST)
+	public String addProductPost(@ModelAttribute("product") Product product, HttpServletRequest req) {
+		if (product.getStatus() == null) {
+			product.setStatus("Inactive");
+	    }
+		
+		productDao.add(product);
+		
+		return "redirect:/admin/product.htm";
 	}
 
 	@RequestMapping(value = "/product/edit", method= RequestMethod.GET)
 	public String editProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
 		Product product = productDao.getById(productId);
 		List<Brand> brandList = brandDao.getAll();
-		List<ProductGroup> productGroupList;
+		List<ProductGroup> productGroupList = productGroupDao.getAll();
 		req.setAttribute("product", product);
 		req.setAttribute("brandList", brandList);
+		req.setAttribute("productGroupList", productGroupList);
 		return "adminview/product/edit";
 	}
 	
 	@RequestMapping(value = "/product/edit", method= RequestMethod.POST)
 	public String editProductPatch(@ModelAttribute("product") Product product) {
-		System.out.println(product.getProductId());
-		return null;
-	}
+		if (product.getStatus() == null) {
+			product.setStatus("Inactive");
+	    }
+		productDao.update(product);
+		
+		return "redirect:/admin/product.htm";
+	}  
 	
 	@RequestMapping("/product/delete")
 	public String deleteProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
@@ -134,8 +158,52 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value = "/product/changeStatus", method= RequestMethod.POST)
-	public String changeStatus(@RequestParam("productId") String productId) {
+	public String changeStatusProduct(@RequestParam("productId") String productId) {
 		productDao.changeStatus(productId);
 		return "adminview/product/index";
 	}
+	// -- End product --
+	
+	// -- Brand --
+		@RequestMapping("/brand")
+		public String showBrands(HttpServletRequest req) {
+			List<Brand> brands = brandDao.getAll();
+			req.setAttribute("brands", brands);
+			return "adminview/brand/index";
+		}
+		
+		@RequestMapping(value = "/brand/add", method= RequestMethod.GET)
+		public String addBrand(HttpServletRequest req) {
+			return "adminview/brand/add";
+		}
+		
+		@RequestMapping(value = "/brand/add", method= RequestMethod.POST)
+		public String addBrandPost(@ModelAttribute("brand") Brand brand, HttpServletRequest req) {
+			if (brand.getStatus() == null) {
+		        brand.setStatus("Inactive");
+		    }
+			
+			brandDao.add(brand);
+			return "redirect:/admin/brand.htm";
+		}
+		
+		@RequestMapping("/brand/delete")
+		public String deleteBrand(@RequestParam("brandName") String brandName, HttpServletRequest req) {
+			brandDao.delete(brandName);
+			return "redirect:/admin/brand.htm";
+		}
+		
+		@RequestMapping(value = "/brand/detail", method= RequestMethod.GET)
+		public String detailBrand(@RequestParam("brandName") String brandName, HttpServletRequest req) {
+			Brand brand = brandDao.getByBrandName(brandName);
+			req.setAttribute("brand", brand);
+			return "adminview/brand/detailModal";
+		}
+		
+		@RequestMapping(value = "/brand/changeStatus", method= RequestMethod.POST)
+		public String changeStatusBrand(@RequestParam("brandName") String brandName) {
+			brandDao.changeStatus(brandName);
+			return "adminview/brand/index";
+		}
+		// -- End brand --
 }

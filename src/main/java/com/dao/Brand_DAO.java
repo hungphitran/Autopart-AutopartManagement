@@ -22,12 +22,46 @@ public class Brand_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Brand b WHERE b.status = 'Active'";
+            String hql = "FROM Brand b WHERE b.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean changeStatus(String brandName) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            // Lấy sản phẩm hiện tại
+            String getStatusHql = "SELECT b.status FROM Brand b WHERE b.brandName = :brandName";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("brandName", brandName);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            // Xác định trạng thái mới
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            // Cập nhật trạng thái
+            String updateHql = "UPDATE Brand b SET b.status = :newStatus WHERE b.brandName = :brandName";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("brandName", brandName);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }

@@ -43,6 +43,9 @@ a:focus {
   padding-right: 1.5rem
 }
 
+.required-text {
+	color: red;
+}
 
 .scroll-to-top {
   position: fixed;

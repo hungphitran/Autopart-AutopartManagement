@@ -26,7 +26,7 @@
       <span>Quản lý danh mục</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">
+    <a class="nav-link" href="/autopart/admin/brand.htm">
       <i class="fa-solid fa-handshake"></i>
       <span>Quản lý nhãn hàng</span></a>
   </li>

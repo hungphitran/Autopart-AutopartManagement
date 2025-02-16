@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,52 +53,52 @@
                         <h6 class="m-0 font-weight-bold text-primary">Thêm Sản Phẩm</h6>
                         </div>
                         <div class="card-body">
-                            <form action="/your-controller-path" method="post">
+                            <form:form action="${pageContext.request.contextPath}/admin/product/add.htm" method="post" modelAttribute="product">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="productId">Mã sản phẩm</label>
-                                            <input type="text" class="form-control" id="productId" name="productId" placeholder="Nhập mã sản phẩm">
+                                            <label for="productId">Mã sản phẩm <span class="required-text">*</span></label>
+                                            <input required type="text" class="form-control" id="productId" name="productId" placeholder="Nhập mã sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="productName">Tên sản phẩm</label>
-                                            <input type="text" class="form-control" id="productName" name="productName" placeholder="Nhập tên sản phẩm">
+                                            <label for="productName">Tên sản phẩm <span class="required-text">*</span></label>
+                                            <input required type="text" class="form-control" id="productName" name="productName" placeholder="Nhập tên sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="brandName">Nhãn hàng sản phẩm</label>
-                                            <select class="form-control mb-3" id="brandName" name="brandName">
-                                                <option disabled>-- Chọn nhãn hàng của sản phẩm --</option>
-                                                <option>Toyota</option>
-                                                <option>ABC</option>
-                                                <option>ABC</option>
-                                            </select>
+                                            <label for="brandName">Nhãn hàng sản phẩm <span class="required-text">*</span></label>
+                                            <form:select required="true" path="brandName" class="form-control mb-3">
+                                                <form:option value="" label="-- Chọn nhãn hàng của sản phẩm --" disabled="true"/>
+                                                <c:forEach items="${brandList}" var="brand">
+                                                    <form:option value="${brand.brandName}" label="${brand.brandName}"/>
+                                                </c:forEach>
+                                            </form:select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="groupName">Danh mục sản phẩm</label>
-                                            <select class="form-control mb-3" id="groupName" name="groupName">
-                                                <option disabled>-- Chọn danh mục của sản phẩm --</option>
-                                                <option>Ống xả</option>
-                                                <option>Nhớt</option>
-                                                <option>Bánh xe</option>
-                                            </select>
+                                            <label for="groupName">Danh mục sản phẩm <span class="required-text">*</span></label>
+                                            <form:select required="true" path="groupName" class="form-control mb-3">
+                                                <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
+                                                <c:forEach items="${productGroupList}" var="productGroup">
+                                                    <form:option value="${productGroup.groupName}" label="${productGroup.groupName}"/>
+                                                </c:forEach>
+                                            </form:select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="costPrice">Giá gốc</label>
-                                            <input type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
+                                            <label for="costPrice">Giá gốc <span class="required-text">*</span></label>
+                                            <input required type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="salePrice">Giá bán</label>
-                                            <input type="number" class="form-control" id="salePrice" name="salePrice" placeholder="Nhập giá tiền bán của sản phẩm">
+                                            <label for="salePrice">Giá bán <span class="required-text">*</span></label>
+                                            <input required type="number" class="form-control" id="salePrice" name="salePrice" placeholder="Nhập giá tiền bán của sản phẩm">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="stock">Số lượng</label>
-                                            <input type="text" class="form-control" id="stock" name="stock" placeholder="Nhập số lượng sản phẩm">
+                                            <label for="stock">Số lượng <span class="required-text">*</span></label>
+                                            <input required type="text" class="form-control" id="stock" name="stock" placeholder="Nhập số lượng sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="unit">Đơn vị</label>
-                                            <select class="form-control mb-3" id="unit" name="unit">
+                                            <label for="unit">Đơn vị <span class="required-text">*</span></label>
+                                            <select required class="form-control mb-3" id="unit" name="unit">
                                                 <option disabled>-- Chọn đơn vị của sản phẩm --</option>
                                                 <option>Bình</option>
                                                 <option>Cái</option>
@@ -105,9 +106,9 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="imageUrls">Ảnh sản phẩm</label>
+                                            <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)">
+                                                <input required type="file" class="custom-file-input" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)">
                                                 <label class="custom-file-label" for="customFile">Chọn ảnh</label>
                                             </div>
                                             <div class="mt-3">
@@ -115,22 +116,22 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="weight">Khối lượng</label>
+                                            <label for="weight">Khối lượng <span class="required-text">*</span></label>
                                             <div class="input-group mb-3">
-                                                <input type="number" class="form-control" name="weight" placeholder="Nhập khối lượng sản phẩm">
+                                                <input required type="number" class="form-control" name="weight" placeholder="Nhập khối lượng sản phẩm">
                                                 <div class="input-group-append">
                                                   <span class="input-group-text">kg</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="description">Mô tả sản phẩm</label>
+                                            <label for="description">Mô tả sản phẩm <span class="required-text">*</span></label>
                                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                                         </div>
                                         <div class="form-group d-flex">
-                                            <label for="status" class="mr-4">Trạng thái hoạt động</label>
+                                            <label for="status" class="mr-4">Trạng thái hoạt động <span class="required-text">*</span></label>
                                             <div class="custom-control custom-switch ml-4">
-                                                <input type="checkbox" class="custom-control-input" name="status" id="status" checked>
+                                                <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active" checked>
                                                 <label class="custom-control-label" for="status">Hoạt động</label>
                                             </div>
                                         </div>
@@ -139,7 +140,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </form:form>
                         </div>
                     </div>
 		
