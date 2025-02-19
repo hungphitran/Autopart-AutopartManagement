@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 public class BlogGroup {
 
     @Id
+    @Column(name ="blogGroupId")
+    private String blogGroupId;
+    
     @Column(name = "groupName", nullable = false, length = 50)
     private String groupName; // Primary key: Group name
-
-    @Column(name = "parentGroup")
-    private String parentGroup; // Foreign key: Parent group name (self-referencing)
 
     @Column(name = "status", length = 50, nullable = false)
     private String status = "Active"; // Status of the group (default: 'Active')
@@ -26,66 +26,62 @@ public class BlogGroup {
     // Default constructor
     public BlogGroup() {}
 
-    // Parameterized constructor
-    public BlogGroup(String groupName, String parentGroup, 
-                     String status, String createdBy, LocalDateTime deletedAt) {
-        this.groupName = groupName;
-        this.parentGroup = parentGroup;
-        this.status = status;
-        this.createdBy = createdBy;
-        this.deletedAt = deletedAt;
-    }
+	public BlogGroup(String blogGroupId, String groupName, String status, String createdBy,
+			LocalDateTime deletedAt) {
+		super();
+		this.blogGroupId = blogGroupId;
+		this.groupName = groupName;
+		this.status = status;
+		this.createdBy = createdBy;
+		this.deletedAt = deletedAt;
+	}
 
-    // Getters and Setters
-    public String getGroupName() {
-        return groupName;
-    }
+	public String getBlogGroupId() {
+		return blogGroupId;
+	}
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+	public void setBlogGroupId(String blogGroupId) {
+		this.blogGroupId = blogGroupId;
+	}
 
-    public String getParentGroup() {
-        return parentGroup;
-    }
+	public String getGroupName() {
+		return groupName;
+	}
 
-    public void setParentGroup(String parentGroup) {
-        this.parentGroup = parentGroup;
-    }
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
 
-    public String getStatus() {
-        return status;
-    }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public LocalDateTime getDeletedAt() {
+		return deletedAt;
+	}
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "BlogGroup{" +
-                "groupName='" + groupName + '\'' +
-                ", parentGroup=" + parentGroup +
-                ", status='" + status + '\'' +
-                ", createdBy=" + createdBy  +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+	public void setDeletedAt(LocalDateTime deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "BlogGroup [blogGroupId=" + blogGroupId + ", groupName=" + groupName 
+				+ ", status=" + status + ", createdBy=" + createdBy + ", deletedAt=" + deletedAt + "]";
+	}
+
+   
 }

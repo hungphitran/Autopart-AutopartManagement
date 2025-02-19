@@ -2,104 +2,127 @@ package com.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "[Order]")
+@Table(name = "[Order]") // Nếu "Order" là từ khóa SQL, đặt trong []
 public class Order {
 
     @Id
-    @Column(name = "orderId", nullable = false, length = 50)
-    private String orderId; // Primary key: Order ID
+    @Column(name = "orderId")
+    private String orderId;
 
-    @Column(name = "cartId", nullable = false)
-    private String cart; // Foreign key: Cart ID (references Cart)
+    @Column(name = "discountId")
+    private String discountId;
 
-    @Column(name = "userEmail", nullable = false)
-    private String user; // Foreign key: User email (references Accounts)
+    @Column(name = "userPhone")
+    private String userPhone;
 
-    @Column(name = "totalCost", precision = 18, scale = 2)
-    private BigDecimal totalCost; // Total cost of the order
+    @Column(name = "shipAddress")
+    private String shipAddress;
 
-    @Column(name = "status", length = 50, nullable = false)
-    private String status = "Active"; // Status of the order (default: 'Active')
+    @Column(name = "totalCost")
+    private BigDecimal totalCost;
+
+    @Column(name = "orderDate")
+    private LocalDate orderDate;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "deletedAt")
-    private LocalDateTime deletedAt; // Timestamp for when the order was deleted
+    private LocalDateTime deletedAt;
 
-    // Default constructor
-    public Order() {}
+	public Order() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    // Parameterized constructor
-    public Order(String orderId, String cart, String user, 
-                 BigDecimal totalCost, String status, LocalDateTime deletedAt) {
-        this.orderId = orderId;
-        this.cart = cart;
-        this.user = user;
-        this.totalCost = totalCost;
-        this.status = status;
-        this.deletedAt = deletedAt;
-    }
+	public Order(String orderId, String discountId, String userPhone, String shipAddress, BigDecimal totalCost,
+			LocalDate orderDate, String status, LocalDateTime deletedAt) {
+		super();
+		this.orderId = orderId;
+		this.discountId = discountId;
+		this.userPhone = userPhone;
+		this.shipAddress = shipAddress;
+		this.totalCost = totalCost;
+		this.orderDate = orderDate;
+		this.status = status;
+		this.deletedAt = deletedAt;
+	}
 
-    // Getters and Setters
-    public String getOrderId() {
-        return orderId;
-    }
+	public String getOrderId() {
+		return orderId;
+	}
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 
-    public String getCart() {
-        return cart;
-    }
+	public String getDiscountId() {
+		return discountId;
+	}
 
-    public void setCart(String cart) {
-        this.cart = cart;
-    }
+	public void setDiscountId(String discountId) {
+		this.discountId = discountId;
+	}
 
-    public String getUser() {
-        return user;
-    }
+	public String getUserPhone() {
+		return userPhone;
+	}
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
+	}
 
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
+	public String getShipAddress() {
+		return shipAddress;
+	}
 
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
+	public void setShipAddress(String shipAddress) {
+		this.shipAddress = shipAddress;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public BigDecimal getTotalCost() {
+		return totalCost;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setTotalCost(BigDecimal totalCost) {
+		this.totalCost = totalCost;
+	}
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+	public LocalDate getOrderDate() {
+		return orderDate;
+	}
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public void setOrderDate(LocalDate orderDate) {
+		this.orderDate = orderDate;
+	}
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderId='" + orderId + '\'' +
-                ", cart=" + cart +
-                ", user=" + user +
-                ", totalCost=" + totalCost +
-                ", status='" + status + '\'' +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public LocalDateTime getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(LocalDateTime deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", discountId=" + discountId + ", userPhone=" + userPhone
+				+ ", shipAddress=" + shipAddress + ", totalCost=" + totalCost + ", orderDate=" + orderDate + ", status="
+				+ status + ", deletedAt=" + deletedAt + "]";
+	}
+    
+    
+    
 }

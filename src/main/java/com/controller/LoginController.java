@@ -27,10 +27,16 @@ public class LoginController {
 	RoleGroup_DAO rgdao;
 	
 	@Autowired
-	Permission_DAO pdao;
+	Account_DAO accountDao;
+	
+	@Autowired 
+	Customer_DAO customerDao;
+	
+	@Autowired 
+	Discount_DAO discountDao;
 	
 	@Autowired
-	Account_DAO accountDao;
+	OrderDetail_DAO oddao;
 
 	@Autowired
 	Blog_DAO blogDao;
@@ -58,24 +64,23 @@ public class LoginController {
 	public String login(Model model, HttpServletRequest req,HttpServletResponse res) throws ClassNotFoundException {
 		
 		//get input from request
-		String email= req.getParameter("email");
+		String phone= req.getParameter("email");
 		String pass = req.getParameter("password");
 		
-//		System.out.println(rgdao.getById("RG001"));
-//		System.out.println(pdao.getById("PER001"));
-//		System.out.println(accountDao.getByEmail("johndoe@example.com"));
-//		System.out.println(blogDao.getById("BLOG001"));
-//		System.out.println(productGroupDao.getByGroupName("Electronics"));
-//		System.out.println(brandDao.getByBrandName("SuperTech"));
-//		System.out.println(orderDao.getById("ORD001"));
-//		System.out.println(productDao.getById("PROD001"));
-//		System.out.println(employeeDao.getByEmail("johndoe@example.com"));
-//		System.out.println(gsdao.getByWebsiteName("SuperStore"));
+		System.out.println(rgdao.getById("RG001"));
+		System.out.println(accountDao.getByPhone("0000000001"));
+		System.out.println(blogDao.getById("BLOG001"));
+		System.out.println(productGroupDao.getByProductGroupId("PG001"));
+		System.out.println(brandDao.getByBrandId("BRAND001"));
+		System.out.println(orderDao.getById("ORD001"));
+		System.out.println(productDao.getById("PROD001"));
+		System.out.println(employeeDao.getByCitizenId("079204001566"));
+		System.out.println(gsdao.getByWebsiteName("daasdad"));
 
-		Account acc = accountDao.getByEmail(email);
+		Account acc = accountDao.getByPhone(phone);
 		
 
-		if(pass==null||email==null||pass.length()<4) {//check valid password
+		if(pass==null||phone==null||pass.length()<4) {//check valid password
 			req.setAttribute("message", "dữ liệu không hợp lệ");
 			return "login";			
 		}

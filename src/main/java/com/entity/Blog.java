@@ -8,19 +8,19 @@ import java.time.LocalDateTime;
 public class Blog {
 
     @Id
-    @Column(name = "blogId", nullable = false, length = 50)
+    @Column(name = "blogId", nullable = false )
     private String blogId; // Primary key: Blog ID
  
-    @Column(name = "groupName")
-    private String groupName; // Foreign key: Group name (references BlogGroup)
+    @Column(name = "blogGroupId")
+    private String blogGroupId; // Foreign key: Group name (references BlogGroup)
 
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(name = "title", nullable = false )
     private String title; // Title of the blog
 
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description; // Description of the blog
 
-    @Column(name = "status", length = 50, nullable = false)
+    @Column(name = "status", nullable = false)
     private String status = "Active"; // Status of the blog (default: 'Active')
 
     @Column(name = "deletedAt")
@@ -30,10 +30,10 @@ public class Blog {
     public Blog() {}
 
     // Parameterized constructor
-    public Blog(String blogId, String groupName, String title, 
+    public Blog(String blogId, String blogGroupId, String title, 
                 String description, String status, LocalDateTime deletedAt) {
         this.blogId = blogId;
-        this.groupName = groupName;
+        this.blogGroupId = blogGroupId;
         this.title = title;
         this.description = description;
         this.status = status;
@@ -49,12 +49,12 @@ public class Blog {
         this.blogId = blogId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getBlogGroupId() {
+        return blogGroupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setBlogGroupId(String blogGroupId) {
+        this.blogGroupId = blogGroupId;
     }
 
     public String getTitle() {
@@ -94,7 +94,7 @@ public class Blog {
     public String toString() {
         return "Blog{" +
                 "blogId='" + blogId + '\'' +
-                ", groupName=" + groupName +
+                ", blogGroupId=" + blogGroupId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +

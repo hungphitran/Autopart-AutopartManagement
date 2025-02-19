@@ -28,7 +28,7 @@ public class Discount_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT d FROM Discount d LEFT JOIN FETCH d.userEmails WHERE d.discountId = :discountId";
+            String hql = "SELECT FROM Discount d WHERE d.status = 'Active'";
             Query query = session.createQuery(hql);
             query.setParameter("discountId", discountId);
             return (Discount) query.uniqueResult();

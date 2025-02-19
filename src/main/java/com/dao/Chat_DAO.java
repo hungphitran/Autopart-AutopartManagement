@@ -28,7 +28,7 @@ public class Chat_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT c FROM Chat c LEFT JOIN FETCH c.images WHERE c.chatRoomId = :chatRoomId";
+            String hql = "SELECT c FROM Chat WHERE c.status ='Active'";
             Query query = session.createQuery(hql);
             query.setParameter("chatRoomId", chatRoomId);
             return (Chat) query.uniqueResult();
@@ -50,18 +50,7 @@ public class Chat_DAO {
             // Save the cart
             session.save(chat);
             session.flush();
-
             
-//            // For ProductsInCart, use SQL with createSQLQuery()
-//            for (Map.Entry<Product, Integer> entry : cart.getProducts().entrySet()) {
-//                String sql = "INSERT INTO ProductsInCart (cartId, productId, amount) VALUES (?, ?, ?)";
-//                session.createSQLQuery(sql)
-//                      .setParameter(0, cart.getCartId())
-//                      .setParameter(1, entry.getKey().getProductId())
-//                      .setParameter(2, entry.getValue())
-//                      .executeUpdate();
-//            }
-//
             transaction.commit();
             return true;
         } catch (Exception e) {
