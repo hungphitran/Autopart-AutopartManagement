@@ -28,7 +28,7 @@ public class Discount_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT FROM Discount d WHERE d.status = 'Active'";
+            String hql = "FROM Discount d WHERE d.status = 'Active' and d.discountId = :discountId";
             Query query = session.createQuery(hql);
             query.setParameter("discountId", discountId);
             return (Discount) query.uniqueResult();
@@ -49,7 +49,6 @@ public class Discount_DAO {
 
             // Save the cart
             session.save(discount);
-            session.flush();
 
             
 //            // For ProductsInCart, use SQL with createSQLQuery()

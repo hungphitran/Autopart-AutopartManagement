@@ -13,11 +13,11 @@ import java.util.Map;
 public class Cart {
 
     @Id
-    @Column(name = "cartId", length = 50)
+    @Column(name = "cartId")
     private String cartId;
 
-    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'")
-    private String status;
+    @Column(name = "createDate")
+    private String createDate;
 
     @ElementCollection
     @CollectionTable(name = "ProductsInCart", 
@@ -29,9 +29,9 @@ public class Cart {
     // Constructors
     public Cart() {}
 
-    public Cart(String cartId, String status) {
+    public Cart(String cartId, String createDate) {
         this.cartId = cartId;
-        this.status = status;
+        this.createDate = createDate;
     }
 
     // Getters and Setters
@@ -43,12 +43,12 @@ public class Cart {
         this.cartId = cartId;
     }
 
-    public String getStatus() {
-        return status;
+    public String getCreateDate() {
+        return createDate;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
     }
 
     public Map<String, Integer> getProducts() {
@@ -64,7 +64,7 @@ public class Cart {
     public String toString() {
         return "Cart{" +
                 "cartId='" + cartId + '\'' +
-                ", status='" + status + '\'' +
+                ", createDate='" + createDate + '\'' +
                 ", products=" + products +
                 '}';
     }

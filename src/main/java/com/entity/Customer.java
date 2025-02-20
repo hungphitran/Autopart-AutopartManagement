@@ -1,11 +1,14 @@
 package com.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "Customer")
 public class Customer 
 {
-	@Id
     @Column(name = "cartId")
     private String cartId; 
 

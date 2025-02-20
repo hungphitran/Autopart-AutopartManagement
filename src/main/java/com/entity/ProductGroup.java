@@ -14,8 +14,8 @@ public class ProductGroup {
     @Column(name = "groupName") // Khóa chính: groupName
     private String groupName;
 
-    @Column(name = "parentGroup") // Khóa ngoại: parentGroup
-    private String parentGroup;
+    @Column(name = "parentGroupId") // Khóa ngoại: parentGroup
+    private String parentGroupId;
 
     @Column(name = "status", columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
     private String status;
@@ -28,12 +28,12 @@ public class ProductGroup {
     public ProductGroup() {}
 
     // Parameterized constructor
-    public ProductGroup(String productGroupId, String groupName, String parentGroup, String status,
+    public ProductGroup(String productGroupId, String groupName, String parentGroupId, String status,
 			LocalDateTime deletedAt) {
 		super();
 		this.productGroupId = productGroupId;
 		this.groupName = groupName;
-		this.parentGroup = parentGroup;
+		this.parentGroupId = parentGroupId;
 		this.status = status;
 		this.deletedAt = deletedAt;
 	}
@@ -55,12 +55,12 @@ public class ProductGroup {
         this.groupName = groupName;
     }
 
-    public String getParentGroup() {
-        return parentGroup;
+    public String getParentGroupId() {
+        return parentGroupId;
     }
 
-    public void setParentGroup(String parentGroup) {
-        this.parentGroup = parentGroup;
+    public void setParentGroupId(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
     }
 
     public String getStatus() {
@@ -82,8 +82,8 @@ public class ProductGroup {
 
 	@Override
 	public String toString() {
-		return "ProductGroup [productGroupId=" + productGroupId + ", groupName=" + groupName + ", parentGroup="
-				+ parentGroup + ", status=" + status + ", deletedAt=" + deletedAt + "]";
+		return "ProductGroup [productGroupId=" + productGroupId + ", groupName=" + groupName + ", parentGroupId="
+				+ parentGroupId + ", status=" + status + ", deletedAt=" + deletedAt + "]";
 	}
 
     

@@ -15,8 +15,6 @@ public class Employee {
 	@Column(name = "phone")
     private String phone;
 
-    @Column(name = "roleGroupId")
-    private String roleGroupId;
 
     @Column(name = "fullName")
     private String fullName;
@@ -24,13 +22,13 @@ public class Employee {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "birthDate")
+    @Column(name = "birthDate", columnDefinition = "DATE")
     private LocalDate birthDate;
 
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "startDate")
+    @Column(name = "startDate", columnDefinition = "DATE")
     private LocalDate startDate;
 
     @Column(name = "address")
@@ -45,7 +43,7 @@ public class Employee {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "deletedAt")
+    @Column(name = "deletedAt", columnDefinition = "DATETIME")
     private LocalDateTime deletedAt;
     
     
@@ -57,13 +55,12 @@ public class Employee {
 
 
 
-	public Employee(String citizenId, String phone, String roleGroupId, String fullName, String email,
+	public Employee(String citizenId, String phone, String fullName, String email,
 			LocalDate birthDate, String gender, LocalDate startDate, String address, String avatar,
 			String educationLevel, String status, LocalDateTime deletedAt) {
 		super();
 		this.citizenId = citizenId;
 		this.phone = phone;
-		this.roleGroupId = roleGroupId;
 		this.fullName = fullName;
 		this.email = email;
 		this.birthDate = birthDate;
@@ -99,19 +96,6 @@ public class Employee {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-
-
-
-	public String getRoleGroupId() {
-		return roleGroupId;
-	}
-
-
-
-	public void setRoleGroupId(String roleGroupId) {
-		this.roleGroupId = roleGroupId;
-	}
-
 
 
 	public String getFullName() {
@@ -236,7 +220,7 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return "Employee [citizenId=" + citizenId + ", phone=" + phone + ", roleGroupId=" + roleGroupId + ", fullName="
+		return "Employee [citizenId=" + citizenId + ", phone=" + phone + ", fullName="
 				+ fullName + ", email=" + email + ", birthDate=" + birthDate + ", gender=" + gender + ", startDate="
 				+ startDate + ", address=" + address + ", avatar=" + avatar + ", educationLevel=" + educationLevel
 				+ ", status=" + status + ", deletedAt=" + deletedAt + "]";

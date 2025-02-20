@@ -17,22 +17,18 @@ public class BlogGroup {
     @Column(name = "status", length = 50, nullable = false)
     private String status = "Active"; // Status of the group (default: 'Active')
 
-    @Column(name = "createdBy")
-    private String createdBy; // Foreign key: Creator's email (from Employees table)
-
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt; // Timestamp for when the group was deleted
 
     // Default constructor
     public BlogGroup() {}
 
-	public BlogGroup(String blogGroupId, String groupName, String status, String createdBy,
+	public BlogGroup(String blogGroupId, String groupName, String status,
 			LocalDateTime deletedAt) {
 		super();
 		this.blogGroupId = blogGroupId;
 		this.groupName = groupName;
 		this.status = status;
-		this.createdBy = createdBy;
 		this.deletedAt = deletedAt;
 	}
 
@@ -61,13 +57,7 @@ public class BlogGroup {
 		this.status = status;
 	}
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+	
 
 	public LocalDateTime getDeletedAt() {
 		return deletedAt;
@@ -80,7 +70,7 @@ public class BlogGroup {
 	@Override
 	public String toString() {
 		return "BlogGroup [blogGroupId=" + blogGroupId + ", groupName=" + groupName 
-				+ ", status=" + status + ", createdBy=" + createdBy + ", deletedAt=" + deletedAt + "]";
+				+ ", status=" + status +  ", deletedAt=" + deletedAt + "]";
 	}
 
    
