@@ -2,6 +2,8 @@ package com.entity;
 
 import javax.persistence.*;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -23,13 +25,13 @@ public class Employee {
     private String email;
 
     @Column(name = "birthDate", columnDefinition = "DATE")
-    private LocalDate birthDate;
+    private Date birthDate;
 
     @Column(name = "gender")
     private String gender;
 
     @Column(name = "startDate", columnDefinition = "DATE")
-    private LocalDate startDate;
+    private Date startDate;
 
     @Column(name = "address")
     private String address;
@@ -44,7 +46,7 @@ public class Employee {
     private String status;
 
     @Column(name = "deletedAt", columnDefinition = "DATETIME")
-    private LocalDateTime deletedAt;
+    private Timestamp  deletedAt;
     
     
 
@@ -56,8 +58,8 @@ public class Employee {
 
 
 	public Employee(String citizenId, String phone, String fullName, String email,
-			LocalDate birthDate, String gender, LocalDate startDate, String address, String avatar,
-			String educationLevel, String status, LocalDateTime deletedAt) {
+			Date birthDate, String gender, Date startDate, String address, String avatar,
+			String educationLevel, String status, Timestamp  deletedAt) {
 		super();
 		this.citizenId = citizenId;
 		this.phone = phone;
@@ -122,13 +124,13 @@ public class Employee {
 
 
 
-	public LocalDate getBirthDate() {
+	public Date getBirthDate() {
 		return birthDate;
 	}
 
 
 
-	public void setBirthDate(LocalDate birthDate) {
+	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
 
@@ -146,13 +148,13 @@ public class Employee {
 
 
 
-	public LocalDate getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 
 
 
-	public void setStartDate(LocalDate startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
@@ -206,13 +208,13 @@ public class Employee {
 
 
 
-	public LocalDateTime getDeletedAt() {
+	public Timestamp getDeletedAt() {
 		return deletedAt;
 	}
 
 
 
-	public void setDeletedAt(LocalDateTime deletedAt) {
+	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 

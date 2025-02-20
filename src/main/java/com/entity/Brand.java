@@ -1,6 +1,6 @@
 package com.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
@@ -18,12 +18,12 @@ public class Brand {
     private String status;
 
     @Column(name = "deletedAt") // Thời điểm bị xóa
-    private LocalDateTime deletedAt;
+    private Timestamp  deletedAt;
 
     // Default constructor
     public Brand() {}
 
-	public Brand(String brandId, String brandName, String status, LocalDateTime deletedAt) {
+	public Brand(String brandId, String brandName, String status, Timestamp  deletedAt) {
 		super();
 		this.brandId = brandId;
 		this.brandName = brandName;
@@ -55,11 +55,11 @@ public class Brand {
 		this.status = status;
 	}
 
-	public LocalDateTime getDeletedAt() {
+	public Timestamp  getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(LocalDateTime deletedAt) {
+	public void setDeletedAt(Timestamp  deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 

@@ -2,6 +2,8 @@ package com.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -26,13 +28,13 @@ public class Order {
     private BigDecimal totalCost;
 
     @Column(name = "orderDate")
-    private LocalDate orderDate;
+    private java.sql.Date orderDate;
 
     @Column(name = "status")
     private String status;
 
     @Column(name = "deletedAt")
-    private LocalDateTime deletedAt;
+    private Timestamp  deletedAt;
 
 	public Order() {
 		super();
@@ -40,7 +42,7 @@ public class Order {
 	}
 
 	public Order(String orderId, String discountId, String userPhone, String shipAddress, BigDecimal totalCost,
-			LocalDate orderDate, String status, LocalDateTime deletedAt) {
+			Date orderDate, String status, Timestamp  deletedAt) {
 		super();
 		this.orderId = orderId;
 		this.discountId = discountId;
@@ -92,11 +94,11 @@ public class Order {
 		this.totalCost = totalCost;
 	}
 
-	public LocalDate getOrderDate() {
+	public Date getOrderDate() {
 		return orderDate;
 	}
 
-	public void setOrderDate(LocalDate orderDate) {
+	public void setOrderDate(java.sql.Date orderDate) {
 		this.orderDate = orderDate;
 	}
 
@@ -108,11 +110,11 @@ public class Order {
 		this.status = status;
 	}
 
-	public LocalDateTime getDeletedAt() {
+	public Timestamp  getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(LocalDateTime deletedAt) {
+	public void setDeletedAt(Timestamp  deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 

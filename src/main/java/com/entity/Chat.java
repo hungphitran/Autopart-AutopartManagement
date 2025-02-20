@@ -1,6 +1,8 @@
 package com.entity;
 
 import javax.persistence.*;
+
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,14 +27,14 @@ public class Chat {
     private String status = "Active"; // Status of the chat (default: 'Active')
 
     @Column(name = "deletedAt")
-    private LocalDateTime deletedAt; // Timestamp for when the chat was deleted
+    private Timestamp  deletedAt; // Timestamp for when the chat was deleted
 
     // Default constructor
     public Chat() {}
 
     // Parameterized constructor
     public Chat(String userEmail, String chatRoomId, String content, 
-                String status, LocalDateTime deletedAt) {
+                String status, Timestamp  deletedAt) {
         this.userEmail = userEmail;
         this.chatRoomId = chatRoomId;
         this.content = content;
@@ -74,11 +76,11 @@ public class Chat {
         this.status = status;
     }
 
-    public LocalDateTime getDeletedAt() {
+    public Timestamp  getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
+    public void setDeletedAt(Timestamp  deletedAt) {
         this.deletedAt = deletedAt;
     }
 

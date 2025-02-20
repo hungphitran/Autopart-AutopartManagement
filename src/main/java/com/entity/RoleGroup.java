@@ -1,5 +1,6 @@
 package com.entity;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,13 +32,13 @@ public class RoleGroup {
     private String status;
 
     @Column(name = "deletedAt") // Cột deletedAt
-    private LocalDateTime deletedAt;
+    private Timestamp  deletedAt;
 
     // Default constructor
     public RoleGroup() {}
 
 	public RoleGroup(String roleGroupId, String roleGroupName, String description, String status,
-			LocalDateTime deletedAt) {
+			Timestamp deletedAt) {
 		super();
 		this.roleGroupId = roleGroupId;
 		this.roleGroupName = roleGroupName;
@@ -86,11 +87,11 @@ public class RoleGroup {
 		this.status = status;
 	}
 
-	public LocalDateTime getDeletedAt() {
+	public Timestamp getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(LocalDateTime deletedAt) {
+	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 

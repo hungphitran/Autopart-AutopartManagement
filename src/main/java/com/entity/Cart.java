@@ -1,6 +1,8 @@
 package com.entity;
 
 import javax.persistence.*;
+
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +19,7 @@ public class Cart {
     private String cartId;
 
     @Column(name = "createDate")
-    private String createDate;
+    private Timestamp  createDate;
 
     @ElementCollection
     @CollectionTable(name = "ProductsInCart", 
@@ -29,7 +31,7 @@ public class Cart {
     // Constructors
     public Cart() {}
 
-    public Cart(String cartId, String createDate) {
+    public Cart(String cartId, Timestamp createDate) {
         this.cartId = cartId;
         this.createDate = createDate;
     }
@@ -43,11 +45,11 @@ public class Cart {
         this.cartId = cartId;
     }
 
-    public String getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 
