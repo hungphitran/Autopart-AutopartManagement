@@ -8,10 +8,13 @@ import javax.persistence.*;
 public class Brand {
 
     @Id
-    @Column(name = "brandName", length = 255) // Khóa chính: Tên thương hiệu
+    @Column(name ="brandId")
+    private String brandId;
+    
+    @Column(name = "brandName") // Khóa chính: Tên thương hiệu
     private String brandName;
 
-    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
+    @Column(name = "status", columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
     private String status;
 
     @Column(name = "deletedAt") // Thời điểm bị xóa
@@ -20,45 +23,51 @@ public class Brand {
     // Default constructor
     public Brand() {}
 
-    // Parameterized constructor
-    public Brand(String brandName, String status, LocalDateTime deletedAt) {
-        this.brandName = brandName;
-        this.status = status;
-        this.deletedAt = deletedAt;
-    }
+	public Brand(String brandId, String brandName, String status, LocalDateTime deletedAt) {
+		super();
+		this.brandId = brandId;
+		this.brandName = brandName;
+		this.status = status;
+		this.deletedAt = deletedAt;
+	}
 
-    // Getters and Setters
-    public String getBrandName() {
-        return brandName;
-    }
+	public String getBrandId() {
+		return brandId;
+	}
 
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
-    }
+	public void setBrandId(String brandId) {
+		this.brandId = brandId;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getBrandName() {
+		return brandName;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "Brand{" +
-                "brandName='" + brandName + '\'' +
-                ", status='" + status + '\'' +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+	public LocalDateTime getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(LocalDateTime deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Brand [brandId=" + brandId + ", brandName=" + brandName + ", status=" + status + ", deletedAt="
+				+ deletedAt + "]";
+	}
+
+   
 }

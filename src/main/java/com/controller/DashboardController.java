@@ -25,7 +25,7 @@ public class DashboardController {
 			String img= proLst.get(i).getImageUrls();
 			proLst.get(i).setImageUrls(img.split(",", i)[0]);
 		}
-		req.setAttribute("products",proLst.subList(0, 12));//get 12 first products
+		req.setAttribute("products",proLst.subList(0, 0));//get 12 first products
 		return "dashboard";
 	}
 }

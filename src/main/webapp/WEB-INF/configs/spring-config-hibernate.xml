@@ -18,9 +18,9 @@
 	<bean id="dataSource" 
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			p:url="jdbc:sqlserver://localhost:1433;databaseName = ProductDB;encrypt=true;trustServerCertificate=true;"
+			p:url="jdbc:sqlserver://localhost:1433;databaseName = AutoPartsDB;encrypt=true;trustServerCertificate=true;"
 			p:username="sa"
-			p:password="1O8O2">
+			p:password="10802">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
@@ -36,11 +36,15 @@
 		<property name="packagesToScan" value="com.entity"/>
 	</bean>
 	
-	<bean id="Account_DAO" class="com.dao.Account_DAO">
+<bean id="Account_DAO" class="com.dao.Account_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
 
 <bean id="Blog_DAO" class="com.dao.Blog_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+<bean id="BlogGroup_DAO" class="com.dao.BlogGroup_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
 
@@ -49,6 +53,10 @@
 </bean>
 
 <bean id="Brand_DAO" class="com.dao.Brand_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+<bean id="Customer_DAO" class="com.dao.Customer_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
 
@@ -64,9 +72,6 @@
     <constructor-arg ref="sessionFactory" />
 </bean>
 
-<bean id="Permission_DAO" class="com.dao.Permission_DAO">
-    <constructor-arg ref="sessionFactory" />
-</bean>
 
 <bean id="Product_DAO" class="com.dao.Product_DAO">
     <constructor-arg ref="sessionFactory" />

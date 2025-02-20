@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -7,39 +8,39 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.Query;
 
-import com.entity.Permission;
+import com.entity.Customer;
 
-public class Permission_DAO {
+public class Customer_DAO {
 
     private final SessionFactory factory;
 
-    public Permission_DAO(SessionFactory factory) {
+    public Customer_DAO(SessionFactory factory) {
         this.factory = factory;
     }
 
-    public List<Permission> getAll() {
+    public List<Customer> getAll() {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Permission p WHERE p.status = 'Active'";
+            String hql = "FROM Customer c WHERE c.status = 'Active'";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            return new ArrayList<>();
         } finally {
             if (session != null) session.close();
         }
     }
 
-    public Permission getById(String permissionId) {
+    public Customer getByPhone(String phone) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Permission p WHERE p.permissionId = :permissionId";
+            String hql = "FROM Customer c WHERE c.phone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("permissionId", permissionId);
-            return (Permission) query.uniqueResult();
+            query.setParameter("phone", phone);
+            return (Customer) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -48,13 +49,13 @@ public class Permission_DAO {
         }
     }
 
-    public boolean add(Permission permission) {
+    public boolean add(Customer customer) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            session.save(permission);
+            session.save(customer);
             transaction.commit();
             return true;
         } catch (Exception e) {
@@ -66,13 +67,13 @@ public class Permission_DAO {
         }
     }
 
-    public boolean update(Permission permission) {
+    public boolean update(Customer customer) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            session.update(permission);
+            session.update(customer);
             transaction.commit();
             return true;
         } catch (Exception e) {
@@ -84,15 +85,15 @@ public class Permission_DAO {
         }
     }
 
-    public boolean delete(String permissionId) {
+    public boolean delete(String phone) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Permission p SET p.status = 'Deleted', p.deletedAt = current_timestamp() WHERE p.permissionId = :permissionId";
+            String hql = "UPDATE Customer c SET c.status = 'Deleted', c.deletedAt = GETDATE() WHERE c.phone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("permissionId", permissionId);
+            query.setParameter("phone", phone);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -105,37 +106,17 @@ public class Permission_DAO {
         }
     }
 
-    public boolean checkExistById(String permissionId) {
+    public boolean checkExistByPhone(String phone) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT 1 FROM Permission p WHERE p.permissionId = :permissionId";
+            String hql = "SELECT 1 FROM Customer c WHERE c.phone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("permissionId", permissionId);
+            query.setParameter("phone", phone);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        } finally {
-            if (session != null) session.close();
-        }
-    }
-
-    public String generateNextPermissionId() {
-        Session session = null;
-        try {
-            session = factory.openSession();
-            String hql = "SELECT MAX(p.permissionId) FROM Permission p WHERE p.permissionId LIKE 'PER%'";
-            Query query = session.createQuery(hql);
-            String maxId = (String) query.uniqueResult();
-            if (maxId == null) {
-                return "PER001";
-            }
-            int currentNum = Integer.parseInt(maxId.substring(3));
-            return String.format("PER%03d", currentNum + 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "PER001";
         } finally {
             if (session != null) session.close();
         }

@@ -8,13 +8,16 @@ import javax.persistence.*;
 public class ProductGroup {
 
     @Id
-    @Column(name = "groupName", length = 50) // Khóa chính: groupName
+    @Column(name="productGroupId")
+    private String productGroupId;
+    
+    @Column(name = "groupName") // Khóa chính: groupName
     private String groupName;
 
-    @Column(name = "parentGroup") // Khóa ngoại: parentGroup
-    private String parentGroup;
+    @Column(name = "parentGroupId") // Khóa ngoại: parentGroup
+    private String parentGroupId;
 
-    @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
+    @Column(name = "status", columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
     private String status;
 
 
@@ -25,28 +28,39 @@ public class ProductGroup {
     public ProductGroup() {}
 
     // Parameterized constructor
-    public ProductGroup(String groupName, String parentGroup, String status, LocalDateTime deletedAt) {
-        this.groupName = groupName;
-        this.parentGroup = parentGroup;
-        this.status = status;
-        this.deletedAt = deletedAt;
-    }
+    public ProductGroup(String productGroupId, String groupName, String parentGroupId, String status,
+			LocalDateTime deletedAt) {
+		super();
+		this.productGroupId = productGroupId;
+		this.groupName = groupName;
+		this.parentGroupId = parentGroupId;
+		this.status = status;
+		this.deletedAt = deletedAt;
+	}
 
     // Getters and Setters
+    public String getProductGroupId() {
+		return productGroupId;
+	}
+
+	public void setProductGroupId(String productGroupId) {
+		this.productGroupId = productGroupId;
+	}
+    
     public String getGroupName() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
+	public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
 
-    public String getParentGroup() {
-        return parentGroup;
+    public String getParentGroupId() {
+        return parentGroupId;
     }
 
-    public void setParentGroup(String parentGroup) {
-        this.parentGroup = parentGroup;
+    public void setParentGroupId(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
     }
 
     public String getStatus() {
@@ -66,14 +80,11 @@ public class ProductGroup {
         this.deletedAt = deletedAt;
     }
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "ProductGroup{" +
-                "groupName='" + groupName + '\'' +
-                ", parentGroup=" + parentGroup  +
-                ", status='" + status + '\'' +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "ProductGroup [productGroupId=" + productGroupId + ", groupName=" + groupName + ", parentGroupId="
+				+ parentGroupId + ", status=" + status + ", deletedAt=" + deletedAt + "]";
+	}
+
+    
 }

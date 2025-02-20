@@ -15,12 +15,12 @@ public class Product {
     @Column(name = "productName", nullable = false)  // Ánh xạ với cột "productName" trong bảng
     private String productName; // Product name
 
-    @Column(name = "groupName")
-    private String groupName; // Foreign key: Group name (references ProductGroup)
+    @Column(name = "productGroupId")
+    private String productGroupId; // Foreign key: Group name (references ProductGroup)
 
     
-    @Column(name = "brandName")
-    private String brandName; // Foreign key: Brand name (references Brand)
+    @Column(name = "brandId")
+    private String brandId; // Foreign key: Brand name (references Brand)
 
     @Column(name = "salePrice")  // Ánh xạ với cột "salePrice" trong bảng
     private double salePrice; // Sale price
@@ -53,14 +53,14 @@ public class Product {
     public Product() {}
 
     // Parameterized constructor
-    public Product(String productId, String productName, String groupName, String brandName,
+    public Product(String productId, String productName, String productGroupId, String brandId,
                    double salePrice, double costPrice, int stock, String unit,
                    String imageUrls, double weight, String status,
                    String deletedAt, String description) {
         this.productId = productId;
         this.productName = productName;
-        this.groupName = groupName;
-        this.brandName = brandName;
+        this.productGroupId = productGroupId;
+        this.brandId = brandId;
         this.salePrice = salePrice;
         this.costPrice = costPrice;
         this.stock = stock;
@@ -89,20 +89,20 @@ public class Product {
         this.productName = productName;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getProductGroupId() {
+        return productGroupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setProductGroupId(String productGroupId) {
+        this.productGroupId = productGroupId;
     }
 
-    public String getBrandName() {
-        return brandName;
+    public String getBrandId() {
+        return brandId;
     }
 
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
     }
 
     public double getSalePrice() {
@@ -183,8 +183,8 @@ public class Product {
         return "Product{" +
                 "productId='" + productId + '\'' +
                 ", productName='" + productName + '\'' +
-                ", groupName='" + groupName + '\'' +
-                ", brandName='" + brandName + '\'' +
+                ", productGroupId='" + productGroupId + '\'' +
+                ", brandId='" + brandId + '\'' +
                 ", salePrice=" + salePrice +
                 ", costPrice=" + costPrice +
                 ", stock=" + stock +

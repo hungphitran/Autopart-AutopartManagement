@@ -33,13 +33,13 @@ public class Employee_DAO {
         }
     }
 
-    public Employee getByEmail(String email) {
+    public Employee getByCitizenId(String citizenId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e  WHERE e.email = :email";
+            String hql = "FROM Employee e  WHERE e.citizenId = :citizenId";
             Query query = session.createQuery(hql);
-            query.setParameter("email", email);
+            query.setParameter("citizenId", citizenId);
             return (Employee) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,15 +89,15 @@ public class Employee_DAO {
         }
     }
 
-    public boolean delete(String email) {
+    public boolean delete(String citizenId) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Account a SET a.status = 'Deleted', a.deletedAt = current_timestamp() WHERE a.email = :email";
+            String hql = "UPDATE Employee e SET e.status = 'Deleted', e.deletedAt = GETDATE() WHERE  e.citizenId= :citizenId";
             Query query = session.createQuery(hql);
-            query.setParameter("email", email);
+            query.setParameter("citizenId", citizenId);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -110,13 +110,13 @@ public class Employee_DAO {
         }
     }
 
-    public boolean checkExistByEmail(String email) {
+    public boolean checkExistByCitizenId(String citizenId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e WHERE e.email = :email";
+            String hql = "FROM Employee e WHERE e.citizenId = :citizenId";
             Query query = session.createQuery(hql);
-            query.setParameter("email", email);
+            query.setParameter("citizenId", citizenId);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
