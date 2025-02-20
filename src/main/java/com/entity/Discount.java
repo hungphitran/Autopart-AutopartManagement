@@ -2,6 +2,7 @@ package com.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,10 +28,10 @@ public class Discount {
     private Integer usageLimit;
 
     @Column(name = "applyStartDate")
-    private LocalDate applyStartDate;
+    private Date applyStartDate;
 
     @Column(name = "applyEndDate")
-    private LocalDate applyEndDate;
+    private Date applyEndDate;
 
     @Column(name = "status")
     private String status;
@@ -41,7 +42,7 @@ public class Discount {
 	}
 
 	public Discount(String discountId, String discountDesc, Integer discountAmount, BigDecimal minimumAmount,
-			Integer usageLimit, LocalDate applyStartDate, LocalDate applyEndDate, String status) {
+			Integer usageLimit, Date applyStartDate, Date applyEndDate, String status) {
 		super();
 		this.discountId = discountId;
 		this.discountDesc = discountDesc;
@@ -93,19 +94,19 @@ public class Discount {
 		this.usageLimit = usageLimit;
 	}
 
-	public LocalDate getApplyStartDate() {
+	public Date getApplyStartDate() {
 		return applyStartDate;
 	}
 
-	public void setApplyStartDate(LocalDate applyStartDate) {
+	public void setApplyStartDate(Date applyStartDate) {
 		this.applyStartDate = applyStartDate;
 	}
 
-	public LocalDate getApplyEndDate() {
+	public Date getApplyEndDate() {
 		return applyEndDate;
 	}
 
-	public void setApplyEndDate(LocalDate applyEndDate) {
+	public void setApplyEndDate(Date applyEndDate) {
 		this.applyEndDate = applyEndDate;
 	}
 

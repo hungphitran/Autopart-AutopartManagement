@@ -1,7 +1,8 @@
 package com.entity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "BlogGroup")
@@ -18,13 +19,13 @@ public class BlogGroup {
     private String status = "Active"; // Status of the group (default: 'Active')
 
     @Column(name = "deletedAt")
-    private LocalDateTime deletedAt; // Timestamp for when the group was deleted
+    private Timestamp  deletedAt; // Timestamp for when the group was deleted
 
     // Default constructor
     public BlogGroup() {}
 
 	public BlogGroup(String blogGroupId, String groupName, String status,
-			LocalDateTime deletedAt) {
+			Timestamp  deletedAt) {
 		super();
 		this.blogGroupId = blogGroupId;
 		this.groupName = groupName;
@@ -59,11 +60,11 @@ public class BlogGroup {
 
 	
 
-	public LocalDateTime getDeletedAt() {
+	public Timestamp  getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(LocalDateTime deletedAt) {
+	public void setDeletedAt(Timestamp  deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 

@@ -1,7 +1,7 @@
 package com.entity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "Blog")
@@ -24,14 +24,14 @@ public class Blog {
     private String status = "Active"; // Status of the blog (default: 'Active')
 
     @Column(name = "deletedAt")
-    private LocalDateTime deletedAt; // Timestamp for when the blog was deleted
+    private Timestamp  deletedAt; // Timestamp for when the blog was deleted
 
     // Default constructor
     public Blog() {}
 
     // Parameterized constructor
     public Blog(String blogId, String blogGroupId, String title, 
-                String description, String status, LocalDateTime deletedAt) {
+                String description, String status, Timestamp  deletedAt) {
         this.blogId = blogId;
         this.blogGroupId = blogGroupId;
         this.title = title;
@@ -81,11 +81,11 @@ public class Blog {
         this.status = status;
     }
 
-    public LocalDateTime getDeletedAt() {
+    public Timestamp  getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
+    public void setDeletedAt(Timestamp  deletedAt) {
         this.deletedAt = deletedAt;
     }
 

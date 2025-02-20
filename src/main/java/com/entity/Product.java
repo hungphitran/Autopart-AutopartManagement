@@ -1,6 +1,8 @@
 package com.entity;
 
 import javax.persistence.*;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class Product {
     @Column(name = "productGroupId")
     private String productGroupId; // Foreign key: Group name (references ProductGroup)
 
-    
     @Column(name = "brandId")
     private String brandId; // Foreign key: Brand name (references Brand)
 
@@ -44,7 +45,7 @@ public class Product {
     private String status; // Status (default: 'Active')
 
     @Column(name = "deletedAt")  // Ánh xạ với cột "deletedAt" trong bảng
-    private String deletedAt; // Deletion timestamp
+    private Timestamp  deletedAt; // Deletion timestamp
 
     @Column(name = "description")  // Ánh xạ với cột "description" trong bảng
     private String description; // Description
@@ -56,7 +57,7 @@ public class Product {
     public Product(String productId, String productName, String productGroupId, String brandId,
                    double salePrice, double costPrice, int stock, String unit,
                    String imageUrls, double weight, String status,
-                   String deletedAt, String description) {
+                   Timestamp deletedAt, String description) {
         this.productId = productId;
         this.productName = productName;
         this.productGroupId = productGroupId;
@@ -161,11 +162,11 @@ public class Product {
         this.status = status;
     }
 
-    public String getDeletedAt() {
+    public Timestamp getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
+    public void setDeletedAt(Timestamp deletedAt) {
         this.deletedAt = deletedAt;
     }
 
