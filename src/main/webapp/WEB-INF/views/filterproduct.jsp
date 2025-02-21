@@ -27,28 +27,30 @@
 
 			<div>
 				<h2>Bộ lọc</h2>
-				<p>
-					<strong>Từ khóa: ${keyword}</strong>
-				</p>
 			</div>
 	
 			<div class="filter-form">
 				<form action="/autopart/product/search.htm" method="get">
 					<div class="search-form">
-						<input type="text" name="keyword" placeholder="Search...">
+						<c:if test="${keyword.length()==0}">
+							<input type="text" name="keyword" placeholder="Search...">
+						</c:if>
+						<c:if test="${keyword.length()>0}">
+							<input type="text" name="keyword" value="${keyword}">
+						</c:if>
 					</div>
 	
 					<div class="form-group">
 						<label for="brand">Hãng</label> <select id="brand" name="brand"
 							class="form-control">
 							<option value="All">Tất cả</option>
-							<c:forEach var="brand" items="${brands}">
+							<c:forEach var="b" items="${brands}">
 								<c:choose>
-									<c:when test="${brand.brandName.equals(brand)}">
-										<option value="${brand.brandName}" selected>${brand.brandName}</option>
+									<c:when test="${b.brandName.equals(brand)}">
+										<option value="${b.brandName}" selected>${b.brandName}</option>
 									</c:when>
 									<c:otherwise>
-										<option value="${brand.brandName}">${brand.brandName}</option>									
+										<option value="${b.brandName}">${b.brandName}</option>									
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>

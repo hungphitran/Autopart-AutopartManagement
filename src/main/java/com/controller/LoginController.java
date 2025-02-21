@@ -86,14 +86,13 @@ public class LoginController {
 	public String login(Model model, HttpServletRequest req,HttpServletResponse res) throws ClassNotFoundException {
 		
 		//get input from request
-		String phone= req.getParameter("email");
+		String phone= req.getParameter("phone");
 		String pass = req.getParameter("password");
 		
-		test();
 		Account acc = accountDao.getByPhone(phone);
 		
 
-		if(pass==null||phone==null||pass.length()<4) {//check valid password
+		if(pass==null||phone==null||pass.length()<4|| phone.length()<10) {//check valid password
 			req.setAttribute("message", "dữ liệu không hợp lệ");
 			return "login";			
 		}
@@ -104,6 +103,9 @@ public class LoginController {
 		else if(pass.equals(acc.getPassword())) {
 			// add user info to session
 			req.getSession().setAttribute("user", acc);
+			Customer c = customerDao.getByPhone(phone);
+			req.getSession().setAttribute("userName", c.getFullName());	
+			req.setAttribute("cart", cdao.getById(c.getCartId()));
 			return "redirect:/";
 		}
 		else {
@@ -116,7 +118,7 @@ public class LoginController {
 	@RequestMapping(value="/login",method=RequestMethod.GET)
 	public String getLogin(HttpServletRequest req) {
 		HttpSession session = req.getSession();
-		if(session.getAttribute("user")!=null) {
+		if(session.getAttribute("user")!=null) {//show profile if user logged in
 			return "profile";
 		}
 		return "login";

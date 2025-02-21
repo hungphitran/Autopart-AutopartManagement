@@ -50,7 +50,7 @@
 												<img alt="" src="${product.imageUrls}" style="max-width: 100px; max-height: 100px; display: block;">
 											</td>
 											<td class="align-middle">${product.productName}</td>
-											<td class="align-middle">${product.groupName}</td>
+											<td class="align-middle">${product.productGroupId}</td>
 											<td class="align-middle"><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
 											<td class="align-middle">
 												<c:choose>
