@@ -31,16 +31,17 @@
 					alt="Car Image" class="img-fluid">
 			</c:forEach>
 			<div class="list-image">
-				<c:forEach items="${imgUrls}" begin="0" end ="0" var="url">
-					<img src="${url}" class="image-item active" onclick="updateMainImg(this)"
-						width="50" height="50" alt="Car Image" class="img-fluid">
+				<c:forEach items="${imgUrls}" begin="0" end="0" var="url">
+					<img src="${url}" class="image-item active"
+						onclick="updateMainImg(this)" width="50" height="50"
+						alt="Car Image" class="img-fluid">
 				</c:forEach>
 				<c:forEach items="${imgUrls}" begin="1" var="url">
 					<img src="${url}" class="image-item" onclick="updateMainImg(this)"
 						width="50" height="50" alt="Car Image" class="img-fluid">
 				</c:forEach>
 			</div>
-			
+
 		</div>
 		<div class="col-md-6 product-details">
 			<h2>${product.productName}</h2>
@@ -54,22 +55,29 @@
 				<strong>Mô tả:</strong> ${product.description}.
 			</p>
 			<ul>
-				<li>Hãng: ${product.brandName}</li>
-				<li>Loại hàng: ${product.groupName}</li>
+				<li>Hãng: ${brand.brandName}</li>
+				<li>Loại hàng: ${group.groupName}</li>
 				<li>Trọng lượng: ${product.weight}</li>
 				<li>Số lượng: ${product.stock} ${product.unit}</li>
 			</ul>
-			<form action="/autopart/addproduct.htm" method="post">
-				<div class="input-group mb-3">
-					<button class="btn btn-danger" type="button" id="button-minus">-</button>
-					<input type="number" class="form-control" name="quantity"
-						id="quantity" value="1" min="1" max="${product.stock}">
-					<button class="btn btn-danger" type="button" id="button-plus">+</button>
 
-				</div>
-				<button class="btn btn-danger" type="submit">Thêm vào giỏ
-					hàng</button>
-			</form>
+			<c:if test="${product.stock>0 }">
+				<form action="/autopart/product/addproduct.htm" method="post">
+					<div class="input-group mb-3">
+						<button class="btn btn-danger" type="button" id="button-minus">-</button>
+						<input type="number" class="form-control" name="quantity"
+							id="quantity" value="1" min="1" max="${product.stock}">
+						<button class="btn btn-danger" type="button" id="button-plus">+</button>
+
+					</div>
+					<button class="btn btn-danger" type="submit">Thêm vào giỏ
+						hàng</button>
+					<input type="hidden" name="productId" value="${product.productId}">
+					<c:if test="${message!=null}">
+						<p id="message" style="font-size: 12px; color: blue;">${message}</p>
+					</c:if> 
+				</form>
+			</c:if>
 		</div>
 	</div>
 
