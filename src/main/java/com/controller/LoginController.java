@@ -36,6 +36,8 @@ import com.entity.Order;
 import com.entity.Product;
 import com.entity.ProductGroup;
 import com.entity.RoleGroup;
+import com.entity.OrderDetail;
+
 
 @Controller
 public class LoginController {
@@ -51,8 +53,8 @@ public class LoginController {
 	@Autowired 
 	Discount_DAO discountDao;
 	
-//	@Autowired
-//	OrderDetail_DAO oddao;
+	@Autowired
+	OrderDetail_DAO oddao;
 
 	@Autowired
 	Blog_DAO blogDao;
@@ -86,14 +88,15 @@ public class LoginController {
 	public String login(Model model, HttpServletRequest req,HttpServletResponse res) throws ClassNotFoundException {
 		
 		//get input from request
-		String phone= req.getParameter("email");
+		String phone= req.getParameter("phone");
 		String pass = req.getParameter("password");
 		
-		test();
+//		test();
+		
 		Account acc = accountDao.getByPhone(phone);
 		
 
-		if(pass==null||phone==null||pass.length()<4) {//check valid password
+		if(pass==null||phone==null||pass.length()<4|| phone.length()<10) {//check valid password
 			req.setAttribute("message", "dữ liệu không hợp lệ");
 			return "login";			
 		}
@@ -104,6 +107,9 @@ public class LoginController {
 		else if(pass.equals(acc.getPassword())) {
 			// add user info to session
 			req.getSession().setAttribute("user", acc);
+			Customer c = customerDao.getByPhone(phone);
+			req.getSession().setAttribute("userName", c.getFullName());	
+			req.setAttribute("cart", cdao.getById(c.getCartId()));
 			return "redirect:/";
 		}
 		else {
@@ -116,7 +122,7 @@ public class LoginController {
 	@RequestMapping(value="/login",method=RequestMethod.GET)
 	public String getLogin(HttpServletRequest req) {
 		HttpSession session = req.getSession();
-		if(session.getAttribute("user")!=null) {
+		if(session.getAttribute("user")!=null) {//show profile if user logged in
 			return "profile";
 		}
 		return "login";
@@ -261,8 +267,8 @@ public class LoginController {
 //	     
 //	     System.out.println(rgdao.update(newRoleGroup1));
 //	     System.out.println(rgdao.update(newRoleGroup2));
-	     System.out.println(rgdao.getById("RG001"));
-	     System.out.println(rgdao.getById("RG002"));
+//	     System.out.println(rgdao.getById("RG001"));
+//	     System.out.println(rgdao.getById("RG002"));
 //
 //	     
 //	     System.out.println(accountDao.update(account1));
@@ -306,7 +312,6 @@ public class LoginController {
 //	     
 //	     System.out.println(order.getOrderDate().getClass().getName());
 //	     
-//	     System.out.println(oddao.add(orderDetail));
 //	     System.out.println(oddao.getAllByOrderId("ORD001"));
 	     
 	     

@@ -19,7 +19,7 @@ public class Product_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Product p WHERE p.status IN ('Active', 'Inactive')";
+            String hql = "FROM Product p WHERE p.status ='Active'";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -122,7 +122,7 @@ public class Product_DAO {
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Product p SET p.status = 'Deleted', p.deletedAt = current_timestamp() WHERE p.productId = :productId";
+            String hql = "UPDATE Product p SET p.status = 'Deleted', p.deletedAt = GETDATE() WHERE p.productId = :productId";
             Query query = session.createQuery(hql);
             query.setParameter("productId", productId);
             int rowsAffected = query.executeUpdate();

@@ -68,6 +68,11 @@
     <constructor-arg ref="sessionFactory" />
 </bean>
 
+<bean id="OrderDetail_DAO" class="com.dao.OrderDetail_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
+
 <bean id="GeneralSettings_DAO" class="com.dao.GeneralSettings_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
