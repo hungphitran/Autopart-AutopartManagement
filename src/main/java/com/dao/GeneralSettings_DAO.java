@@ -19,20 +19,20 @@ public class GeneralSettings_DAO {
         this.factory = factory;
     }
 
-    public List<GeneralSettings> getAll() {
-        Session session = null;
-        try {
-            session = factory.openSession();
-            String hql = "FROM GeneralSettings";
-            Query query = session.createQuery(hql);
-            return query.list();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>(); // Return an empty list in case of error
-        } finally {
-            if (session != null) session.close();
-        }
-    }
+//    public List<GeneralSettings> getAll() {
+//        Session session = null;
+//        try {
+//            session = factory.openSession();
+//            String hql = "FROM GeneralSettings";
+//            Query query = session.createQuery(hql);
+//            return query.list();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ArrayList<>(); // Return an empty list in case of error
+//        } finally {
+//            if (session != null) session.close();
+//        }
+//    }
 
     public GeneralSettings getByWebsiteName(String websiteName) {
         Session session = null;

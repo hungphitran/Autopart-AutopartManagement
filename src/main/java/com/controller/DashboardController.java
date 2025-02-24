@@ -32,7 +32,7 @@ public class DashboardController {
 	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
-		
+		System.out.println("Test");
 		List<Product> proLst = productDao.getAll();	
 		for(int i=0;i<proLst.size();i++) {
 			String img= proLst.get(i).getImageUrls();

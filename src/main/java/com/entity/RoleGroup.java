@@ -25,8 +25,9 @@ public class RoleGroup {
     @ElementCollection
     @CollectionTable(name = "RoleGroupPermissions", 
                      joinColumns = @JoinColumn(name = "roleGroupId"))
-    @MapKeyColumn(name = "permissionName") 
+    @Column(name = "permissionName") // Specify the column name in RoleGroupPermissions
     private List<String> permissions = new ArrayList<>();
+
     
     @Column(name = "status", length = 50, columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Cột status với giá trị mặc định
     private String status;

@@ -20,7 +20,7 @@
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433;databaseName = AutoPartsDB;encrypt=true;trustServerCertificate=true;"
 			p:username="sa"
-			p:password="1111">
+			p:password="10802">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
@@ -67,6 +67,11 @@
 <bean id="Order_DAO" class="com.dao.Order_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
+
+<bean id="OrderDetail_DAO" class="com.dao.OrderDetail_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
+
 
 <bean id="GeneralSettings_DAO" class="com.dao.GeneralSettings_DAO">
     <constructor-arg ref="sessionFactory" />

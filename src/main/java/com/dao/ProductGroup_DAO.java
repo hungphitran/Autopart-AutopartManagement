@@ -33,7 +33,7 @@ public class ProductGroup_DAO {
         }
     }
 
-    public ProductGroup getByProductGroupId(String productGroupId) {
+    public ProductGroup getById(String productGroupId) {
         Session session = null;
         try {
             session = factory.openSession();
@@ -106,7 +106,7 @@ public class ProductGroup_DAO {
         }
     }
 
-    public boolean checkExistByProductGroupId(String productGroupId) {
+    public boolean checkExistById(String productGroupId) {
         Session session = null;
         try {
             session = factory.openSession();
