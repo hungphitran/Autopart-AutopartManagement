@@ -30,6 +30,9 @@ public class Order {
     @Column(name = "orderDate")
     private java.sql.Date orderDate;
 
+    @Column(name ="confirmedBy")
+    private String confirmedBy;
+    
     @Column(name = "status")
     private String status;
 
@@ -42,7 +45,7 @@ public class Order {
 	}
 
 	public Order(String orderId, String discountId, String userPhone, String shipAddress, BigDecimal totalCost,
-			Date orderDate, String status, Timestamp  deletedAt) {
+			Date orderDate, String confirmedBy, String status, Timestamp deletedAt) {
 		super();
 		this.orderId = orderId;
 		this.discountId = discountId;
@@ -50,6 +53,7 @@ public class Order {
 		this.shipAddress = shipAddress;
 		this.totalCost = totalCost;
 		this.orderDate = orderDate;
+		this.confirmedBy = confirmedBy;
 		this.status = status;
 		this.deletedAt = deletedAt;
 	}
@@ -94,12 +98,20 @@ public class Order {
 		this.totalCost = totalCost;
 	}
 
-	public Date getOrderDate() {
+	public java.sql.Date getOrderDate() {
 		return orderDate;
 	}
 
 	public void setOrderDate(java.sql.Date orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getConfirmedBy() {
+		return confirmedBy;
+	}
+
+	public void setConfirmedBy(String confirmedBy) {
+		this.confirmedBy = confirmedBy;
 	}
 
 	public String getStatus() {
@@ -110,21 +122,22 @@ public class Order {
 		this.status = status;
 	}
 
-	public Timestamp  getDeletedAt() {
+	public Timestamp getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(Timestamp  deletedAt) {
+	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
 
 	@Override
 	public String toString() {
 		return "Order [orderId=" + orderId + ", discountId=" + discountId + ", userPhone=" + userPhone
-				+ ", shipAddress=" + shipAddress + ", totalCost=" + totalCost + ", orderDate=" + orderDate + ", status="
-				+ status + ", deletedAt=" + deletedAt + "]";
+				+ ", shipAddress=" + shipAddress + ", totalCost=" + totalCost + ", orderDate=" + orderDate
+				+ ", confirmedBy=" + confirmedBy + ", status=" + status + ", deletedAt=" + deletedAt + "]";
 	}
-    
+
+	    
     
     
 }

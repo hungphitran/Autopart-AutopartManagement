@@ -10,13 +10,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Employee")
 public class Employee {
-	@Id
 	@Column(name = "citizenId")
 	private String citizenId;
 	
+	@Id
 	@Column(name = "phone")
     private String phone;
-
 
     @Column(name = "fullName")
     private String fullName;

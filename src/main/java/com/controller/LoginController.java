@@ -132,122 +132,122 @@ public class LoginController {
 	public void test()
 	{
 		
-		 RoleGroup newRoleGroup1 = new RoleGroup("RG001", "Admin Group", "Group for Admins", "Active", new Timestamp(System.currentTimeMillis()));
-		 RoleGroup newRoleGroup2 = new RoleGroup("RG002", "Customer Group", "Group for Customers", "Active", new Timestamp(System.currentTimeMillis()));
-
-	     Account account1 = new Account("0909876543", "securePassword1", "randomToken123", "RG001");
-	     Account account2 = new Account("0901234567", "securePassword2", "randomToken123", "RG002");
-	     BlogGroup blogGroup = new BlogGroup("BG001", "Tech Blogs", "Active", new Timestamp(System.currentTimeMillis()));
-	  // Blog instance
-	     Blog blog = new Blog(
-	         "BLOG001",
-	         "BG001",
-	         "Hướng dẫn chăm sóc cây cảnh",
-	         "Bài viết chia sẻ các tips chăm sóc cây cảnh trong nhà...",
-	         "Active",
-	         new Timestamp(System.currentTimeMillis())
-	     );
-
-	     // Brand instance
-	     Brand brand = new Brand(
-	         "BRAND001",
-	         "Nike",
-	         "Active",
-	         new Timestamp(System.currentTimeMillis())
-	     );
-
-	     // Cart instance
-	     Cart cart = new Cart("CART001", new Timestamp(System.currentTimeMillis()));
-	     // Thêm sản phẩm vào giỏ hàng
-//	     cart.getProducts().put("PROD001", 2);
-//	     cart.getProducts().put("PROD002", 1);
-
-	     // Customer instance
-	     Customer customer = new Customer(
-	         "CART001",
-	         "Nguyễn Văn B",
-	         "0901234567",
-	         "123 Đường ABC, Quận 1, TP.HCM",
-	         "Active"
-	     );
-
-	     // Employee instance
-	     Employee employee = new Employee(
-	         "079123456789",        // citizenId
-	         "0909876543",         // phone
-	         "Trần Thị A",         // fullName
-	         "tranb@email.com",    // email
-	         Date.valueOf(LocalDate.now()), // birthDate
-	         "Female",             // gender
-	         Date.valueOf(LocalDate.now()),  // startDate
-	         "456 Đường XYZ, Quận 2, TP.HCM", // address
-	         "avatar_url.jpg",     // avatar
-	         "University",         // educationLevel
-	         "Active",            // status
-	         new Timestamp(System.currentTimeMillis())                 // deletedAt
-	     );
-
-	     // Discount instance
-	     Discount discount = new Discount(
-	         "DIS001",                          // discountId
-	         "Giảm giá mùa hè",                  // discountDesc
-	         20,                                 // discountAmount (20%)
-	         new BigDecimal("1000000"),         // minimumAmount
-	         100,                               // usageLimit
-	         Date.valueOf(LocalDate.now()),
-	         Date.valueOf(LocalDate.now()),
-	         "Active"                           // status
-	     );
-	     
-	     // ProductGroup instance
-	     ProductGroup productGroup = new ProductGroup(
-	         "PG001",                       // productGroupId
-	         "Giày Thể Thao",              // groupName
-	         null,                          // parentGroup (null if it's a root group)
-	         "Active",                      // status
-	         new Timestamp(System.currentTimeMillis())                           // deletedAt
-	     );
-	     
-	  // Product instance
-	     Product product = new Product(
-	         "PROD001",                      // productId
-	         "Giày thể thao Nike Air Max",   // productName
-	         "PG001",                        // productGroupId
-	         "BRAND001",                        // brandId
-	         2500000.0,                      // salePrice
-	         1800000.0,                      // costPrice
-	         50,                             // stock
-	         "Đôi",                          // unit
-	         "nike-air-max-1.jpg,nike-air-max-2.jpg",  // imageUrls
-	         0.8,                            // weight
-	         "Active",                       // status
-	         new Timestamp(System.currentTimeMillis()),                          // deletedAt
-	         "Giày thể thao cao cấp từ Nike" // description
-	     );
-
-	     // GeneralSettings instance
-	     GeneralSettings settings = new GeneralSettings(
-	         "Shop Thể Thao Pro",           // websiteName
-	         "logo1.png",                    // logo
-	         "1900123456",                  // phone
-	         "contact@shopthethaopro.com",  // email
-	         "789 Đường DEF, Quận 3, TP.HCM", // address
-	         "© 2025 Shop Thể Thao Pro. All rights reserved." // copyright
-	     );
-
-	     // Order instance
-	     Order order = new Order(
-	         "ORD001",                      // orderId
-	         "DIS001",                     // discountId
-	         "0901234567",                  // userPhone
-	         "123 Đường ABC, Quận 1, TP.HCM", // shipAddress
-	         new BigDecimal("2300000"),     // totalCost
-	         Date.valueOf(LocalDate.now()),               // orderDate
-	         "Pending",                     // status
-	         new Timestamp(System.currentTimeMillis())                           // deletedAt
-       
-	     );
-	     
+//		 RoleGroup newRoleGroup1 = new RoleGroup("RG001", "Admin Group", "Group for Admins", "Active", new Timestamp(System.currentTimeMillis()));
+//		 RoleGroup newRoleGroup2 = new RoleGroup("RG002", "Customer Group", "Group for Customers", "Active", new Timestamp(System.currentTimeMillis()));
+//
+//	     Account account1 = new Account("0909876543", "securePassword1", "randomToken123", "RG001");
+//	     Account account2 = new Account("0901234567", "securePassword2", "randomToken123", "RG002");
+//	     BlogGroup blogGroup = new BlogGroup("BG001", "Tech Blogs", "Active", new Timestamp(System.currentTimeMillis()));
+//	  // Blog instance
+//	     Blog blog = new Blog(
+//	         "BLOG001",
+//	         "BG001",
+//	         "Hướng dẫn chăm sóc cây cảnh",
+//	         "Bài viết chia sẻ các tips chăm sóc cây cảnh trong nhà...",
+//	         "Active",
+//	         new Timestamp(System.currentTimeMillis())
+//	     );
+//
+//	     // Brand instance
+//	     Brand brand = new Brand(
+//	         "BRAND001",
+//	         "Nike",
+//	         "Active",
+//	         new Timestamp(System.currentTimeMillis())
+//	     );
+//
+//	     // Cart instance
+//	     Cart cart = new Cart("CART001", new Timestamp(System.currentTimeMillis()));
+//	     // Thêm sản phẩm vào giỏ hàng
+////	     cart.getProducts().put("PROD001", 2);
+////	     cart.getProducts().put("PROD002", 1);
+//
+//	     // Customer instance
+//	     Customer customer = new Customer(
+//	         "CART001",
+//	         "Nguyễn Văn B",
+//	         "0901234567",
+//	         "123 Đường ABC, Quận 1, TP.HCM",
+//	         "Active"
+//	     );
+//
+//	     // Employee instance
+//	     Employee employee = new Employee(
+//	         "079123456789",        // citizenId
+//	         "0909876543",         // phone
+//	         "Trần Thị A",         // fullName
+//	         "tranb@email.com",    // email
+//	         Date.valueOf(LocalDate.now()), // birthDate
+//	         "Female",             // gender
+//	         Date.valueOf(LocalDate.now()),  // startDate
+//	         "456 Đường XYZ, Quận 2, TP.HCM", // address
+//	         "avatar_url.jpg",     // avatar
+//	         "University",         // educationLevel
+//	         "Active",            // status
+//	         new Timestamp(System.currentTimeMillis())                 // deletedAt
+//	     );
+//
+//	     // Discount instance
+//	     Discount discount = new Discount(
+//	         "DIS001",                          // discountId
+//	         "Giảm giá mùa hè",                  // discountDesc
+//	         20,                                 // discountAmount (20%)
+//	         new BigDecimal("1000000"),         // minimumAmount
+//	         100,                               // usageLimit
+//	         Date.valueOf(LocalDate.now()),
+//	         Date.valueOf(LocalDate.now()),
+//	         "Active"                           // status
+//	     );
+//	     
+//	     // ProductGroup instance
+//	     ProductGroup productGroup = new ProductGroup(
+//	         "PG001",                       // productGroupId
+//	         "Giày Thể Thao",              // groupName
+//	         null,                          // parentGroup (null if it's a root group)
+//	         "Active",                      // status
+//	         new Timestamp(System.currentTimeMillis())                           // deletedAt
+//	     );
+//	     
+//	  // Product instance
+//	     Product product = new Product(
+//	         "PROD001",                      // productId
+//	         "Giày thể thao Nike Air Max",   // productName
+//	         "PG001",                        // productGroupId
+//	         "BRAND001",                        // brandId
+//	         2500000.0,                      // salePrice
+//	         1800000.0,                      // costPrice
+//	         50,                             // stock
+//	         "Đôi",                          // unit
+//	         "nike-air-max-1.jpg,nike-air-max-2.jpg",  // imageUrls
+//	         0.8,                            // weight
+//	         "Active",                       // status
+//	         new Timestamp(System.currentTimeMillis()),                          // deletedAt
+//	         "Giày thể thao cao cấp từ Nike" // description
+//	     );
+//
+//	     // GeneralSettings instance
+//	     GeneralSettings settings = new GeneralSettings(
+//	         "Shop Thể Thao Pro",           // websiteName
+//	         "logo1.png",                    // logo
+//	         "1900123456",                  // phone
+//	         "contact@shopthethaopro.com",  // email
+//	         "789 Đường DEF, Quận 3, TP.HCM", // address
+//	         "© 2025 Shop Thể Thao Pro. All rights reserved." // copyright
+//	     );
+//
+//	     // Order instance
+//	     Order order = new Order(
+//	         "ORD001",                      // orderId
+//	         "DIS001",                     // discountId
+//	         "0901234567",                  // userPhone
+//	         "123 Đường ABC, Quận 1, TP.HCM", // shipAddress
+//	         new BigDecimal("2300000"),     // totalCost
+//	         Date.valueOf(LocalDate.now()),               // orderDate
+//	         "Pending",                     // status
+//	         new Timestamp(System.currentTimeMillis())                           // deletedAt
+//       
+//	     );
+//	     
 
 
 //	     // OrderDetail instance
@@ -261,8 +261,8 @@ public class LoginController {
 //	     
 //	     System.out.println(rgdao.update(newRoleGroup1));
 //	     System.out.println(rgdao.update(newRoleGroup2));
-//	     System.out.println(rgdao.getById("RG001"));
-//	     System.out.println(rgdao.getById("RG002"));
+	     System.out.println(rgdao.getById("RG001"));
+	     System.out.println(rgdao.getById("RG002"));
 //
 //	     
 //	     System.out.println(accountDao.update(account1));

@@ -2,6 +2,8 @@ package com.dao;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -17,11 +19,12 @@ public class RoleGroup_DAO {
         this.factory = factory;
     }
 
+    @Transactional
     public List<RoleGroup> getAll() {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM RoleGroup rg WHERE rg.status = 'Active'";
+            String hql = "SELECT DISTINCT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.status = 'Active'";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -36,7 +39,7 @@ public class RoleGroup_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM RoleGroup rg WHERE rg.roleGroupId = :roleGroupId";
+            String hql = "SELECT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.roleGroupId = :roleGroupId AND rg.status = 'Active'";
             Query query = session.createQuery(hql);
             query.setParameter("roleGroupId", roleGroupId);
             return (RoleGroup) query.uniqueResult();
