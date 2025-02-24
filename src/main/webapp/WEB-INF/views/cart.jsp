@@ -19,30 +19,7 @@
 
 <link href="<c:url value="/resources/css/cart.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/css/base.css" />" rel="stylesheet">
-<script>
-	function updateQuantity(input, delta) {
-		let value = parseInt(input.value) + delta;
-		if (value < 1) {
-			showDialog(input);
-		} else {
-			input.value = value;
-		}
-	}
 
-	function showDialog(input) {
-		const dialogOverlay = document.getElementById('dialog-overlay');
-		dialogOverlay.style.visibility = 'visible';
-		const confirmButton = document.getElementById('confirm-button');
-		confirmButton.onclick = function() {
-			input.closest('.cart-item').remove();
-			dialogOverlay.style.visibility = 'hidden';
-		};
-		const cancelButton = document.getElementById('cancel-button');
-		cancelButton.onclick = function() {
-			dialogOverlay.style.visibility = 'hidden';
-		};
-	}
-</script>
 </head>
 <body>
 	<!-- <div class="cart-container">
@@ -125,19 +102,20 @@
 										src="https://html.themability.com/autoelite/assets/images/categories/1.png">
 								</div>
 								<div class="col">
-									<div class="row text-muted">${product.key }</div>
-									<div class="row">${product.value}</div>
+									<div class="row text-muted">${product.key.productId }</div>
+									<div class="row">${product.key.productName}</div>
 								</div>
 								<div class="col updateQTY">
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
-									<input class="input-updateQTY" type="number" value="${product.value }" min="1"
+									<input class="input-updateQTY quantity" type="number"  value="${product.value }" min="1" max="${product.key.stock }"
 										readonly>
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
 								</div>
-								<div class="col">
-									1.000.000 &#8363;<span class="close">&#10005;</span>
+								<div class="col" class="price">
+									<input type="hidden" class="price" value="${product.key.salePrice}">
+									${product.key.salePrice } &#8363;<span class="close">&#10005;</span>
 								</div>
 							</div>
 						</div>
@@ -158,7 +136,7 @@
 				</div>
 				<hr>
 				<div class="row">
-					<div class="col" style="padding-left: 0;">Số lượng: 3</div>
+					<div class="col" style="padding-left: 0;">Số lượng: ${products.size()}</div>
 					<div class="col text-right">3.000.000 &#8363;</div>
 				</div>
 				<form>
@@ -177,12 +155,50 @@
 				<div class="row"
 					style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 					<div class="col">TỔNG TIỀN</div>
-					<div class="col text-right">3.050.000 &#8363;</div>
+					<div class="col text-right" id="total" > &#8363;</div>
 				</div>
-				<button class="btn">THANH TOÁN</button>
+				<button class="btn">ĐẶT HÀNG</button>
 			</div>
 		</div>
 
 	</div>
 </body>
+<script>
+	
+let totalLabel= document.getElementById("total");
+
+let priceInputs = document.querySelectorAll(".price");
+let quantityInputs = document.querySelectorAll(".quantity");
+let total = 0;
+for(let i = 0; i < priceInputs.length; i++) {
+    let price = parseFloat(priceInputs[i].value);
+    let quantity = parseInt(quantityInputs[i].value);
+    total += price * quantity;
+}
+
+totalLabel.innerText = total+ " đ";
+
+	function updateQuantity(input, delta) {
+		let value = parseInt(input.value) + delta;
+		if (value < 1) {
+			showDialog(input);
+		} else {
+			input.value = value;
+		}
+	}
+
+	function showDialog(input) {
+		const dialogOverlay = document.getElementById('dialog-overlay');
+		dialogOverlay.style.visibility = 'visible';
+		const confirmButton = document.getElementById('confirm-button');
+		confirmButton.onclick = function() {
+			input.closest('.cart-item').remove();
+			dialogOverlay.style.visibility = 'hidden';
+		};
+		const cancelButton = document.getElementById('cancel-button');
+		cancelButton.onclick = function() {
+			dialogOverlay.style.visibility = 'hidden';
+		};
+	}
+</script>
 </html>

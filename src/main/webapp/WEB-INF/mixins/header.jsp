@@ -42,7 +42,7 @@
 					<div class="header__cart-info">
 						<i class="header__cart-icon fa-solid fa-cart-shopping"></i> <span
 							class="header__cart-text">Giỏ hàng</span> <span
-							class="header__cart-notice">3</span>
+							class="header__cart-notice">${productInCart.size()}</span>
 					</div>
 
 					<!-- No cart: header__cart-list--no-cart-->
@@ -54,23 +54,22 @@
 						<h4 class="header__cart-heading">Sản phẩm đã thêm</h4>
 						<ul class="header__cart-list-item">
 							<!-- Cart item -->
-							<c:forEach items="${cart.products}" var="product">
+							<c:forEach items="${productInCart}" var="product">
 								<li class="header__cart-item"><img
 									src="https://img.freepik.com/free-photo/fashion-portrait-young-elegant-woman_1328-2743.jpg?w=1480&t=st=1701357403~exp=1701358003~hmac=435f00eded774f42e172f48f4be677658485206407baa84eaef2058b11f1431f"
 									alt="" class="header__cart-img">
 									<div class="header__cart-item-info">
 										<div class="header__cart-item-head">
-											<h5 class="header__cart-item-name">${product.key}</h5>
+											<h5 class="header__cart-item-name">${product.key.productName }</h5>
 											<div class="header__cart-item-wrap">
-												<span class="header__cart-item-price">3.500.000đ</span> <span
+												<span class="header__cart-item-price"></span> <span
 													class="header__cart-item-multiply">x</span> <span
 													class="header__cart-item-qnt">${product.value }</span>
 											</div>
 										</div>
 
 										<div class="header__cart-item-body">
-											<span class="header__cart-item-description">Phân loại:
-												Bạc</span> <span class="header__cart-item-remove">Xóa</span>
+											<span class="header__cart-item-description">${product.key.productId }</span> <span class="header__cart-item-remove">Xóa</span>
 										</div>
 									</div>
 									</li>

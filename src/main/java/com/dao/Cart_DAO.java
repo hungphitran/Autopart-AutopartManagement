@@ -127,7 +127,7 @@ public class Cart_DAO {
         }
     }
 
-    public String generateNextBlogId() {
+    public String generateNextCartId() {
         Session session = null;
         try {
             session = factory.openSession();

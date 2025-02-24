@@ -1,6 +1,9 @@
 package com.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -46,6 +49,13 @@ public class DashboardController {
 			Customer cus = customerDao.getByPhone(acc.getPhone());
 			Cart cart =cartDao.getById(cus.getCartId());
 			req.setAttribute("cart", cart);
+			Map<String,Integer> productsInCart =cart.getProducts();
+
+			Map<Product,Integer> products= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				products.put(productDao.getById(key),productsInCart.get(key));
+			}
+			req.setAttribute("productInCart", products);
 		}
 
 		return "dashboard";
