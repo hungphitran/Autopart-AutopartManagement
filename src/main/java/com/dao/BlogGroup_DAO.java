@@ -33,7 +33,7 @@ public class BlogGroup_DAO {
         }
     }
 
-    public BlogGroup getByBlogGroupId(String blogGroupId) {
+    public BlogGroup getById(String blogGroupId) {
         Session session = null;
         try {
             session = factory.openSession();
@@ -106,7 +106,7 @@ public class BlogGroup_DAO {
         }
     }
 
-    public boolean checkExistByBlogGroupId(String blogGroupId) {
+    public boolean checkExistById(String blogGroupId) {
         Session session = null;
         try {
             session = factory.openSession();

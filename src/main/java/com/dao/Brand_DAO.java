@@ -34,7 +34,7 @@ public class Brand_DAO {
     }
     
 
-    public Brand getByBrandId(String brandId) {
+    public Brand getById(String brandId) {
         Session session = null;
         try {
             session = factory.openSession();
@@ -107,7 +107,7 @@ public class Brand_DAO {
         }
     }
 
-    public boolean checkExistByBrandId(String brandId) {
+    public boolean checkExistById(String brandId) {
         Session session = null;
         try {
             session = factory.openSession();

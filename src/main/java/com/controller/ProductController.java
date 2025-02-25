@@ -54,8 +54,8 @@ public class ProductController {
 	public String showProduct(@RequestParam("productId") String id,HttpServletRequest req) {
 		Product p = productDao.getById(id);
 		String[] imgUrls = p.getImageUrls().split(",");
-		Brand brand= brandDao.getByBrandId(p.getBrandId());
-		ProductGroup group = pgDao.getByProductGroupId(p.getProductGroupId());
+		Brand brand= brandDao.getById(p.getBrandId());
+		ProductGroup group = pgDao.getById(p.getProductGroupId());
 		req.setAttribute("product", p);
 		req.setAttribute("imgUrls", imgUrls);
 		req.setAttribute("brand", brand);

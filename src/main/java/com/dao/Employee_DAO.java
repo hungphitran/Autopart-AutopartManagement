@@ -33,13 +33,13 @@ public class Employee_DAO {
         }
     }
 
-    public Employee getByCitizenId(String citizenId) {
+    public Employee getByPhone(String phone) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e  WHERE e.citizenId = :citizenId";
+            String hql = "FROM Employee e  WHERE e.phone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("citizenId", citizenId);
+            query.setParameter("phone", phone);
             return (Employee) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,15 +89,15 @@ public class Employee_DAO {
         }
     }
 
-    public boolean delete(String citizenId) {
+    public boolean delete(String phone) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Employee e SET e.status = 'Deleted', e.deletedAt = GETDATE() WHERE  e.citizenId= :citizenId";
+            String hql = "UPDATE Employee e SET e.status = 'Deleted', e.deletedAt = GETDATE() WHERE  e.phone= :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("citizenId", citizenId);
+            query.setParameter("phone", phone);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -110,13 +110,13 @@ public class Employee_DAO {
         }
     }
 
-    public boolean checkExistByCitizenId(String citizenId) {
+    public boolean checkExistByPhone(String phone) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e WHERE e.citizenId = :citizenId";
+            String hql = "FROM Employee e WHERE e.phone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("citizenId", citizenId);
+            query.setParameter("phone", phone);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
