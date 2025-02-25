@@ -67,15 +67,15 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="brandName">Nhãn hàng sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="brandName" class="form-control mb-3">
+                                            <form:select required="true" path="brandId" class="form-control mb-3">
                                                 <form:option value="" label="-- Chọn nhãn hàng của sản phẩm --" disabled="true"/>
                                                 <c:forEach items="${brandList}" var="brand">
                                                     <c:choose>
-                                                        <c:when test="${brand.brandName eq product.brandName}">
-                                                            <form:option value="${brand.brandName}" label="${brand.brandName}" selected="true"/>
+                                                        <c:when test="${brand.brandId eq product.brandId}">
+                                                            <form:option value="${brand.brandId}" label="${brand.brandName}" selected="true"/>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <form:option value="${brand.brandName}" label="${brand.brandName}"/>
+                                                            <form:option value="${brand.brandId}" label="${brand.brandName}"/>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>
@@ -83,15 +83,15 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="groupName">Danh mục sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="groupName" class="form-control mb-3">
+                                            <form:select required="true" path="productGroupId" class="form-control mb-3">
                                                 <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
                                                 <c:forEach items="${productGroupList}" var="productGroup">
                                                     <c:choose>
-                                                        <c:when test="${productGroup.groupName eq product.groupName}">
-                                                            <form:option value="${productGroup.groupName}" label="${productGroup.groupName}" selected="true"/>
+                                                        <c:when test="${productGroup.productGroupId eq product.productGroupId}">
+                                                            <form:option value="${productGroup.productGroupId}" label="${productGroup.groupName}" selected="true"/>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <form:option value="${productGroup.groupName}" label="${productGroup.groupName}"/>
+                                                            <form:option value="${productGroup.productGroupId}" label="${productGroup.groupName}"/>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>

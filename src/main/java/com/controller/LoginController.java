@@ -123,7 +123,7 @@ public class LoginController {
 	public String getLogin(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		if(session.getAttribute("user")!=null) {//show profile if user logged in
-			return "profile";
+			return "redirect:/account.htm";
 		}
 		return "login";
 	}

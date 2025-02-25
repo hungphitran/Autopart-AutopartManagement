@@ -47,20 +47,20 @@
 											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${brand.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
+												    	<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
-												<a href="javascript:void(0);" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
+												<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
+												<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -140,6 +140,8 @@
 
 	<script>
 		$(document).ready(function () {
+
+			
 			$('#dataTable').DataTable({
 				"language": {
 					"search": "Tìm kiếm",
@@ -151,15 +153,15 @@
 					}
 				}
 			}); 
-			
-			$('.change-status-link').click(function(event) {
+
+			$('#dataTable').on('click', '.change-status-link',function(event) {
 			      event.preventDefault(); 
 
-			      var brandName = $(this).data('brand-name');
+			      var brandId = $(this).data('brand-id');
 			      var brandStatus = $(this).data('brand-status');
 
 			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/brand/changeStatus.htm?brandName=' + brandName,
+			        url: '${pageContext.request.contextPath}/admin/brand/changeStatus.htm?brandId=' + brandId,
 			        type: 'POST',
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
@@ -180,19 +182,21 @@
 			        }
 				});
 		    });
-			
-			$('.detail-btn').on('click', function() {
-		        var brandName = $(this).data('brand-name');
-		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/brand/detail.htm?brandName=' + brandName, function() {
+		    
+		 // Use event delegation for dynamically created elements
+		    $('#dataTable').on('click', '.detail-btn', function() {
+		        var brandId = $(this).data('brand-id');
+
+		        // Load the detail modal content
+		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/brand/detail.htm?brandId=' + brandId, function() {
 		            $('#DetailModal').modal('show');
 		        });
 		    });
 			
-			$('.delete-btn').on('click', function() {
-			    var brandName = $(this).data('brand-name');
-			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/brand/delete.htm?brandName=' + brandName);
+		    $('#dataTable').on('click', '.delete-btn', function() {
+			    var brandId = $(this).data('brand-id');
+			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/brand/delete.htm?brandId=' + brandId);
 		  	});
 		});
   	</script>
 </body>
-</html>

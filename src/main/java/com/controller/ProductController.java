@@ -1,8 +1,10 @@
 package com.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -176,7 +178,12 @@ public class ProductController {
 		
 		Map<String,Integer> productsInCart =cart.getProducts();
 		
-		req.setAttribute("products", productsInCart);
+		Map<Product,Integer> products= new HashMap<Product, Integer>();
+		for(String key : productsInCart.keySet()) {
+			products.put(productDao.getById(key),productsInCart.get(key));
+		}
+		
+		req.setAttribute("products", products);
 
 		return "cart";
 	}
