@@ -31,7 +31,7 @@
       <span>Quản lý nhãn hàng</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">
+    <a class="nav-link" href="/autopart/admin/customer.htm">
       <i class="fa-solid fa-person"></i>
       <span>Danh sách khách hàng</span></a>
   </li>

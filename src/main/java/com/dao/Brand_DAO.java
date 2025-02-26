@@ -22,7 +22,7 @@ public class Brand_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Brand b WHERE b.status ='Active'";
+            String hql = "FROM Brand b WHERE b.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.dao.Account_DAO;
 import com.dao.Blog_DAO;
 import com.dao.Brand_DAO;
+import com.dao.Customer_DAO;
 import com.dao.Employee_DAO;
 import com.dao.GeneralSettings_DAO;
 import com.dao.Order_DAO;
@@ -27,6 +28,7 @@ import com.entity.Account;
 import com.entity.Brand;
 import com.entity.Product;
 import com.entity.ProductGroup;
+import com.entity.Customer;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,6 +42,9 @@ public class AdminController {
 	
 	@Autowired
 	Account_DAO accountDao;
+
+	@Autowired
+	Customer_DAO customerDao;
 
 	@Autowired
 	Blog_DAO blogDao;
@@ -160,8 +165,8 @@ public class AdminController {
 		Product product = productDao.getById(productId);
 		String[] imgUrls = product.getImageUrls().split(",");
 		
-		String brandName=brandDao.getByBrandId(product.getBrandId()).getBrandName();
-		String groupName = productGroupDao.getByProductGroupId(product.getProductGroupId()).getGroupName();
+		String brandName=brandDao.getById(product.getBrandId()).getBrandName();
+		String groupName = productGroupDao.getById(product.getProductGroupId()).getGroupName();
 		
 		req.setAttribute("imgUrls", imgUrls);
 		req.setAttribute("product", product);
@@ -178,58 +183,80 @@ public class AdminController {
 	// -- End product --
 	
 	// -- Brand --
-		@RequestMapping("/brand")
-		public String showBrands(HttpServletRequest req) {
-			List<Brand> brands = brandDao.getAll();
-			req.setAttribute("brands", brands);
-			return "adminview/brand/index";
-		}
-		
-		@RequestMapping(value = "/brand/add", method= RequestMethod.GET)
-		public String addBrand(HttpServletRequest req) {
-			return "adminview/brand/add";
-		}
-		
-		@RequestMapping(value = "/brand/add", method= RequestMethod.POST)
-		public String addBrandPost(@ModelAttribute("brand") Brand brand, HttpServletRequest req) {
-			List<Brand> brands = brandDao.getAll();
-			for(int i=0;i<brands.size();i++) {
-				if(brands.get(i).getBrandName().toLowerCase().equals(brand.getBrandName().toLowerCase())){
-					System.out.println("brand is existed");
-					return "redirect:/admin/brand.htm";
-				}
+	@RequestMapping("/brand")
+	public String showBrands(HttpServletRequest req) {
+		List<Brand> brands = brandDao.getAll();
+		req.setAttribute("brands", brands);
+		return "adminview/brand/index";
+	}
+	
+	@RequestMapping(value = "/brand/add", method= RequestMethod.GET)
+	public String addBrand(HttpServletRequest req) {
+		return "adminview/brand/add";
+	}
+	
+	@RequestMapping(value = "/brand/add", method= RequestMethod.POST)
+	public String addBrandPost(@ModelAttribute("brand") Brand brand, HttpServletRequest req) {
+		List<Brand> brands = brandDao.getAll();
+		for(int i=0;i<brands.size();i++) {
+			if(brands.get(i).getBrandName().toLowerCase().equals(brand.getBrandName().toLowerCase())){
+				return "redirect:/admin/brand.htm";
 			}
-			
-			
-			brand.setBrandId(brandDao.generateNextBrandId());
-			Boolean success= brandDao.add(brand);
-			System.out.println("add brand succeed:"+success);
-			
-			return "redirect:/admin/brand.htm";
 		}
 		
-		@RequestMapping(value="/brand/delete",method=RequestMethod.GET)
-		public String deleteBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
-			System.out.println(brandId);
-			
-			System.out.println("deleted: "+brandDao.delete(brandId));
-			return "redirect:/admin/brand.htm";
-		}
+		brand.setBrandId(brandDao.generateNextBrandId());
+		Boolean success = brandDao.add(brand);
 		
-		@RequestMapping(value = "/brand/detail", method= RequestMethod.GET)
-		public String detailBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
-			System.out.println("detail for brand : "+brandId);
-			Brand brand = brandDao.getByBrandId(brandId);
-			req.setAttribute("brand", brand);
-			return "adminview/brand/detailModal";
-		}
-		
-		@RequestMapping(value = "/brand/changeStatus", method= RequestMethod.POST)
-		public String changeStatusBrand(@RequestParam("brandId") String brandId) {
-			Brand brand=  brandDao.getByBrandId(brandId);
+		return "redirect:/admin/brand.htm";
+	}
+	
+	@RequestMapping(value = "/brand/edit", method= RequestMethod.GET)
+	public String editBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
+		Brand brand = brandDao.getById(brandId);
+		req.setAttribute("brand", brand);
+
+		return "adminview/brand/editModal";
+	}
+	
+	@RequestMapping(value = "/brand/edit", method= RequestMethod.POST)
+	public String editBrandPatch(@ModelAttribute("brand") Brand brand) {
+		if (brand.getStatus() == null) {
 			brand.setStatus("Inactive");
-			brandDao.update(brand);
-			return "adminview/brand/index";
-		}
-		// -- End brand --
+	    }
+		brandDao.update(brand);
+		
+		return "redirect:/admin/brand.htm";
+	} 
+	
+	@RequestMapping(value = "/brand/detail", method= RequestMethod.GET)
+	public String detailBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
+		Brand brand = brandDao.getById(brandId);
+		req.setAttribute("brand", brand);
+		return "adminview/brand/detailModal";
+	}
+	
+	@RequestMapping(value = "/brand/changeStatus", method= RequestMethod.POST)
+	public String changeStatusBrand(@RequestParam("brandId") String brandId) {
+		Brand brand=  brandDao.getById(brandId);
+		brand.setStatus("Inactive");
+		brandDao.update(brand);
+		return "adminview/brand/index";
+	}
+	// -- End brand --
+	
+	// -- customer --
+	@RequestMapping("/customer")
+	public String showCustomers(HttpServletRequest req) {
+		List<Customer> customers = customerDao.getAll();
+		req.setAttribute("customers", customers);
+		return "adminview/customer/index";
+	}
+	
+	@RequestMapping(value = "/customer/detail", method= RequestMethod.GET)
+	public String detailCustomer(@RequestParam("cusPhone") String cusPhone, HttpServletRequest req) {
+		Customer customer = customerDao.getByPhone(cusPhone);
+		req.setAttribute("customer", customer);
+		return "adminview/customer/detailModal";
+	}
+	// -- End customer --
 }

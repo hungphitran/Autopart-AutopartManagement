@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách nhãn hàng</title>
+	<title>Danh sách khách hàng</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,39 +28,28 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Nhãn Hàng</h6>
-								<a href="${pageContext.request.contextPath}/admin/brand/add.htm" class="btn btn-primary">+ Thêm nhãn hàng</a>
+								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Khách Hàng</h6>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Tên Nhãn Hàng</th>
-										<th>Trạng thái</th>
+										<th>Tên Khách Hàng</th>
+										<th>Số Điện Thoại</th>
+										<th>Địa chỉ</th>
+										<th>Trạng thái tài khoản</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${brands}" var="brand">
+									<c:forEach items="${customers}" var="customer">
 										<tr class="brand-item">
-											<td class="align-middle">${brand.brandName}</td>
+											<td class="align-middle">${customer.fullName}</td>
+											<td class="align-middle">${customer.phone}</td>
+											<td class="align-middle">${customer.address}</td>
+											<td class="align-middle text-center">${customer.status}</td>
 											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${brand.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
-													        <span class="badge badge-success">Hoạt động</span>											    	
-												    	</a>
-												    </c:when>
-												    <c:otherwise>
-												        <a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-brand-status="${brand.status}" class="change-status-link">
-													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
-												    	</a>
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-danger edit-btn">Sửa</a>
-												<a href="javascript:void(0);" data-brand-id="${brand.brandId}" data-brand-name="${brand.brandName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
+												<a href="javascript:void(0);" data-customer-phone="${customer.phone}" data-customer-name="${customer.fullName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -90,15 +79,6 @@
 						</div>
 						</div>
 					</div>
-					
-					<!-- Modal Edit Item -->
-					<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModal" aria-hidden="true">
-			            <div class="modal-dialog modal-dialog-centered" role="document">
-			              <div class="modal-content">
-			               	
-			              </div>
-			            </div>
-			      	</div>
 	
 					<!-- Modal Detail Item -->
 					<div class="modal fade" id="DetailModal" tabindex="-1" role="dialog" aria-labelledby="DetailModal" aria-hidden="true">
@@ -139,52 +119,14 @@
 					}
 				}
 			}); 
-
-			$('#dataTable').on('click', '.change-status-link',function(event) {
-			      event.preventDefault(); 
-
-			      var brandId = $(this).data('brand-id');
-			      var brandStatus = $(this).data('brand-status');
-
-			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/brand/changeStatus.htm?brandId=' + brandId,
-			        type: 'POST',
-			        success: function(response) {
-			          var badge = $(event.target).closest('.change-status-link').find('.badge');
-			          var link = $(event.target).closest('.change-status-link');
-			          
-			          if (brandStatus === "Inactive") { 
-			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('brand-status', 'Active');
-			          } else {
-			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('brand-status', 'Inactive');
-			          }
-
-			        },
-			        error: function(error) {
-			          console.error("Error changing status:", error);
-			          alert("Lỗi khi thay đổi trạng thái.");
-			        }
-				});
-		    });
 		    
 		 // Use event delegation for dynamically created elements
 		    $('#dataTable').on('click', '.detail-btn', function() {
-		        var brandId = $(this).data('brand-id');
+		        var cusPhone = $(this).data('customer-phone');
 
 		        // Load the detail modal content
-		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/brand/detail.htm?brandId=' + brandId, function() {
+		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/customer/detail.htm?cusPhone=' + cusPhone, function() {
 		            $('#DetailModal').modal('show');
-		        });
-		    });
-			
-		    $('#dataTable').on('click', '.edit-btn', function() {
-		        var brandId = $(this).data('brand-id');
-
-		        // Load the edit modal content
-		        $('#EditModal .modal-content').load('${pageContext.request.contextPath}/admin/brand/edit.htm?brandId=' + brandId, function() {
-		            $('#EditModal').modal('show');
 		        });
 		    });
 		});
