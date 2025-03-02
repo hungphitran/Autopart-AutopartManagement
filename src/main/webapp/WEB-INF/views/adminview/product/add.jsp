@@ -65,8 +65,8 @@
                                             <input required type="text" class="form-control" id="productName" name="productName" placeholder="Nhập tên sản phẩm">
                                         </div>
                                         <div class="form-group">
-                                            <label for="brandName">Nhãn hàng sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="brandName" class="form-control mb-3">
+                                            <label for="brandId">Nhãn hàng sản phẩm <span class="required-text">*</span></label>
+                                            <form:select required="true" path="brandId" class="form-control mb-3">
                                                 <form:option value="" label="-- Chọn nhãn hàng của sản phẩm --" disabled="true"/>
                                                 <c:forEach items="${brandList}" var="brand">
                                                     <form:option value="${brand.brandName}" label="${brand.brandName}"/>
@@ -74,8 +74,8 @@
                                             </form:select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="groupName">Danh mục sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="groupName" class="form-control mb-3">
+                                            <label for="productGroupId">Danh mục sản phẩm <span class="required-text">*</span></label>
+                                            <form:select required="true" path="productGroupId" class="form-control mb-3">
                                                 <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
                                                 <c:forEach items="${productGroupList}" var="productGroup">
                                                     <form:option value="${productGroup.groupName}" label="${productGroup.groupName}"/>

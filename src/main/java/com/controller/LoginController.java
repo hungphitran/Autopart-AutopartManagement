@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpSession;
@@ -109,7 +111,14 @@ public class LoginController {
 			req.getSession().setAttribute("user", acc);
 			Customer c = customerDao.getByPhone(phone);
 			req.getSession().setAttribute("userName", c.getFullName());	
-			req.setAttribute("cart", cdao.getById(c.getCartId()));
+			Customer cus = customerDao.getByPhone(acc.getPhone());
+			Cart cart =cdao.getById(cus.getCartId());
+			Map<String,Integer> productsInCart =cart.getProducts();
+			Map<Product,Integer> products= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				products.put(productDao.getById(key),productsInCart.get(key));
+			}
+			req.getSession().setAttribute("productInCart", products);
 			return "redirect:/";
 		}
 		else {

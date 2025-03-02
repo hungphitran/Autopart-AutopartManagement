@@ -160,8 +160,8 @@ public class AdminController {
 		Product product = productDao.getById(productId);
 		String[] imgUrls = product.getImageUrls().split(",");
 		
-		String brandName=brandDao.getByBrandId(product.getBrandId()).getBrandName();
-		String groupName = productGroupDao.getByProductGroupId(product.getProductGroupId()).getGroupName();
+		String brandName=brandDao.getById(product.getBrandId()).getBrandName();
+		String groupName = productGroupDao.getById(product.getProductGroupId()).getGroupName();
 		
 		req.setAttribute("imgUrls", imgUrls);
 		req.setAttribute("product", product);
@@ -219,14 +219,14 @@ public class AdminController {
 		@RequestMapping(value = "/brand/detail", method= RequestMethod.GET)
 		public String detailBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
 			System.out.println("detail for brand : "+brandId);
-			Brand brand = brandDao.getByBrandId(brandId);
+			Brand brand = brandDao.getById(brandId);
 			req.setAttribute("brand", brand);
 			return "adminview/brand/detailModal";
 		}
 		
 		@RequestMapping(value = "/brand/changeStatus", method= RequestMethod.POST)
 		public String changeStatusBrand(@RequestParam("brandId") String brandId) {
-			Brand brand=  brandDao.getByBrandId(brandId);
+			Brand brand=  brandDao.getById(brandId);
 			brand.setStatus("Inactive");
 			brandDao.update(brand);
 			return "adminview/brand/index";

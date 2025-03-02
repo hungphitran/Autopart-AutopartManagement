@@ -12,9 +12,15 @@
 
 		<div class="header_search">
 			<form action="/autopart/product/search.htm" method="get">
-				<input type="text" name="keyword" placeholder="Tên sản phẩm..."
-					autocomplete="false" /> <input type="hidden" name="brand">
-				<input type="hidden" name="category"> <span>
+				<c:if test="${keyword == null}">
+					<input type="text" name="keyword"
+						placeholder="Nhập từ khóa tìm kiếm..." />
+				</c:if>
+				<c:if test="${keyword!=null}">
+					<input type="text" name="keyword" autocomplete="false"
+						value="${keyword }" />
+				</c:if>
+				<span>
 					<button type="submit" class="search-btn">
 						<i class="fa fa-search"></i>
 					</button>
@@ -46,38 +52,48 @@
 					</div>
 
 					<!-- No cart: header__cart-list--no-cart-->
-					<div class="header__cart-list">
+					<form class="header__cart-list" action="/autopart/order.htm"
+						method="post">
 						<!-- <img src="./assets/img/no_cart.png" alt="" class="header__cart-np-cart-img"> -->
-						<span class="header__cart-list-no-cart-msg">Chưa có sản
-							phẩm</span>
+
 
 						<h4 class="header__cart-heading">Sản phẩm đã thêm</h4>
-						<ul class="header__cart-list-item">
-							<!-- Cart item -->
-							<c:forEach items="${productInCart}" var="product">
-								<li class="header__cart-item"><img
-									src="https://img.freepik.com/free-photo/fashion-portrait-young-elegant-woman_1328-2743.jpg?w=1480&t=st=1701357403~exp=1701358003~hmac=435f00eded774f42e172f48f4be677658485206407baa84eaef2058b11f1431f"
-									alt="" class="header__cart-img">
-									<div class="header__cart-item-info">
-										<div class="header__cart-item-head">
-											<h5 class="header__cart-item-name">${product.key.productName }</h5>
-											<div class="header__cart-item-wrap">
-												<span class="header__cart-item-price"></span> <span
-													class="header__cart-item-multiply">x</span> <span
-													class="header__cart-item-qnt">${product.value }</span>
-											</div>
-										</div>
+						<c:if test="${productInCart.size()==0}">
+							<p>Chưa có sản phẩm nào</p>
 
-										<div class="header__cart-item-body">
-											<span class="header__cart-item-description">${product.key.productId }</span> <span class="header__cart-item-remove">Xóa</span>
-										</div>
-									</div>
-									</li>
-							</c:forEach>
-						</ul>
-						<a href="/autopart/product/cart.htm"
-							class="btn btn--primary header__cart-view-cart">Xem giỏ hàng</a>
-					</div>
+						</c:if>
+						<c:if test="${productInCart.size()>0}">
+							<ul class="header__cart-list-item">
+								<!-- Cart item -->
+								<c:forEach items="${productInCart}" var="product">
+									<li class="header__cart-item"><input type="checkbox"
+										name="${product.key.productId}" value="${product.value}">
+										<img
+										src="https://img.freepik.com/free-photo/fashion-portrait-young-elegant-woman_1328-2743.jpg?w=1480&t=st=1701357403~exp=1701358003~hmac=435f00eded774f42e172f48f4be677658485206407baa84eaef2058b11f1431f"
+										alt="" class="header__cart-img">
+										<div class="header__cart-item-info">
+											<div class="header__cart-item-head">
+												<h5 class="header__cart-item-name">${product.key.productName }</h5>
+												<div class="header__cart-item-wrap">
+													<span class="header__cart-item-price"></span> <span
+														class="header__cart-item-multiply">x</span> <span
+														class="header__cart-item-qnt">${product.value }</span>
+												</div>
+											</div>
+
+											<div class="header__cart-item-body">
+												<span class="header__cart-item-description"> <a href="/autopart/product/detailproduct.htm?productId=${product.key.productId}">${product.key.productId }</a> </span>
+												<span class="header__cart-item-remove"><a href="/autopart/product/delete.htm?productId=${product.key.productId}">Xóa</a></span>
+											</div>
+										</div></li>
+								</c:forEach>
+							</ul>
+
+							<button type="submit"
+								class="btn btn--primary header__cart-view-cart">Thanh
+								toán</button>
+						</c:if>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -85,20 +101,39 @@
 
 	<div class="header_menu">
 		<ul class="header_menu-list">
-			<li><a href="#">Trang chủ</a></li>
-			<li><a href="#"> Danh mục <i class="fa fa-angle-down"
+			<li><a href="#dashboard">Trang chủ</a></li>
+			<li><a href="#categories" class="menu-item"> Danh mục <i
+					class="fa fa-angle-down" aria-hidden="true"></i>
+					<div class="items">
+						<c:forEach items="${groups}" var="group">
+							<h4 class="item">${group.key}							
+							<c:if test="${group.value.size()>0}">
+								<i class="fa-solid fa-arrow-right"></i>
+								<div class="mini-menu" >
+									<c:forEach items="${group.value}" var="child">
+										<p class="mini-item">${child}</p>
+									</c:forEach>
+								</div> 
+							</c:if>
+							</h4>
+						</c:forEach>
+					</div>
+			</a></li>
+			<li><a href="#products" class="menu-item"> Sản phẩm <i
+					class="fa fa-angle-down" aria-hidden="true"></i>
+			</a></li>
+			<li><a href="#contact"> Liên hệ <i class="fa fa-angle-down"
 					aria-hidden="true"></i>
 			</a></li>
-			<li><a href="#"> Sản phẩm <i class="fa fa-angle-down"
+			<li><a href="#" class="menu-item" id="brand"> Nhãn hàng <i class="fa fa-angle-down"
 					aria-hidden="true"></i>
+					<div class="items">
+						<c:forEach items="${brands}" var="brand">
+							<h4 class="item">${brand.brandName }</h4>
+						</c:forEach>
+					</div>
 			</a></li>
-			<li><a href="#"> Liên hệ <i class="fa fa-angle-down"
-					aria-hidden="true"></i>
-			</a></li>
-			<li><a href="#"> Nhãn hàng <i class="fa fa-angle-down"
-					aria-hidden="true"></i>
-			</a></li>
-			<li><a href="#">Bài viết</a></li>
+			<li><a href="/autopart/blog.htm" target="_blank">Bài viết</a></li>
 		</ul>
 	</div>
 </div>

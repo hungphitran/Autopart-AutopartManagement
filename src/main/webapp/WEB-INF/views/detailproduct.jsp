@@ -78,6 +78,15 @@
 					</c:if> 
 				</form>
 			</c:if>
+			
+			<c:if test="${product.stock<=0}">
+			<ul>
+				<li><p>Hết hàng</p></li>
+			</ul>
+
+			</c:if>
+			
+			
 		</div>
 	</div>
 

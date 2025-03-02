@@ -1,5 +1,7 @@
 package com.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.dao.Account_DAO;
 import com.dao.Customer_DAO;
+import com.dao.Order_DAO;
 import com.entity.Account;
 import com.entity.Customer;
+import com.entity.Order;
 
 @Controller
 public class AccountController {
@@ -22,14 +26,20 @@ public class AccountController {
 	@Autowired
 	Customer_DAO customerDao;
 	
+	@Autowired
+	Order_DAO orderDao;
+	
 	@RequestMapping("/account")
 	public String showProfile(HttpServletRequest req,Model model) {
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("user");
+		List<Order> orderLst= orderDao.getAll();
 		if(acc==null) {
 			return "redirect:/login.htm";
 		}
 		model.addAttribute("customer",customerDao.getByPhone(acc.getPhone()));
+		System.out.println(orderLst);
+		req.setAttribute("orders", orderLst);
 		return "profile";
 	}
 	@RequestMapping(value="/account/edit", method = RequestMethod.POST)
@@ -37,6 +47,8 @@ public class AccountController {
 		System.out.println(customerDao.update(cus));
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("user");
+		Customer c = customerDao.getByPhone(acc.getPhone());
+		req.getSession().setAttribute("userName", c.getFullName());	
 		return "redirect:/account.htm";
 	}
 	@RequestMapping(value="/account/changepass",method=RequestMethod.POST)

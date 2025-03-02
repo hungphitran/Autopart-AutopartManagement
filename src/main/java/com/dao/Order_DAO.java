@@ -21,7 +21,7 @@ public class Order_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Order o WHERE o.status = 'Active'";
+            String hql = "FROM Order";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
