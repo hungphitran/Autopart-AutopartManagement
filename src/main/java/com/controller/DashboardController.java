@@ -50,7 +50,12 @@ public class DashboardController {
 			String img= proLst.get(i).getImageUrls();
 			proLst.get(i).setImageUrls(img.split(",", i)[0]);
 		}
-		req.setAttribute("products",proLst.subList(0, 12));//show first 12 products
+		if(proLst.size()>10) {
+			req.setAttribute("products",proLst.subList(0, 10));//show first 12 products
+		}
+		else {
+			req.setAttribute("products",proLst);//show first 12 products
+		}
 		//check user in session
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");

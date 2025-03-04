@@ -32,7 +32,23 @@ public class Order_DAO {
             if (session != null) session.close();
         }
     }
-
+    
+    public List<Order> getOrderByPhone(String phone){
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Order o WHERE o.userPhone = :phone";
+            Query query = session.createQuery(hql);
+            query.setParameter("phone", phone);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
     public Order getById(String orderId) {
         Session session = null;
         try {
