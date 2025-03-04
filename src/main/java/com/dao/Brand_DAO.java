@@ -33,6 +33,39 @@ public class Brand_DAO {
         }
     }
     
+    public boolean changeStatus(String brandId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            // Lấy sản phẩm hiện tại
+            String getStatusHql = "SELECT b.status FROM Brand b WHERE b.brandId = :brandId";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("brandId", brandId);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            // Xác định trạng thái mới
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            // Cập nhật trạng thái
+            String updateHql = "UPDATE Brand b SET b.status = :newStatus WHERE b.brandId = :brandId";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("brandId", brandId);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 
     public Brand getById(String brandId) {
         Session session = null;

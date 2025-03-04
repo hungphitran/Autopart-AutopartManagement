@@ -85,4 +85,25 @@ public class OrderDetail_DAO {
             if (session != null) session.close();
         }
     }
+    
+    public boolean deleteByOrderId(String orderId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "DELETE FROM OrderDetail od WHERE od.orderId = :orderId";
+            Query query = session.createQuery(hql);
+            query.setParameter("orderId", orderId);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 }

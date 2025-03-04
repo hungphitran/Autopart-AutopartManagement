@@ -9,6 +9,7 @@
     </button>
 </div>
 <div class="modal-body">
+	<p><strong>Mã Nhãn Hàng:</strong> ${brand.brandId}</p>
     <p><strong>Tên Nhãn Hàng:</strong> ${brand.brandName}</p>
     <p><strong>Trạng Thái:</strong> 
         <c:choose>

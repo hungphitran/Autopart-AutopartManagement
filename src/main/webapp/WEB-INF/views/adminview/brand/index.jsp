@@ -35,6 +35,7 @@
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
+										<th>Mã Nhãn Hàng</th>
 										<th>Tên Nhãn Hàng</th>
 										<th>Trạng thái</th>
 										<th>Hoạt Động</th>
@@ -43,6 +44,7 @@
 								<tbody>
 									<c:forEach items="${brands}" var="brand">
 										<tr class="brand-item">
+											<td class="align-middle">${brand.brandId}</td>
 											<td class="align-middle">${brand.brandName}</td>
 											<td class="align-middle">
 												<c:choose>

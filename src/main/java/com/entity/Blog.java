@@ -6,34 +6,43 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "Blog")
 public class Blog {
-
+    @Transient // Not stored in the database, just for convenience
+    private String blogGroupName;
+    
     @Id
-    @Column(name = "blogId", nullable = false )
+    @Column(name = "blogId", nullable = false)
     private String blogId; // Primary key: Blog ID
- 
-    @Column(name = "blogGroupId")
-    private String blogGroupId; // Foreign key: Group name (references BlogGroup)
 
-    @Column(name = "title", nullable = false )
+    // Store the foreign key directly as a column
+    @Column(name = "blogGroupId", nullable = true) // Allow nullable if a blog can exist without a group
+    private String blogGroupId; // Foreign key to BlogGroup table
+
+    // Maintain the relationship with BlogGroup for object navigation
+    @ManyToOne(fetch = FetchType.EAGER) // EAGER fetch for immediate loading, or LAZY if you prefer
+    @JoinColumn(name = "blogGroupId", insertable = false, updatable = false, referencedColumnName = "blogGroupId")
+    private BlogGroup blogGroup; // Relationship with BlogGroup
+
+    @Column(name = "title", nullable = false)
     private String title; // Title of the blog
 
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description; // Description of the blog
 
     @Column(name = "status", nullable = false)
-    private String status = "Active"; // Status of the blog (default: 'Active')
+    private String status; 
 
     @Column(name = "deletedAt")
-    private Timestamp  deletedAt; // Timestamp for when the blog was deleted
+    private Timestamp deletedAt; // Timestamp for when the blog was deleted
 
     // Default constructor
     public Blog() {}
 
     // Parameterized constructor
-    public Blog(String blogId, String blogGroupId, String title, 
-                String description, String status, Timestamp  deletedAt) {
+    public Blog(String blogId, String blogGroupId, BlogGroup blogGroup, String title, 
+                String description, String status, Timestamp deletedAt) {
         this.blogId = blogId;
         this.blogGroupId = blogGroupId;
+        this.blogGroup = blogGroup;
         this.title = title;
         this.description = description;
         this.status = status;
@@ -55,6 +64,20 @@ public class Blog {
 
     public void setBlogGroupId(String blogGroupId) {
         this.blogGroupId = blogGroupId;
+    }
+
+    public BlogGroup getBlogGroup() {
+        return blogGroup;
+    }
+
+    public void setBlogGroup(BlogGroup blogGroup) {
+        this.blogGroup = blogGroup;
+        // Update blogGroupId when setting the blogGroup to maintain consistency
+        if (blogGroup != null) {
+            this.blogGroupId = blogGroup.getBlogGroupId();
+        } else {
+            this.blogGroupId = null;
+        }
     }
 
     public String getTitle() {
@@ -81,20 +104,28 @@ public class Blog {
         this.status = status;
     }
 
-    public Timestamp  getDeletedAt() {
+    public Timestamp getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(Timestamp  deletedAt) {
+    public void setDeletedAt(Timestamp deletedAt) {
         this.deletedAt = deletedAt;
     }
 
-    // Override toString for better representation
+    public String getBlogGroupName() {
+        return blogGroupName;
+    }
+
+    public void setBlogGroupName(String blogGroupName) {
+        this.blogGroupName = blogGroupName;
+    }
+
     @Override
     public String toString() {
         return "Blog{" +
                 "blogId='" + blogId + '\'' +
-                ", blogGroupId=" + blogGroupId +
+                ", blogGroupId='" + blogGroupId + '\'' +
+                ", blogGroup=" + blogGroup +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +

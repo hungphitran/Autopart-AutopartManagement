@@ -41,18 +41,27 @@
       <span>Quản lý bài viết</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">
+    <a class="nav-link" href="/autopart/admin/discount.htm">
       <i class="fa-solid fa-ticket"></i>
       <span>Quản lý khuyến mãi</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderPage" aria-expanded="true" aria-controls="orderPage">
       <i class="fa-solid fa-truck"></i>
-      <span>Quản lý đơn hàng</span></a>
+      <span>Quản lý đơn hàng</span>
+    </a>
+    <div id="orderPage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+      	<a class="collapse-item" href="${pageContext.request.contextPath}/admin/order/add.htm">Tạo đơn hàng</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=confirm">Đơn hàng chờ xác nhận</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=processing">Đơn hàng chờ đóng gói</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=delivery">Đơn hàng đang giao</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=history">Lịch sử đơn hàng</a>
+      </div>
+    </div>
   </li>
   <li class="nav-item">
-    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage" aria-expanded="true"
-      aria-controls="collapsePage">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage" aria-expanded="true" aria-controls="collapsePage">
       <i class="fa-solid fa-file-invoice"></i>
       <span>Cài đặt tài khoản</span>
     </a>

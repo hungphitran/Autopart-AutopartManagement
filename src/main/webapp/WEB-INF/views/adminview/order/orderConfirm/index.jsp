@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách sản phẩm</title>
+	<title>Đơn hàng chờ xác nhận</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,48 +28,31 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Sản Phẩm</h6>
-								<a href="${pageContext.request.contextPath}/admin/product/add.htm" class="btn btn-primary">+ Thêm sản phẩm</a>
+								<h6 class="m-0 font-weight-bold text-primary">Đơn Hàng Chờ Xác Nhận</h6>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Ảnh Sản Phẩm</th>
-										<th>Tên Sản Phẩm</th>
-										<th>Giá Bán</th>
-										<th>Số Lượng</th>
-										<th>Trạng thái</th>
+										<th>Mã Đơn Hàng</th>
+										<th>Số Điện Thoại KH</th>
+										<th>Địa Chỉ Giao Hàng</th>
+										<th>Ngày Đặt Hàng</th>
+										<th>Tổng Tiền</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${products}" var="product">
+									<c:forEach items="${orders}" var="order">
 										<tr class="product-item">
-											<td>
-												<img alt="" src="${product.imageUrls}" style="max-width: 100px; max-height: 100px; display: block;">
-											</td>
-											<td class="align-middle">${product.productName}</td>
-											<td class="align-middle"><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
-											<td class="align-middle">${product.stock}</td>
+											<td class="align-middle">${order.orderId}</td>
+											<td class="align-middle">${order.userPhone}</td>
+											<td class="align-middle">${order.shipAddress}</td>
+											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" /></td>
 											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${product.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
-													        <span class="badge badge-success">Hoạt động</span>											    	
-												    	</a>
-												    </c:when>
-												    <c:otherwise>
-												        <a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
-													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
-												    	</a>
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<a href="javascript:void(0);" data-product-id="${product.productId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/order/edit.htm?orderId=${order.orderId}" class="btn btn-sm btn-primary">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -99,28 +82,6 @@
 						</div>
 						</div>
 					</div>
-					
-					<!-- Modal Delete Item -->
-					<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
-						<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabelLogout">Xóa sản phẩm</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-							</div>
-							<div class="modal-body">
-							<p>Bạn chắc chắn muốn xóa sản phẩm này không?</p>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-								<a href="#" id="delete-link" class="btn btn-primary">Xóa</a>
-							</div>
-						</div>
-						</div>
-					</div>
-
 				</div>
 			</div>
 		</div>
