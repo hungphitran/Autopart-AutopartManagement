@@ -19,7 +19,7 @@ public class Product_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Product p WHERE p.status ='Active'";
+            String hql = "FROM Product p WHERE p.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {

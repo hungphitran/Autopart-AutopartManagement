@@ -32,6 +32,10 @@
                             <form:form action="${pageContext.request.contextPath}/admin/brand/add.htm" method="post" modelAttribute="brand">
                                 <div class="row">
                                     <div class="col-lg-12">
+                                    	 <div class="form-group">
+                                            <label for="brandId">Mã nhãn hàng<span class="required-text">*</span></label>
+                                            <input required type="text" class="form-control" id="brandId" name="brandId" value="${nextBrandId}" readonly>
+                                        </div>
                                         <div class="form-group">
                                             <label for="brandName">Tên nhãn hàng <span class="required-text">*</span></label>
                                             <input type="text" class="form-control" id="brandName" name="brandName" placeholder="Nhập tên nhãn hàng" required>

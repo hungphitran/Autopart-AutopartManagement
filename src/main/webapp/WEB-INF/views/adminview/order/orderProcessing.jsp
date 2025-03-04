@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách sản phẩm</title>
+	<title>Danh sách đơn hàng</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,48 +28,40 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Sản Phẩm</h6>
-								<a href="${pageContext.request.contextPath}/admin/product/add.htm" class="btn btn-primary">+ Thêm sản phẩm</a>
+								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Đơn Hàng</h6>
+								<a href="${pageContext.request.contextPath}/admin/order/add.htm" class="btn btn-primary">+ Thêm đơn hàng</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Ảnh Sản Phẩm</th>
-										<th>Tên Sản Phẩm</th>
-										<th>Giá Bán</th>
-										<th>Số Lượng</th>
+										<th>Mã Đơn Hàng</th>
+										<th>Số Điện Thoại KH</th>
+										<th>Địa Chỉ Giao Hàng</th>
+										<th>Ngày Đặt Hàng</th>
 										<th>Trạng thái</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${products}" var="product">
+									<c:forEach items="${orders}" var="order">
 										<tr class="product-item">
-											<td>
-												<img alt="" src="${product.imageUrls}" style="max-width: 100px; max-height: 100px; display: block;">
-											</td>
-											<td class="align-middle">${product.productName}</td>
-											<td class="align-middle"><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
-											<td class="align-middle">${product.stock}</td>
+											<td class="align-middle">${order.orderId}</td>
+											<td class="align-middle">${order.userPhone}</td>
+											<td class="align-middle">${order.shipAddress}</td>
+											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
 											<td class="align-middle">
 												<c:choose>
-												    <c:when test="${product.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
-													        <span class="badge badge-success">Hoạt động</span>											    	
-												    	</a>
-												    </c:when>
-												    <c:otherwise>
-												        <a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
-													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
-												    	</a>
-												    </c:otherwise>
+												    <c:when test="${order.status == 'Wait for confirmation'}"><span class="badge badge-warning">Chờ xác nhận</span></c:when>
+												    <c:when test="${order.status == 'Processing'}"><span class="badge badge-primary">Đang đóng gói</span></c:when>
+												   	<c:when test="${order.status == 'Shipping'}"><span class="badge badge-info">Đang giao hàng</span></c:when>
+												   	<c:when test="${order.status == 'Completed'}"><span class="badge badge-success">Đã hoàn thành</span></c:when>
+												    <c:otherwise><span class="badge badge-danger">Đã hủy</span></c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-product-id="${product.productId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/order/edit.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>

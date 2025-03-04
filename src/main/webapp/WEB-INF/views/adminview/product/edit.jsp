@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -59,7 +58,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label for="productId">Mã sản phẩm <span class="required-text">*</span></label>
-                                            <form:input required="true" type="text" class="form-control" id="productId" path="productId" name="productId" placeholder="Nhập mã sản phẩm" />
+                                            <form:input required="true" type="text" class="form-control" id="productId" path="productId" name="productId" readonly="true" />
                                         </div>
                                         <div class="form-group">
                                             <label for="productName">Tên sản phẩm <span class="required-text">*</span></label>
@@ -165,10 +164,10 @@
                                             <div class="custom-control custom-switch ml-4">
                                                 <c:choose>
 												    <c:when test="${product.status == 'Active'}">
-												        <input type="checkbox" class="custom-control-input" name="status" id="status" checked>
+												        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active" checked>
 												    </c:when>
 												    <c:otherwise>
-												        <input type="checkbox" class="custom-control-input" name="status" id="status">
+												        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active">
 												    </c:otherwise>
 												</c:choose>
                                                 <label class="custom-control-label" for="status">Hoạt động</label>

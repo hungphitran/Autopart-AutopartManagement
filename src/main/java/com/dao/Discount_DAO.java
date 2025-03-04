@@ -22,19 +22,64 @@ public class Discount_DAO {
         this.factory = factory;
     }
 
+    public List<Discount> getAll() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Discount d WHERE d.status IN ('Active', 'Inactive')";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 
     @Transactional
     public Discount getById(String discountId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Discount d WHERE d.status = 'Active' and d.discountId = :discountId";
+            String hql = "FROM Discount d WHERE d.discountId = :discountId";
             Query query = session.createQuery(hql);
             query.setParameter("discountId", discountId);
             return (Discount) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean changeStatus(String discountId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            String getStatusHql = "SELECT d.status FROM Discount d WHERE d.discountId = :discountId";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("discountId", discountId);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            String updateHql = "UPDATE Discount d SET d.status = :newStatus WHERE d.discountId = :discountId";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("discountId", discountId);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }

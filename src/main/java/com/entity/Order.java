@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "[Order]") // Nếu "Order" là từ khóa SQL, đặt trong []
@@ -38,6 +39,9 @@ public class Order {
 
     @Column(name = "deletedAt")
     private Timestamp  deletedAt;
+    
+    @OneToMany(mappedBy = "orderId", fetch = FetchType.EAGER)
+    private List<OrderDetail> orderDetails; // Thêm danh sách chi tiết
 
 	public Order() {
 		super();
@@ -129,6 +133,14 @@ public class Order {
 	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+	
+	public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+    }
 
 	@Override
 	public String toString() {

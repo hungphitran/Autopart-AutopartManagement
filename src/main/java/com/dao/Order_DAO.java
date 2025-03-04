@@ -17,12 +17,13 @@ public class Order_DAO {
         this.factory = factory;
     }
 
-    public List<Order> getAll() {
+    public List<Order> getOrderByStatus(String status) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Order o WHERE o.status = 'Active'";
+            String hql = "FROM Order o WHERE o.status = :status";
             Query query = session.createQuery(hql);
+            query.setParameter("status", status);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
