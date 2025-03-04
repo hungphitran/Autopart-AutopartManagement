@@ -108,14 +108,14 @@
 								<div class="col updateQTY">
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
-									<input class="input-updateQTY quantity" type="number"  value="${product.value }" min="1" max="${product.key.stock }"
-										readonly>
+									<input class="input-updateQTY quantity" type="number" data-product-id="${product.key.productId}" value="${product.value}" min="1" max="${product.key.stock}">
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
 								</div>
 								<div class="col" class="price">
-									<input type="hidden" class="price" value="${product.key.salePrice}">
-									${product.key.salePrice } &#8363;<span class="close">&#10005;</span>
+									<a href="/autopart/product/detailproduct.htm?productId=${product.key.productId }">Xem chi tiết -></a>
+								<!-- 	<input type="hidden" class="price" value="${product.key.salePrice}">
+									${product.key.salePrice } &#8363;<span class="close"> &#10005;</span> -->
 								</div>
 							</div>
 						</div>
@@ -128,7 +128,7 @@
 					</a>
 				</div>
 			</div>
-			<div class="col-md-4 summary">
+			<form action="/autopart/order/create.htm" method="post" class="col-md-4 summary">
 				<div>
 					<h5>
 						<b>HÓA ĐƠN</b>
@@ -137,9 +137,14 @@
 				<hr>
 				<div class="row">
 					<div class="col" style="padding-left: 0;">Số lượng: ${products.size()}</div>
-					<div class="col text-right">3.000.000 &#8363;</div>
+					<c:forEach items="${products}" var="product">
+						<input type="hidden" id="${product.key.productId}" name="${product.key.productId}" value ="${product.value}">
+					</c:forEach>
 				</div>
-				<form>
+				<div class="row">
+					<input type="text" name="shipAddress" placeholder="Địa chỉ" required="required">
+				</div>
+				<div>
 					<p>Loại vận chuyển</p>
 					<select>
 						<option class="text-muted">Vận chuyển thường- 20.000
@@ -151,39 +156,48 @@
 					</select>
 					<p>Mã khuyến mãi</p>
 					<input id="code" placeholder="Nhập mã khuyến mãi">
-				</form>
+				</div>
 				<div class="row"
 					style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 					<div class="col">TỔNG TIỀN</div>
-					<div class="col text-right" id="total" > &#8363;</div>
+					<input class="col text-right" id="total" name="totalCost" value=""> &#8363;
 				</div>
-				<button class="btn">ĐẶT HÀNG</button>
-			</div>
+				<button  class="btn">ĐẶT HÀNG</button>
+			</form>
 		</div>
 
 	</div>
 </body>
 <script>
 	
-let totalLabel= document.getElementById("total");
+let totalInput= document.getElementById("total");
 
 let priceInputs = document.querySelectorAll(".price");
 let quantityInputs = document.querySelectorAll(".quantity");
-let total = 0;
-for(let i = 0; i < priceInputs.length; i++) {
-    let price = parseFloat(priceInputs[i].value);
-    let quantity = parseInt(quantityInputs[i].value);
-    total += price * quantity;
+
+function updateCost(){
+	let total = 0;
+	for(let i = 0; i < priceInputs.length; i++) {
+	    let price = parseFloat(priceInputs[i].value);
+	    let quantity = parseInt(quantityInputs[i].value);
+	    total += price * quantity;
+	}
+
+	totalInput.value = total
 }
 
-totalLabel.innerText = total+ " đ";
-
+updateCost();
 	function updateQuantity(input, delta) {
 		let value = parseInt(input.value) + delta;
 		if (value < 1) {
 			showDialog(input);
-		} else {
+		}
+		else if(value>input.max){
+			return;
+		}
+		else {
 			input.value = value;
+			updateCost();
 		}
 	}
 

@@ -21,7 +21,7 @@
 	
 </head>
 <body>
-	<div class="wrapper">
+	<div class="wrapper" id="dashboard">
 		<jsp:include page="/WEB-INF/mixins/header.jsp" />
 
 		<div class="banner">
@@ -32,7 +32,7 @@
 
 		<div class="cat-container">
 			<!-- show all categories -->
-			<div class="categories">
+			<div class="categories" id="categories">
 				<div class="categories_title">
 					<h1 class="part-name">Danh mục</h1>
 				</div>
@@ -83,12 +83,12 @@
 			<!-- show products -->
 			<div class="list-card">
 				<div class="products_title">
-					<h1 class="part-name">Sản phẩm nổi bật</h1>
+					<h1 class="part-name" id="products" >Sản phẩm nổi bật</h1>
 				</div>
 				
 				<div class="products_list">
 					<c:forEach items="${products}" var="product">
-						<div class="card" style="width: 18rem;">
+						<div class="card" style="width: 16rem;">
 							<a href="/autopart/product/detailproduct.htm?productId=${product.productId}"><img
 							src="${product.imageUrls}"
 							class="card-img-top" alt="..."></a>
@@ -99,6 +99,9 @@
 							</div>
 						</div>
 					</c:forEach>
+				</div>
+				<div>
+								<a href ="/autopart/product/search.htm?keyword=">Xem tất cả</a>
 				</div>
 			</div>
 		</div>

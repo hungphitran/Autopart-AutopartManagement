@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<footer class="footer">
+<footer class="footer" id="contact">
 	<div class="grid">
 	  <div class="grid__row">
 		<div class="grid__column-2-4">
