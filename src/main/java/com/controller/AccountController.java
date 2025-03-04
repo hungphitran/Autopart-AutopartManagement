@@ -33,10 +33,10 @@ public class AccountController {
 	public String showProfile(HttpServletRequest req,Model model) {
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("user");
-		List<Order> orderLst= orderDao.getOrderByStatus("Completed");
 		if(acc==null) {
 			return "redirect:/login.htm";
 		}
+		List<Order> orderLst= orderDao.getOrderByPhone(acc.getPhone());
 		model.addAttribute("customer",customerDao.getByPhone(acc.getPhone()));
 		System.out.println(orderLst);
 		req.setAttribute("orders", orderLst);

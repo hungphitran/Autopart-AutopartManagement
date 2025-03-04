@@ -145,7 +145,7 @@ body {
 					<strong>Đơn giá:</strong> ${p.unitPrice }
 				</p>
 				<p>
-					<strong> <button class="btn nav-btn">Xem sản phẩm</button> </strong>
+					<strong> <a href="/autopart/product/detailproduct.htm?productId=${p.productId}" class="btn nav-btn">Xem sản phẩm</a> </strong>
 				</p>
 			</li>
 		</c:forEach>
