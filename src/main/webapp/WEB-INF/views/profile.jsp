@@ -25,82 +25,109 @@
 
 </head>
 <body>
-  <div class="sidebar">
-	<form:form method="POST" action="/autopart/account/edit.htm"
-			 modelAttribute="customer" data-oc-toggle="ajax">
-			<h1>Tài khoản</h1>
+	<div class="sidebar">
+		<form:form method="POST" action="/autopart/account/edit.htm"
+			modelAttribute="customer" data-oc-toggle="ajax">
+			<img id="user_icon"
+				src="https://i.pinimg.com/474x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg"
+				width="100px" height="100px" alt="">
 
 			<p>
-				<form:input type="hidden" path="cartId"/>
+				<form:input type="hidden" path="cartId" required="required" />
 			</p>
-			<p class="input-field" >
-								<label>Họ và tên</label>
-				<form:input type="text" path="fullName" disabled="true"/>
+			<p class="input-field">
+				<label>Họ và tên</label>
+				<form:input type="text" path="fullName" disabled="true"
+					required="required" />
 			</p>
 
 			<p class="input-field">
-							<label>Số điện thoại</label>
-			
-				<form:input type="phone" path="phone" disabled="true"/>
+				<label>Số điện thoại</label>
+
+				<form:input type="phone" path="phone" disabled="true"
+					required="required" />
 			</p>
 			<p class="input-field">
-							<label>Địa chỉ</label>
-			
-				<form:input type="text" path="address" disabled="true" />
+				<label>Địa chỉ</label>
+
+				<form:input type="text" path="address" disabled="true"
+					required="required" />
 			</p>
 			<p>
-							<label>Trạng thái</label>
-							<c:if test="${customer.status == 'Active'}"><label style="color:green;"> Đang hoạt động</label></c:if>
-							<c:if test="${status == 'Inactive'}"><label>Ngưng hoạt động</label></c:if>
-				<form:input path="status" type="hidden"/>
+				<label>Trạng thái</label>
+				<c:if test="${customer.status == 'Active'}">
+					<label style="color: green;"> Đang hoạt động</label>
+				</c:if>
+				<c:if test="${status == 'Inactive'}">
+					<label>Ngưng hoạt động</label>
+				</c:if>
+				<form:input path="status" type="hidden" required="required" />
 			</p>
-			
-			<div class="buttons">	
-				<button type="submit" class="button edit-btn" id="edit-btn">Chỉnh sửa</button>
+
+			<div class="buttons">
+				<button type="submit" class="button edit-btn" id="edit-btn">Chỉnh
+					sửa</button>
 			</div>
 		</form:form>
 
-    <div class="menu">
-      <a  class="order choosed">Thông tin đơn hàng</a>
-      <a  class="setting">Đổi mật khẩu</a>
-      <a  href ="/autopart/product/cart.htm" >Giỏ hàng</a>
-      <a href= "/autopart/">Trang chủ</a>
-      <a href = "/autopart/logout.htm" ><button class="button delete-btn" >Đăng xuất</button></a>
-      
-    </div>
-  </div>
+		<div class="menu">
+			<a class="order choosed"><i class="fa-solid fa-box-open"></i>
+				Thông tin đơn hàng</a> <a class="setting"><i
+				class="fa-solid fa-lock"></i> Đổi mật khẩu</a> <a href="/autopart/"><i
+				class="fa-solid fa-house"></i> Trang chủ</a> <a
+				href="/autopart/logout.htm" class="delete-btn"><i
+				class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
 
-  <div class="content">
-    <div class="orders">
-      <h3>Lịch sử đơn hàng</h3>
-      <div class="order-item">
-        <p><strong>Order ID:</strong> 1001</p>
-        <p><strong>Date:</strong> 2024-02-01</p>
-        <p><strong>Total:</strong> $150.00</p>
-        <p><strong>Status:</strong> Shipped</p>
-      </div>
-      <div class="order-item">
-        <p><strong>Order ID:</strong> 1002</p>
-        <p><strong>Date:</strong> 2024-02-10</p>
-        <p><strong>Total:</strong> $85.00</p>
-        <p><strong>Status:</strong> Processing</p>
-      </div>
-      <div class="order-item">
-        <p><strong>Order ID:</strong> 1003</p>
-        <p><strong>Date:</strong> 2024-02-15</p>
-        <p><strong>Total:</strong> $230.00</p>
-        <p><strong>Status:</strong> Delivered</p>
-      </div>
-    </div>
-    <form action="/autopart/account/changepass.htm" method="post"  class="change-password hide">
-      <h3>Đổi mật khẩu</h3>
-      <input type="password" name="pass" placeholder="Mật khẩu hiện tại">
-      <input type="password" name="newpass" placeholder="Mật khẩu mới">
-      <input type="password" placeholder="Xác nhận mật khẩu mới">
-      <button>Cập nhật</button>
-    </form>
-  </div>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="orders">
+			<header class="header">
+				<h1>Lịch sử đơn hàng</h1>
+			</header>
+			<c:forEach items="${orders}" var="order">
+				<div class="order-item" data-order="${order}">
+					<p>
+						<strong>Mã đơn hàng: </strong>${order.orderId}</p>
+					<p>
+						<strong>Ngày: </strong> ${order.orderDate}
+					</p>
+					<p>
+						<strong>Tổng tiền: </strong>${order.totalCost}</p>
+					<p>
+						<strong>Trạng thái: </strong>${order.status}</p>
+					<a href="/autopart/order.htm?orderId=${order.orderId}"
+						class="button nav-btn">Xem chi tiết đơn hàng</a>
+
+				</div>
+			</c:forEach>
+
+		</div>
+
+		<form action="/autopart/account/changepass.htm" method="post"
+			class="change-password hide">
+			<h3>Đổi mật khẩu</h3>
+			<div class="form-item">
+				<input type="password" name="pass" placeholder="Mật khẩu hiện tại"
+					required="required"> <i class="fa-solid fa-eye"></i> <i
+					class="fa-solid fa-eye-slash"></i>
+			</div>
+			<div class="form-item">
+				<input type="password" name="newpass" placeholder="Mật khẩu mới"
+					required="required"> <i class="fa-solid fa-eye"></i> <i
+					class="fa-solid fa-eye-slash"></i>
+			</div>
+			<div class="form-item">
+				<input type="password" placeholder="Xác nhận mật khẩu mới"
+					required="required">
+			</div>
+			<button>Cập nhật</button>
+		</form>
+	</div>
+
 </body>
 
-<script type="text/javascript" src="<c:url value="/resources/js/profile.js" />"></script>
+<script type="text/javascript"
+	src="<c:url value="/resources/js/profile.js" />"></script>
 </html>

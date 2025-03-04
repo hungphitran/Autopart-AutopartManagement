@@ -38,16 +38,32 @@ public class RegisterController {
 		System.out.println(email+password+fullName+repassword+phone+address);
 		//validate
 		if(password.equals(repassword)) {
-//			Cart newCart= new Cart(cartDao.generateNextCartId(),Timestamp.,null);
-			Account acc =new Account() ;
-			if(accountDao.add(acc)) {
-				req.setAttribute("message","Đăng ký thành công. Vui lòng đăng nhập");
-				return "redirect:/login";
+			Cart newCart= new Cart(cartDao.generateNextCartId(),null);
+			if(cartDao.add(newCart)) {
+				Account acc =new Account(phone,password,"","RG002","Active") ;
+				if(accountDao.add(acc)) {
+					Customer cus = new Customer(newCart.getCartId(),fullName,phone, address, "Active");
+					if(customerDao.add(cus)) {
+						req.setAttribute("message", "Đăng ký thành công, vui lòng đăng nhập");
+						return "redirect:/login.htm";
+					}
+					else {
+						accountDao.delete(phone);
+						req.setAttribute("message", "Không thể thêm tài khoản");
+						return "register";
+					}
+				}
+
+				else {
+					req.setAttribute("message", "Không thể thêm tài khoản");
+					return "register";
+				}
 			}
 			else {
 				req.setAttribute("message", "Không thể thêm tài khoản");
 				return "register";
 			}
+
 		}
 		
 		return "register";

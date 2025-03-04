@@ -2,8 +2,10 @@ package com.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -50,7 +53,7 @@ public class ProductController {
 	@Autowired
 	Account_DAO accountDao;
 	
-	@RequestMapping("/detailproduct")
+	@RequestMapping("/detailproduct")//show detail of a product
 	public String showProduct(@RequestParam("productId") String id,HttpServletRequest req) {
 		Product p = productDao.getById(id);
 		String[] imgUrls = p.getImageUrls().split(",");
@@ -77,16 +80,21 @@ public class ProductController {
 		Customer cus = customerDao.getByPhone(acc.getPhone());
 		Cart cart =cartDao.getById(cus.getCartId());
 		productDao.getById(productId);
-		Map<String,Integer> products =cart.getProducts();
-		if(products.containsKey(productId)) {//this product was in cart before
-			products.put(productId,Integer.parseInt(quantity)+products.get(productId));
+		Map<String,Integer> productInCart =cart.getProducts();
+		if(productInCart.containsKey(productId)) {//this product was in cart before
+			productInCart.put(productId,Integer.parseInt(quantity)+productInCart.get(productId));
 		}
 		else {//product is not in cart
-			products.put(productId, Integer.parseInt(quantity));
+			productInCart.put(productId, Integer.parseInt(quantity));
 		}
-		cart.setProducts(products);//update products in cart
+		cart.setProducts(productInCart);//update products in cart
 		if(cartDao.update(cart)) {//update cart's infor in database
 			Product p = productDao.getById(productId);
+			Map<Product,Integer> products= new HashMap<Product, Integer>();
+			for(String key : productInCart.keySet()) {
+				products.put(productDao.getById(key),productInCart.get(key));
+			}
+			req.getSession().setAttribute("productInCart", products);
 		}
 		else {
 
@@ -94,10 +102,25 @@ public class ProductController {
 		return "redirect:/product/detailproduct.htm?productId="+productId;
 	}
 	
-	@RequestMapping("/deleteProduct")
-	@ResponseBody
+	@RequestMapping("/delete")
 	public String delete(HttpServletRequest req) {
-		return "chưa làm!!!";
+		String referer = req.getHeader("Referer");
+		System.out.println(referer);
+		String productId=  req.getParameter("productId");
+		
+		HttpSession session = req.getSession();
+		Account acc = (Account) session.getAttribute("user");
+		Customer cus = customerDao.getByPhone(acc.getPhone());
+		Cart cart =cartDao.getById(cus.getCartId());
+		Map<String,Integer> productsInCart =cart.getProducts();
+		productsInCart.remove(productId);
+		cartDao.update(cart);
+		Map<Product,Integer> products= new HashMap<Product, Integer>();
+		for(String key : productsInCart.keySet()) {
+			products.put(productDao.getById(key),productsInCart.get(key));
+		}
+		session.setAttribute("productInCart", products);
+		return "redirect:"+referer;
 	}
 	
 	
@@ -105,47 +128,23 @@ public class ProductController {
 	@RequestMapping("/search")
 	public String showFilter(HttpServletRequest req) {
 		String key = req.getParameter("keyword").toLowerCase().strip();
-		String brand=req.getParameter("brand");
-		String category = req.getParameter("category");
+
 		req.setAttribute("keyword", key);
 		List<Product> filteredLst = new ArrayList<Product>();		
 		List<Brand> brands = brandDao.getAll();
 		List<ProductGroup> categories = pgDao.getAll();
 		
-		//find brand id and group id
-		String brandId="";
-		String groupId="";
-		
-		if(brand.equals("All")) {
-			brandId="";
-		}
-		else {
-			for(int i=0;i<brands.size();i++) {
-				if(brands.get(i).getBrandName().equals(brand)) {
-					brandId=brands.get(i).getBrandId();
-					break;
-				}
-			}
-		}
-		if(category.equals("All")) {
-			groupId="";
-		}
-		else {
-			for(int i=0;i<categories.size();i++) {
-				if(categories.get(i).getGroupName().equals(category)) {
-					groupId=categories.get(i).getProductGroupId();
-					break;
-				}
-			}
-		}
-		
 		List<Product> pLst = productDao.getAll();
+		for(int i=0;i<pLst.size();i++) {
+			String img= pLst.get(i).getImageUrls();
+			pLst.get(i).setImageUrls(img.split(",", i)[0]);
+		}
 		for(int i=0;i<pLst.size();i++) {
 			Product p=pLst.get(i);
 			String img= p.getImageUrls();
 			pLst.get(i).setImageUrls(img.split(",", i)[0]);
 			//find all product that contain keyword, brand and group)
-			if((p.getProductId().toLowerCase().contains(key) || p.getProductName().toLowerCase().contains(key)|| p.getDescription().toLowerCase().contains(key))&&(p.getBrandId().contains(brandId)&& p.getProductGroupId().contains(groupId))) {
+			if(p.getProductId().toLowerCase().contains(key) || p.getProductName().toLowerCase().contains(key) || p.getDescription().toLowerCase().contains("key")) {
 				filteredLst.add(p);
 			}
 			
@@ -156,35 +155,9 @@ public class ProductController {
 		req.setAttribute("brands",brands);
 		req.setAttribute("categories", categories);
 		req.setAttribute("products", filteredLst);
-		
-		req.setAttribute("brand", brand);
-		req.setAttribute("category",category);
+
 		
 		return "filterproduct";
 	}
 	
-	
-	@RequestMapping("/cart")
-	public String showCart(HttpServletRequest req) {
-		
-		//check if user logged in
-		HttpSession session = req.getSession();
-		Account acc =(Account) session.getAttribute("user");
-		if(acc == null ) {
-			return "redirect:/login.htm";
-		}
-		Customer cus = customerDao.getByPhone(acc.getPhone());
-		Cart cart= cartDao.getById(cus.getCartId());
-		
-		Map<String,Integer> productsInCart =cart.getProducts();
-		
-		Map<Product,Integer> products= new HashMap<Product, Integer>();
-		for(String key : productsInCart.keySet()) {
-			products.put(productDao.getById(key),productsInCart.get(key));
-		}
-		
-		req.setAttribute("products", products);
-
-		return "cart";
-	}
 }

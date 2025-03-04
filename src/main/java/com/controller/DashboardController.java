@@ -1,5 +1,6 @@
 package com.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +14,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.dao.Account_DAO;
+import com.dao.Brand_DAO;
 import com.dao.Cart_DAO;
 import com.dao.Customer_DAO;
+import com.dao.ProductGroup_DAO;
 import com.dao.Product_DAO;
 import com.entity.Account;
 import com.entity.Cart;
 import com.entity.Customer;
 import com.entity.Product;
+import com.entity.ProductGroup;
 
 @Controller
 public class DashboardController {
@@ -33,9 +37,14 @@ public class DashboardController {
 	@Autowired 
 	Cart_DAO cartDao;
 	
+	@Autowired
+	Brand_DAO brandDao;
+	
+	@Autowired
+	ProductGroup_DAO pgDao;
+	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
-		System.out.println("Test");
 		List<Product> proLst = productDao.getAll();	
 		for(int i=0;i<proLst.size();i++) {
 			String img= proLst.get(i).getImageUrls();
@@ -45,6 +54,37 @@ public class DashboardController {
 		//check user in session
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
+		session.setAttribute("brands", brandDao.getAll());
+		
+		//separate parentgroup and childgroup
+		List<ProductGroup> pgLst = pgDao.getAll();
+		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
+		for(ProductGroup pg: pgLst) {
+			if(pg.getParentGroupId()==null) {
+				parentGroups.add(pg);
+			}
+		}
+	
+		Map<String, List<String>> groups = new HashMap<String, List<String>>();
+		for(ProductGroup pg: parentGroups) {
+			List<String> childGroups= new ArrayList<String>();
+			for(ProductGroup pgr: pgLst) {
+				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
+					continue;
+				}
+				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
+					childGroups.add(pgr.getGroupName());
+				}
+			}
+			groups.put(pg.getGroupName(), childGroups);
+		}
+		
+		pgLst.clear();
+		parentGroups.clear();
+		session.setAttribute("groups", groups);
+		
+		
+		
 		if(acc != null ) {//get cart if user logged in
 			Customer cus = customerDao.getByPhone(acc.getPhone());
 			Cart cart =cartDao.getById(cus.getCartId());
