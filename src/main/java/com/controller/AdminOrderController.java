@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,8 @@ import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
 
+@Controller
+@RequestMapping("/admin")
 public class AdminOrderController {
 	
 	@Autowired
@@ -64,7 +67,7 @@ public class AdminOrderController {
 				req.setAttribute("orders", orders);
 				return "adminview/order/orderDeli";
 			default:
-				orders = orderDao.getOrderByStatus("Completed");
+				orders = orderDao.getOrderByStatus("History");
 				req.setAttribute("orders", orders);
 				return "adminview/order/orderHistory";
 		}
@@ -211,23 +214,6 @@ public class AdminOrderController {
 	    return "redirect:/admin/order.htm?status=confirm";
 	}
 	
-	@RequestMapping(value = "/order/cancel", method = RequestMethod.GET)
-	public String cancelOrder(@RequestParam("orderId") String orderId, HttpServletRequest req) {
-	    Order order = orderDao.getById(orderId);
-	    if (order != null) {
-	        if ("Wait for confirmation".equals(order.getStatus())) {
-	            order.setStatus("Cancelled"); 
-	            orderDao.update(order); 
-	        } else {
-	            //req.setAttribute("error", "Chỉ có thể hủy đơn hàng đang chờ xác nhận.");
-	        	//return "redirect:/admin/order.htm?status=confirm"; 
-	        }
-	    }
-	    // Nếu không tìm thấy đơn hàng
-	    //req.setAttribute("error", "Không tìm thấy đơn hàng.");
-	    return "redirect:/admin/order.htm?status=confirm";
-	}
-	
 	@RequestMapping(value = "/order/detail", method= RequestMethod.GET)
 	public String detailOrder(@RequestParam("orderId") String orderId, Model model, HttpServletRequest req) {
 		Order order = orderDao.getById(orderId);
@@ -246,9 +232,37 @@ public class AdminOrderController {
 	    
 	    model.addAttribute("order", order);
 	    model.addAttribute("discounts", discounts);
-	    req.setAttribute("title", "Sửa Đơn Hàng");
 	    req.setAttribute("userName", cus.getFullName());
-		return "adminview/order/orderConfirm/detail";
+		return "adminview/order/detail";
 	}
+	
+	@RequestMapping(value = "/order/changeStatus", method= RequestMethod.POST)
+	public String changeStatusOrder(@RequestParam("orderId") String orderId, @RequestParam("status") String status, Model model, HttpServletRequest req) {
+		Order order = orderDao.getById(orderId);
 
+		if (order != null) {
+			if ("Wait for confirmation".equals(status)) {
+				order.setStatus("Processing");
+				orderDao.update(order);	
+				return "redirect:/admin/order.htm?status=processing";
+			}
+			else if ("Cancelled".equals(status)) {
+				order.setStatus("Cancelled");
+				orderDao.update(order);	
+				return "redirect:/admin/order.htm?status=history";
+			}
+			else if ("Processing".equals(status)) {
+				order.setStatus("Shipping");
+				orderDao.update(order);	
+				return "redirect:/admin/order.htm?status=delivery";
+			}
+			else if ("Shipping".equals(status)) {
+				order.setStatus("Completed");
+				orderDao.update(order);	
+				return "redirect:/admin/order.htm?status=history";
+			}				
+		}
+	    
+		return "redirect:/admin/order.htm?status=processing";
+	}
 }

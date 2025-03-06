@@ -117,20 +117,24 @@
                                                     <label>Chi tiết đơn hàng</label>
                                                     <div class="selected-products" id="selectedProducts">
                                                         <c:forEach items="${order.orderDetails}" var="detail" varStatus="loop">
-			                                                <div class="selected-item" data-index="${loop.index}">
-			                                                    <div>
-			                                                        <div>${detail.productName}</div>
-			                                                        <div>Giá: <fmt:formatNumber value="${detail.unitPrice}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</div>
-			                                                    </div>
-			                                                    <div class="d-flex justify-content-end">
-			                                                        <input type="number" class="quantity-input" name="orderDetails[${loop.index}].amount" min="1" value="${detail.amount}" onchange="updateTotal(this, ${loop.index}, ${detail.unitPrice})">
-			                                                        <form:hidden path="orderDetails[${loop.index}].productId" />
-			                                                        <form:hidden path="orderDetails[${loop.index}].productName" />
-			                                                        <form:hidden path="orderDetails[${loop.index}].unitPrice" />
-			                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${loop.index})">Xóa</button>
-			                                                    </div>
-			                                                </div>
-			                                            </c:forEach>
+								                            <div class="selected-item" data-index="${loop.index}"
+								                                 data-product-id="${detail.productId}"
+								                                 data-product-name="${detail.productName}"
+								                                 data-unit-price="${detail.unitPrice}"
+								                                 data-amount="${detail.amount}">
+								                                <div>
+								                                    <div>${detail.productName}</div>
+								                                    <div>Giá: <fmt:formatNumber value="${detail.unitPrice}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</div>
+								                                </div>
+								                                <div class="d-flex justify-content-end">
+								                                    <input type="number" class="quantity-input" name="orderDetails[${loop.index}].amount" min="1" value="${detail.amount}" onchange="updateTotal(this, ${loop.index}, ${detail.unitPrice})">
+								                                    <form:hidden path="orderDetails[${loop.index}].productId" />
+								                                    <form:hidden path="orderDetails[${loop.index}].productName" />
+								                                    <form:hidden path="orderDetails[${loop.index}].unitPrice" />
+								                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${loop.index})">Xóa</button>
+								                                </div>
+								                            </div>
+								                        </c:forEach>
                                                     </div>
                                                 </div>
                                             </div>
@@ -231,6 +235,55 @@
     <script>
 	    let selectedProducts = [];
 	
+	    // Khởi tạo selectedProducts từ các phần tử HTML hiện có trong selectedProducts
+	    $(document).ready(function() {
+	        $('.selected-item').each(function() {
+	            var index = $(this).data('index');
+	            var product = {
+	                productId: $(this).data('product-id'),
+	                productName: $(this).data('product-name'),
+	                salePrice: $(this).data('unit-price'),
+	                quantity: parseInt($(this).data('amount')) || 1
+	            };
+	            selectedProducts.push(product);
+	        });
+	
+	        updateSelectedProducts();
+	        calculateTotal();
+	        updateDiscountOptions();
+	
+	        $('#productSearch').on('input', function() {
+	            const searchTerm = $(this).val().toLowerCase();
+	            $('.product-item').each(function() {
+	                const productName = $(this).data('product-name').toLowerCase();
+	                if (productName.includes(searchTerm)) {
+	                    $(this).show();
+	                } else {
+	                    $(this).hide();
+	                }
+	            });
+	        });
+	
+	        $(document).on('click', '.product-item', function() {
+	            const product = {
+	                productId: $(this).data('product-id'),
+	                productName: $(this).data('product-name'),
+	                salePrice: $(this).data('sale-price'),
+	                productStock: $(this).data('product-stock')
+	            };
+	            addProduct(product);
+	        });
+	        
+	        $('form').on('submit', function(e) {
+	            if (selectedProducts.length === 0) {
+	                e.preventDefault();
+	                alert('Vui lòng chọn ít nhất một sản phẩm trước khi lưu đơn hàng!');
+	                return false;
+	            }
+	            updateSelectedProducts(); // Đảm bảo input ẩn được cập nhật trước khi submit
+	        });
+	    });
+	
 	    function formatCurrency(amount) {
 	        const number = Number(amount);
 	        
@@ -262,19 +315,23 @@
 	
 	    // Hàm xóa sản phẩm khỏi danh sách đã chọn
 	    function removeProduct(productId) {
-	    	productId = String(productId);
-		    selectedProducts = selectedProducts.filter(p => p.productId !== productId);
-		    updateSelectedProducts();
-		    calculateTotal();
-		    updateDiscountOptions();
-		}
+	        productId = String(productId);
+	        selectedProducts = selectedProducts.filter(p => p.productId !== productId);
+	        updateSelectedProducts();
+	        calculateTotal();
+	        updateDiscountOptions();
+	    }
 	
 	    // Cập nhật danh sách sản phẩm đã chọn
 	    function updateSelectedProducts() {
 	        let html = '';
 	        let inputsHtml = '';
 	        selectedProducts.forEach((product, index) => {
-	            html += '<div class="selected-item">' +
+	            html += '<div class="selected-item" data-index="' + index + '" ' +
+	                    'data-product-id="' + product.productId + '" ' +
+	                    'data-product-name="' + product.productName + '" ' +
+	                    'data-unit-price="' + product.salePrice + '" ' +
+	                    'data-amount="' + product.quantity + '">' +
 	                    '<div>' + 
 	                        '<div>' + product.productName + '</div>' + 
 	                        '<div> Giá: ' + formatCurrency(product.salePrice) + '</div>' +
@@ -344,43 +401,6 @@
 	            $('#discountSelect').val(''); 
 	        }
 	    }
-	
-	    $(document).ready(function() {
-	        $('#productSearch').on('input', function() {
-	            const searchTerm = $(this).val().toLowerCase();
-	            $('.product-item').each(function() {
-	                const productName = $(this).data('product-name').toLowerCase();
-	                if (productName.includes(searchTerm)) {
-	                    $(this).show();
-	                } else {
-	                    $(this).hide();
-	                }
-	            });
-	        });
-	
-	        updateDiscountOptions();
-	
-		    $(document).on('click', '.product-item', function() {
-		        const product = {
-		            productId: $(this).data('product-id'),
-		            productName: $(this).data('product-name'),
-		            salePrice: $(this).data('sale-price'),
-		            productStock: $(this).data('product-stock')
-		        };
-		        addProduct(product);
-		    });
-		    
-		    $('form').on('submit', function(e) {
-	            if (selectedProducts.length === 0) {
-	                e.preventDefault();
-	                alert('Vui lòng chọn ít nhất một sản phẩm trước khi lưu đơn hàng!');
-	                return false;
-	            }
-	            updateSelectedProducts(); // Đảm bảo input ẩn được cập nhật trước khi submit
-	        });
-	    });
-	
-	    
 	</script>
 </body>
 </html>

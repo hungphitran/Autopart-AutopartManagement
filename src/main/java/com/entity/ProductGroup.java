@@ -18,7 +18,7 @@ public class ProductGroup {
     @Column(name = "parentGroupId") // Khóa ngoại: parentGroup
     private String parentGroupId;
 
-    @Column(name = "status", columnDefinition = "NVARCHAR(50) DEFAULT 'Active'") // Trạng thái mặc định
+    @Column(name = "status", columnDefinition = "NVARCHAR(50)") // Trạng thái mặc định
     private String status;
 
 
