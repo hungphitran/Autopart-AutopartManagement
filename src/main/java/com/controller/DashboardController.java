@@ -14,12 +14,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.dao.Account_DAO;
+import com.dao.BlogGroup_DAO;
 import com.dao.Brand_DAO;
 import com.dao.Cart_DAO;
 import com.dao.Customer_DAO;
 import com.dao.ProductGroup_DAO;
 import com.dao.Product_DAO;
 import com.entity.Account;
+import com.entity.BlogGroup;
 import com.entity.Cart;
 import com.entity.Customer;
 import com.entity.Product;
@@ -43,6 +45,9 @@ public class DashboardController {
 	@Autowired
 	ProductGroup_DAO pgDao;
 	
+	@Autowired 
+	BlogGroup_DAO blogGroupDao;
+	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
 		List<Product> proLst = productDao.getAll();	
@@ -59,7 +64,6 @@ public class DashboardController {
 		//check user in session
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
-		session.setAttribute("brands", brandDao.getAll());
 		
 		//separate parentgroup and childgroup
 		List<ProductGroup> pgLst = pgDao.getAll();
@@ -87,7 +91,11 @@ public class DashboardController {
 		pgLst.clear();
 		parentGroups.clear();
 		session.setAttribute("groups", groups);
+		session.setAttribute("brands", brandDao.getAll());
+
 		
+		List<BlogGroup> blogGroups = blogGroupDao.getAll();
+		session.setAttribute("blogGroups", blogGroups);
 		
 		
 		if(acc != null ) {//get cart if user logged in

@@ -117,7 +117,7 @@ public class Chat_DAO {
         }
     }
 
-    public String generateNextBlogId() {
+    public String generateNextChatId() {
         Session session = null;
         try {
             session = factory.openSession();
