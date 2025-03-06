@@ -139,6 +139,7 @@
 										        <c:forEach items="${discounts}" var="discount">
 										            <form:option value="${discount.discountId}" 
 										                         label="${discount.discountDesc} - ${discount.discountAmount}% - ${discount.minimumAmount}₫"
+										                         data-discount-amount="${discount.discountAmount}"
 										                         data-minimum-amount="${discount.minimumAmount}"
 										                         data-status="${discount.status}"
 										                         data-usage-limit="${discount.usageLimit}"
@@ -295,8 +296,11 @@
 	    }
 	
 	    // Tính tổng tiền
-	    function calculateTotal() {
+	    function calculateTotal(discountAmount = 0) {
 	        let total = selectedProducts.reduce((sum, product) => sum + (product.salePrice * product.quantity), 0);
+	        if (discountAmount != 0) {
+	        	total *= (100 - discountAmount) / 100;
+	        }
 	        $('#totalCostlbl').text(formatCurrency(total));
 	        $('#totalCost').val(total); // Lưu giá trị tổng vào hidden input
 	    }
@@ -305,7 +309,7 @@
 	    function updateDiscountOptions() {
 	        const totalCost = Number($('#totalCost').val());
 	        const currentDate = new Date();
-	
+			
 	        $('#discountSelect option').each(function() {
 	            const minimumAmount = Number($(this).data('minimum-amount'));
 	            const status = $(this).data('status');
@@ -329,6 +333,26 @@
 	        if (!selectedDiscount || $('#discountSelect option[value="' + selectedDiscount + '"]').is(':hidden')) {
 	            $('#discountSelect').val(''); 
 	        }
+	        
+	        // Chọn ra mã khuyến mãi giảm nhiều nhất
+	        let maxAmount = -Infinity; // Giá trị nhỏ nhất để so sánh
+	        let $selectedOption = null;
+
+	        $('#discountSelect option:enabled').each(function() {
+	            let currentAmount = parseFloat($(this).attr("data-discount-amount")) || 0; 
+	            if (currentAmount > maxAmount) {
+	                maxAmount = currentAmount;
+	                $selectedOption = $(this); 
+	            }
+	        });
+
+	        if ($selectedOption) {
+	            $selectedOption.prop("selected", true);
+	            
+	            // Cập nhật giá tiền
+	            let discountAmount = parseFloat($selectedOption.attr("data-discount-amount")) || 0;
+	            calculateTotal(discountAmount);
+	        }
 	    }
 	
 	    $(document).ready(function() {
@@ -344,7 +368,7 @@
 	            });
 	        });
 	
-	        updateDiscountOptions();
+	       	updateDiscountOptions();
 	
 		    $(document).on('click', '.product-item', function() {
 		        const product = {

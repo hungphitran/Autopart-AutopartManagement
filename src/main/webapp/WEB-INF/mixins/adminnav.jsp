@@ -16,24 +16,28 @@
       <span>Thống kê</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="/autopart/admin/product.htm">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#productPage" aria-expanded="true" aria-controls="collapsePage">
       <i class="fas fa-fw fa-solid fa-gears"></i>
-      <span>Quản lý sản phẩm</span></a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fa-solid fa-boxes-stacked"></i>
-      <span>Quản lý danh mục</span></a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="/autopart/admin/brand.htm">
-      <i class="fa-solid fa-handshake"></i>
-      <span>Quản lý nhãn hàng</span></a>
+      <span>Quản lý sản phẩm</span>
+    </a>
+    <div id="productPage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+     	<a class="collapse-item" href="${pageContext.request.contextPath}/admin/product/import.htm">Nhập hàng</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/product.htm">Quản lý sản phẩm</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/productGroup.htm">Quản lý danh mục</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/brand.htm">Quản lý nhãn hàng</a>
+      </div>
+    </div>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="/autopart/admin/customer.htm">
       <i class="fa-solid fa-person"></i>
       <span>Danh sách khách hàng</span></a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/autopart/admin/employee.htm">
+      <i class="fa-regular fa-id-card"></i>
+      <span>Danh sách nhân viên</span></a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="/autopart/admin/blog.htm">
@@ -67,6 +71,7 @@
     </a>
     <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
+      	<a class="collapse-item" href="#">Danh sách</a>
         <a class="collapse-item" href="#">Nhóm quyền</a>
         <a class="collapse-item" href="#">Phân quyền</a>
       </div>

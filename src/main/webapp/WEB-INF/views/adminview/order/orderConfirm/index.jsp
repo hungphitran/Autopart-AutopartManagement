@@ -114,35 +114,6 @@
 				}
 			}); 
 			
-			$('#dataTable').on('click', '.change-status-link', function(event) {
-			      event.preventDefault(); 
-
-			      var productId = $(this).data('product-id');
-			      var productStatus = $(this).data('product-status');
-
-			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
-			        type: 'POST',
-			        success: function(response) {
-			          var badge = $(event.target).closest('.change-status-link').find('.badge');
-			          var link = $(event.target).closest('.change-status-link');
-			          
-			          if (productStatus === "Inactive") { 
-			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('product-status', 'Active');
-			          } else {
-			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('product-status', 'Inactive');
-			          }
-
-			        },
-			        error: function(error) {
-			          console.error("Error changing status:", error);
-			          alert("Lỗi khi thay đổi trạng thái.");
-			        }
-				});
-		    });
-			
 			$('#dataTable').on('click', '.delete-btn', function() {
 			    var productId = $(this).data('product-id');
 			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/product/delete.htm?productId=' + productId);

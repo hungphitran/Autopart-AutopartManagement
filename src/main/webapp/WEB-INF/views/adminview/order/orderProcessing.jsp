@@ -29,7 +29,6 @@
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Đơn Hàng</h6>
-								<a href="${pageContext.request.contextPath}/admin/order/add.htm" class="btn btn-primary">+ Thêm đơn hàng</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
@@ -39,7 +38,7 @@
 										<th>Số Điện Thoại KH</th>
 										<th>Địa Chỉ Giao Hàng</th>
 										<th>Ngày Đặt Hàng</th>
-										<th>Trạng thái</th>
+										<th>Tổng Tiền</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
@@ -50,17 +49,9 @@
 											<td class="align-middle">${order.userPhone}</td>
 											<td class="align-middle">${order.shipAddress}</td>
 											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" /></td>
 											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${order.status == 'Wait for confirmation'}"><span class="badge badge-warning">Chờ xác nhận</span></c:when>
-												    <c:when test="${order.status == 'Processing'}"><span class="badge badge-primary">Đang đóng gói</span></c:when>
-												   	<c:when test="${order.status == 'Shipping'}"><span class="badge badge-info">Đang giao hàng</span></c:when>
-												   	<c:when test="${order.status == 'Completed'}"><span class="badge badge-success">Đã hoàn thành</span></c:when>
-												    <c:otherwise><span class="badge badge-danger">Đã hủy</span></c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/order/edit.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Sửa</a>
+												<button type="button" class="btn btn-primary confirm-btn" data-order-id="${order.orderId}" data-order-status="${order.status}" data-toggle="modal" data-target="#ConfirmModal">Giao Hàng</button>
 												<a href="${pageContext.request.contextPath}/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
@@ -92,27 +83,26 @@
 						</div>
 					</div>
 					
-					<!-- Modal Delete Item -->
-					<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+					<!-- Modal Logout -->
+					<div class="modal fade" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModal" aria-hidden="true">
 						<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabelLogout">Xóa sản phẩm</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
+								<h5 class="modal-title" id="ConfirmModal">Xác nhận</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
 							</div>
 							<div class="modal-body">
-							<p>Bạn chắc chắn muốn xóa sản phẩm này không?</p>
+								<p>Xác nhận giao hàng?</p>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-								<a href="#" id="delete-link" class="btn btn-primary">Xóa</a>
+               					<button type="button" class="btn btn-primary confirm-order-btn" data-order-id="${order.orderId}" data-order-status="${order.status}" >Xác Nhận</button>
 							</div>
 						</div>
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>
@@ -145,39 +135,38 @@
 				}
 			}); 
 			
-			$('#dataTable').on('click', '.change-status-link', function(event) {
-			      event.preventDefault(); 
+			$("#dataTable").on('click', '.confirm-btn', function() {
+                let orderId = $(this).data('order-id');
+                let orderStatus = $(this).data('order-status');
+                
+                $('#ConfirmModal').modal('show');
+                $('#ConfirmModal .confirm-order-btn').data('order-id', orderId);
+                $('#ConfirmModal .confirm-order-btn').data('order-status', orderStatus);
+            });
 
-			      var productId = $(this).data('product-id');
-			      var productStatus = $(this).data('product-status');
+            // Xử lý khi nhấp vào nút "Xác Nhận" trong modal
+            $('#ConfirmModal').on('click', '.confirm-order-btn', function() {
+                let orderId = $(this).data('order-id');
+                let orderStatus = $(this).data('order-status');
 
-			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
-			        type: 'POST',
-			        success: function(response) {
-			          var badge = $(event.target).closest('.change-status-link').find('.badge');
-			          var link = $(event.target).closest('.change-status-link');
-			          
-			          if (productStatus === "Inactive") { 
-			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('product-status', 'Active');
-			          } else {
-			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('product-status', 'Inactive');
-			          }
-
-			        },
-			        error: function(error) {
-			          console.error("Error changing status:", error);
-			          alert("Lỗi khi thay đổi trạng thái.");
-			        }
-				});
-		    });
-			
-			$('#dataTable').on('click', '.delete-btn', function() {
-			    var productId = $(this).data('product-id');
-			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/product/delete.htm?productId=' + productId);
-		  	});
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/admin/order/changeStatus.htm',
+                    type: 'POST',
+                    data: { 
+                    	orderId: orderId,
+                    	status: orderStatus
+                    },
+                    success: function(response) {
+                    	$('#ConfirmModal').modal('hide');
+                    	window.location.href = '${pageContext.request.contextPath}/admin/order.htm?status=delivery';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        $('#ConfirmModal .modal-body').html('<p class="text-danger">Có lỗi xảy ra khi xác nhận đơn hàng.</p>');
+                        $('#ConfirmModal .modal-footer').html('<button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>');
+                    }
+                });
+            });
 		});
   	</script>
 </body>
