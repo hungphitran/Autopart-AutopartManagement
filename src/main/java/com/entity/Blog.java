@@ -30,6 +30,18 @@ public class Blog {
 
     @Column(name = "status", nullable = false)
     private String status; 
+    
+    @Column(name="content")
+    private String content;
+    
+    @Column(name="createdBy")
+    private String createdBy;
+ 
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
 
     @Column(name = "deletedAt")
     private Timestamp deletedAt; // Timestamp for when the blog was deleted
@@ -37,99 +49,130 @@ public class Blog {
     // Default constructor
     public Blog() {}
 
-    // Parameterized constructor
-    public Blog(String blogId, String blogGroupId, BlogGroup blogGroup, String title, 
-                String description, String status, Timestamp deletedAt) {
-        this.blogId = blogId;
-        this.blogGroupId = blogGroupId;
-        this.blogGroup = blogGroup;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.deletedAt = deletedAt;
-    }
+	public Blog(String blogGroupName, String blogId, String blogGroupId, BlogGroup blogGroup, String title,
+			String description, String status, String content, String createdBy, Timestamp createdAt,
+			Timestamp updatedAt, Timestamp deletedAt) {
+		super();
+		this.blogGroupName = blogGroupName;
+		this.blogId = blogId;
+		this.blogGroupId = blogGroupId;
+		this.blogGroup = blogGroup;
+		this.title = title;
+		this.description = description;
+		this.status = status;
+		this.content = content;
+		this.createdBy = createdBy;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deletedAt = deletedAt;
+	}
 
-    // Getters and Setters
-    public String getBlogId() {
-        return blogId;
-    }
+	public String getBlogGroupName() {
+		return blogGroupName;
+	}
 
-    public void setBlogId(String blogId) {
-        this.blogId = blogId;
-    }
+	public void setBlogGroupName(String blogGroupName) {
+		this.blogGroupName = blogGroupName;
+	}
 
-    public String getBlogGroupId() {
-        return blogGroupId;
-    }
+	public String getBlogId() {
+		return blogId;
+	}
 
-    public void setBlogGroupId(String blogGroupId) {
-        this.blogGroupId = blogGroupId;
-    }
+	public void setBlogId(String blogId) {
+		this.blogId = blogId;
+	}
 
-    public BlogGroup getBlogGroup() {
-        return blogGroup;
-    }
+	public String getBlogGroupId() {
+		return blogGroupId;
+	}
 
-    public void setBlogGroup(BlogGroup blogGroup) {
-        this.blogGroup = blogGroup;
-        // Update blogGroupId when setting the blogGroup to maintain consistency
-        if (blogGroup != null) {
-            this.blogGroupId = blogGroup.getBlogGroupId();
-        } else {
-            this.blogGroupId = null;
-        }
-    }
+	public void setBlogGroupId(String blogGroupId) {
+		this.blogGroupId = blogGroupId;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public BlogGroup getBlogGroup() {
+		return blogGroup;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setBlogGroup(BlogGroup blogGroup) {
+		this.blogGroup = blogGroup;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public Timestamp getDeletedAt() {
-        return deletedAt;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setDeletedAt(Timestamp deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getBlogGroupName() {
-        return blogGroupName;
-    }
+	public String getContent() {
+		return content;
+	}
 
-    public void setBlogGroupName(String blogGroupName) {
-        this.blogGroupName = blogGroupName;
-    }
+	public void setContent(String content) {
+		this.content = content;
+	}
 
-    @Override
-    public String toString() {
-        return "Blog{" +
-                "blogId='" + blogId + '\'' +
-                ", blogGroupId='" + blogGroupId + '\'' +
-                ", blogGroup=" + blogGroup +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Timestamp getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(Timestamp deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Blog [blogGroupName=" + blogGroupName + ", blogId=" + blogId + ", blogGroupId=" + blogGroupId
+				+ ", blogGroup=" + blogGroup + ", title=" + title + ", description=" + description + ", status="
+				+ status + ", content=" + content + ", createdBy=" + createdBy + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + "]";
+	}
+
+	
+	
+
+    
 }

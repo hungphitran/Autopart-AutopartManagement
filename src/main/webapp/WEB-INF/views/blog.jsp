@@ -97,7 +97,7 @@ footer {
         	<c:forEach items="${blogs}" var="blog">
         	<article class="blog-post">
                 <h2>${blog.title }</h2>
-                <p class="date">February 27, 2025</p>
+                <p class="date">${blog.updatedAt }</p>
                 <p>${blog.description}</p>
                 <a href="/autopart/blog/detail.htm?id=${blog.blogId }">Xem chi tiết</a>
             </article>

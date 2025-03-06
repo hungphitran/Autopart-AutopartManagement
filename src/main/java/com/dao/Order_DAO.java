@@ -107,7 +107,7 @@ public class Order_DAO {
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Order o SET o.status = 'Deleted', o.deletedAt = current_timestamp() WHERE o.orderId = :orderId";
+            String hql = "UPDATE Order o SET o.status = 'Deleted', o.deletedAt = GETDATE(), o.deleted =TRUE WHERE o.orderId = :orderId";
             Query query = session.createQuery(hql);
             query.setParameter("orderId", orderId);
             int rowsAffected = query.executeUpdate();

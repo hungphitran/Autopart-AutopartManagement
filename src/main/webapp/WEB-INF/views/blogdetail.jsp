@@ -49,12 +49,12 @@
     </header>
     <div class="content">
         <h1>${blog.title}</h1>
-        <p>Date: 2024-03-01</p>
-        <p>Author: John Doe</p>
+        <p>Date: ${blog.updatedAt}</p>
+        <p>Author: ${author}</p>
         <img src="placeholder.jpg" alt="Blog Image" width="500">
         <h2>${blog.description}</h2>
         <p>This is a short description of the blog post.</p>
         <h2>Content</h2>
-        <p>This is the main content of the blog post.</p>
+        <p>${blog.content}</p>
     </div>
 </body>
