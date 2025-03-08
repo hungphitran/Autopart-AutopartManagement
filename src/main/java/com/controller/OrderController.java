@@ -28,7 +28,9 @@ import com.entity.OrderDetail;
 import com.entity.Product;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Controller
@@ -76,7 +78,7 @@ public class OrderController {
 			String shipAddress= req.getParameter("shipAddress");
 			
 			//create new order then add it to database
-			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getPhone() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Wait for confirmation", null);
+			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getPhone() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 			orderDao.add(newOrder);
 			
 			//update cart

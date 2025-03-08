@@ -46,6 +46,15 @@ public class Product {
 
     @Column(name = "deletedAt")  // Ánh xạ với cột "deletedAt" trong bảng
     private Timestamp  deletedAt; // Deletion timestamp
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
     @Column(name = "description")  // Ánh xạ với cột "description" trong bảng
     private String description; // Description
@@ -53,148 +62,164 @@ public class Product {
     // Default constructor
     public Product() {}
 
-    // Parameterized constructor
-    public Product(String productId, String productName, String productGroupId, String brandId,
-                   double salePrice, double costPrice, int stock, String unit,
-                   String imageUrls, double weight, String status,
-                   Timestamp deletedAt, String description) {
-        this.productId = productId;
-        this.productName = productName;
-        this.productGroupId = productGroupId;
-        this.brandId = brandId;
-        this.salePrice = salePrice;
-        this.costPrice = costPrice;
-        this.stock = stock;
-        this.unit = unit;
-        this.imageUrls = imageUrls;
-        this.weight = weight;
-        this.status = status;
-        this.deletedAt = deletedAt;
-        this.description = description;
-    }
+	public Product(String productId, String productName, String productGroupId, String brandId, double salePrice,
+			double costPrice, int stock, String unit, String imageUrls, double weight, String status,
+			Timestamp deletedAt, Timestamp createdAt, Timestamp updatedAt, boolean deleted, String description) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.productGroupId = productGroupId;
+		this.brandId = brandId;
+		this.salePrice = salePrice;
+		this.costPrice = costPrice;
+		this.stock = stock;
+		this.unit = unit;
+		this.imageUrls = imageUrls;
+		this.weight = weight;
+		this.status = status;
+		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
+		this.description = description;
+	}
 
-    // Getters and Setters
-    public String getProductId() {
-        return productId;
-    }
+	public String getProductId() {
+		return productId;
+	}
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
 
-    public String getProductName() {
-        return productName;
-    }
+	public String getProductName() {
+		return productName;
+	}
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 
-    public String getProductGroupId() {
-        return productGroupId;
-    }
+	public String getProductGroupId() {
+		return productGroupId;
+	}
 
-    public void setProductGroupId(String productGroupId) {
-        this.productGroupId = productGroupId;
-    }
+	public void setProductGroupId(String productGroupId) {
+		this.productGroupId = productGroupId;
+	}
 
-    public String getBrandId() {
-        return brandId;
-    }
+	public String getBrandId() {
+		return brandId;
+	}
 
-    public void setBrandId(String brandId) {
-        this.brandId = brandId;
-    }
+	public void setBrandId(String brandId) {
+		this.brandId = brandId;
+	}
 
-    public double getSalePrice() {
-        return salePrice;
-    }
+	public double getSalePrice() {
+		return salePrice;
+	}
 
-    public void setSalePrice(double salePrice) {
-        this.salePrice = salePrice;
-    }
+	public void setSalePrice(double salePrice) {
+		this.salePrice = salePrice;
+	}
 
-    public double getCostPrice() {
-        return costPrice;
-    }
+	public double getCostPrice() {
+		return costPrice;
+	}
 
-    public void setCostPrice(double costPrice) {
-        this.costPrice = costPrice;
-    }
+	public void setCostPrice(double costPrice) {
+		this.costPrice = costPrice;
+	}
 
-    public int getStock() {
-        return stock;
-    }
+	public int getStock() {
+		return stock;
+	}
 
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
 
-    public String getUnit() {
-        return unit;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-    public String getImageUrls() {
-        return imageUrls;
-    }
+	public String getImageUrls() {
+		return imageUrls;
+	}
 
-    public void setImageUrls(String imageUrls) {
-        this.imageUrls = imageUrls;
-    }
+	public void setImageUrls(String imageUrls) {
+		this.imageUrls = imageUrls;
+	}
 
-    public double getWeight() {
-        return weight;
-    }
+	public double getWeight() {
+		return weight;
+	}
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public Timestamp getDeletedAt() {
-        return deletedAt;
-    }
+	public Timestamp getDeletedAt() {
+		return deletedAt;
+	}
 
-    public void setDeletedAt(Timestamp deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public void setDeletedAt(Timestamp deletedAt) {
+		this.deletedAt = deletedAt;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "Product{" +
-                "productId='" + productId + '\'' +
-                ", productName='" + productName + '\'' +
-                ", productGroupId='" + productGroupId + '\'' +
-                ", brandId='" + brandId + '\'' +
-                ", salePrice=" + salePrice +
-                ", costPrice=" + costPrice +
-                ", stock=" + stock +
-                ", unit='" + unit + '\'' +
-                ", imageUrls=" + imageUrls +
-                ", weight=" + weight +
-                ", status='" + status + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [productId=" + productId + ", productName=" + productName + ", productGroupId=" + productGroupId
+				+ ", brandId=" + brandId + ", salePrice=" + salePrice + ", costPrice=" + costPrice + ", stock=" + stock
+				+ ", unit=" + unit + ", imageUrls=" + imageUrls + ", weight=" + weight + ", status=" + status
+				+ ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
+				+ deleted + ", description=" + description + "]";
+	}
+
+  
 }

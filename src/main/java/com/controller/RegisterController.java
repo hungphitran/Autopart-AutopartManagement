@@ -1,6 +1,7 @@
 package com.controller;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,9 +41,9 @@ public class RegisterController {
 		if(password.equals(repassword)) {
 			Cart newCart= new Cart(cartDao.generateNextCartId(),null);
 			if(cartDao.add(newCart)) {
-				Account acc =new Account(phone,password,"","RG002","Active") ;
+				Account acc =new Account(phone,password,"","RG002","Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false) ;
 				if(accountDao.add(acc)) {
-					Customer cus = new Customer(newCart.getCartId(),fullName,phone, address, "Active");
+					Customer cus = new Customer(newCart.getCartId(),fullName,phone, address, "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 					if(customerDao.add(cus)) {
 						req.setAttribute("message", "Đăng ký thành công, vui lòng đăng nhập");
 						return "redirect:/login.htm";

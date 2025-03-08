@@ -29,16 +29,29 @@ public class Chat {
     @Column(name = "deletedAt")
     private Timestamp  deletedAt; // Timestamp for when the chat was deleted
 
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
+    
     // Default constructor
     public Chat() {}
 
-	public Chat(String chatRoomId, String userPhone, String content, String status, Timestamp deletedAt) {
+	public Chat(String chatRoomId, String userPhone, String content, String status, Timestamp deletedAt,
+			Timestamp createdAt, Timestamp updatedAt, boolean deleted) {
 		super();
 		this.chatRoomId = chatRoomId;
 		this.userPhone = userPhone;
 		this.content = content;
 		this.status = status;
 		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
 	public String getChatRoomId() {
@@ -81,11 +94,37 @@ public class Chat {
 		this.deletedAt = deletedAt;
 	}
 
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	@Override
 	public String toString() {
 		return "Chat [chatRoomId=" + chatRoomId + ", userPhone=" + userPhone + ", content=" + content + ", status="
-				+ status + ", deletedAt=" + deletedAt + "]";
+				+ status + ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ ", deleted=" + deleted + "]";
 	}
 
+	
    
 }

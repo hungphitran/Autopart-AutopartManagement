@@ -1,5 +1,7 @@
 package com.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.*;
 
 @Entity
@@ -24,79 +26,123 @@ public class GeneralSettings {
     @Column(name = "copyright", length = 255)
     private String copyright;    // Copyright information
 
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name ="deletedAt")
+    private Timestamp deletedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
+    
     // Default constructor
     public GeneralSettings() {}
 
-    // Parameterized constructor
-    public GeneralSettings(String websiteName, String logo, String phone,
-                           String email, String address, String copyright) {
-        this.websiteName = websiteName;
-        this.logo = logo;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.copyright = copyright;
-    }
+	public GeneralSettings(String websiteName, String logo, String phone, String email, String address,
+			String copyright, Timestamp createdAt, Timestamp updatedAt, Timestamp deletedAt, boolean deleted) {
+		super();
+		this.websiteName = websiteName;
+		this.logo = logo;
+		this.phone = phone;
+		this.email = email;
+		this.address = address;
+		this.copyright = copyright;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deletedAt = deletedAt;
+		this.deleted = deleted;
+	}
 
-    // Getters and Setters
-    public String getWebsiteName() {
-        return websiteName;
-    }
+	public String getWebsiteName() {
+		return websiteName;
+	}
 
-    public void setWebsiteName(String websiteName) {
-        this.websiteName = websiteName;
-    }
+	public void setWebsiteName(String websiteName) {
+		this.websiteName = websiteName;
+	}
 
-    public String getLogo() {
-        return logo;
-    }
+	public String getLogo() {
+		return logo;
+	}
 
-    public void setLogo(String logo) {
-        this.logo = logo;
-    }
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public String getCopyright() {
-        return copyright;
-    }
+	public String getCopyright() {
+		return copyright;
+	}
 
-    public void setCopyright(String copyright) {
-        this.copyright = copyright;
-    }
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
+	}
 
-    // Override toString for better representation
-    @Override
-    public String toString() {
-        return "GeneralSettings{" +
-                "websiteName='" + websiteName + '\'' +
-                ", logo='" + logo + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", copyright='" + copyright + '\'' +
-                '}';
-    }
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Timestamp getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(Timestamp deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public String toString() {
+		return "GeneralSettings [websiteName=" + websiteName + ", logo=" + logo + ", phone=" + phone + ", email="
+				+ email + ", address=" + address + ", copyright=" + copyright + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", deleted=" + deleted + "]";
+	}
+
+	
 }
+   

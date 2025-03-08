@@ -21,70 +21,103 @@ public class ProductGroup {
     @Column(name = "status", columnDefinition = "NVARCHAR(50)") // Trạng thái mặc định
     private String status;
 
-
     @Column(name = "deletedAt") // Thời điểm bị xóa
     private Timestamp  deletedAt;
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
     // Default constructor
     public ProductGroup() {}
 
-    // Parameterized constructor
-    public ProductGroup(String productGroupId, String groupName, String parentGroupId, String status,
-			Timestamp deletedAt) {
+	public ProductGroup(String productGroupId, String groupName, String parentGroupId, String status,
+			Timestamp deletedAt, Timestamp createdAt, Timestamp updatedAt, boolean deleted) {
 		super();
 		this.productGroupId = productGroupId;
 		this.groupName = groupName;
 		this.parentGroupId = parentGroupId;
 		this.status = status;
 		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
-    // Getters and Setters
-    public String getProductGroupId() {
+	public String getProductGroupId() {
 		return productGroupId;
 	}
 
 	public void setProductGroupId(String productGroupId) {
 		this.productGroupId = productGroupId;
 	}
-    
-    public String getGroupName() {
-        return groupName;
-    }
+
+	public String getGroupName() {
+		return groupName;
+	}
 
 	public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+		this.groupName = groupName;
+	}
 
-    public String getParentGroupId() {
-        return parentGroupId;
-    }
+	public String getParentGroupId() {
+		return parentGroupId;
+	}
 
-    public void setParentGroupId(String parentGroupId) {
-        this.parentGroupId = parentGroupId;
-    }
+	public void setParentGroupId(String parentGroupId) {
+		this.parentGroupId = parentGroupId;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
+	public Timestamp getDeletedAt() {
+		return deletedAt;
+	}
 
-    public Timestamp getDeletedAt() {
-        return deletedAt;
-    }
+	public void setDeletedAt(Timestamp deletedAt) {
+		this.deletedAt = deletedAt;
+	}
 
-    public void setDeletedAt(Timestamp deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	@Override
 	public String toString() {
 		return "ProductGroup [productGroupId=" + productGroupId + ", groupName=" + groupName + ", parentGroupId="
-				+ parentGroupId + ", status=" + status + ", deletedAt=" + deletedAt + "]";
+				+ parentGroupId + ", status=" + status + ", deletedAt=" + deletedAt + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", deleted=" + deleted + "]";
 	}
 
     

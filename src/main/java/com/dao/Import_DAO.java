@@ -2,6 +2,7 @@ package com.dao;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -9,60 +10,39 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.Query;
 
-import com.entity.Order;
+import com.entity.Import;
 
-public class Order_DAO {
+public class Import_DAO {
 
     private final SessionFactory factory;
 
-    public Order_DAO(SessionFactory factory) {
+    public Import_DAO(SessionFactory factory) {
         this.factory = factory;
     }
 
-    public List<Order> getOrderByStatus(String status) {
+    public List<Import> getAll() {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = (status == "History") 
-            		? "FROM Order o WHERE o.status IN ('Cancelled', 'Completed')" 
-            		: "FROM Order o WHERE o.status = :status";
+            String hql = "FROM Import i WHERE i.deleted = FALSE";
             Query query = session.createQuery(hql);
-            if (!status.equals("History")) {
-                query.setParameter("status", status);
-            }
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            return new ArrayList<>();
         } finally {
             if (session != null) session.close();
         }
     }
-    
-    public List<Order> getOrderByPhone(String phone){
+
+    public Import getById(String importId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Order o WHERE o.userPhone = :phone";
+            String hql = "FROM Import i WHERE i.importId = :importId";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
-            return query.list();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return List.of();
-        } finally {
-            if (session != null) session.close();
-        }
-    }
-    
-    public Order getById(String orderId) {
-        Session session = null;
-        try {
-            session = factory.openSession();
-            String hql = "FROM Order o WHERE o.orderId = :orderId";
-            Query query = session.createQuery(hql);
-            query.setParameter("orderId", orderId);
-            return (Order) query.uniqueResult();
+            query.setParameter("importId", importId);
+            return (Import) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -70,52 +50,72 @@ public class Order_DAO {
             if (session != null) session.close();
         }
     }
-
-    public boolean add(Order order) {
+    
+    public List<Import> getImportByPhone(String employeePhone) {
         Session session = null;
-        Transaction transaction = null;
         try {
             session = factory.openSession();
-            transaction = session.beginTransaction();
-            session.save(order);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) session.close();
-        }
-    }
-
-    public boolean update(Order order) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            session.update(order);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) session.close();
-        }
-    }
-
-    public boolean delete(String orderId) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            String hql = "UPDATE Order o SET o.status = 'Deleted', o.deletedAt = GETDATE(), o.deleted =TRUE WHERE o.orderId = :orderId";
+            String hql = "FROM Import i WHERE i.employeePhone = :phone";
             Query query = session.createQuery(hql);
-            query.setParameter("orderId", orderId);
+            query.setParameter("phone", employeePhone);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean add(Import importEntity) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            session.save(importEntity);
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean update(Import importEntity) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            session.update(importEntity);
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean delete(String importId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "UPDATE Import i SET i.deleted = TRUE, i.deletedAt = GETDATE() WHERE i.importId = :importId";
+            Query query = session.createQuery(hql);
+            query.setParameter("importId", importId);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -128,13 +128,13 @@ public class Order_DAO {
         }
     }
 
-    public boolean checkExistById(String orderId) {
+    public boolean checkExistById(String importId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT 1 FROM Order o WHERE o.orderId = :orderId";
+            String hql = "FROM Import i WHERE i.importId = :importId";
             Query query = session.createQuery(hql);
-            query.setParameter("orderId", orderId);
+            query.setParameter("importId", importId);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,7 +144,8 @@ public class Order_DAO {
         }
     }
 
-    public String generateNextOrderId() {
+
+    public String generateNextImportId() {
         Session session = null;
         try {
             session = factory.openSession();
@@ -152,25 +153,25 @@ public class Order_DAO {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
             String dateStr = currentDate.format(formatter); 
 
-            String prefix = "ORD" + dateStr;
+            String prefix = "IMP" + dateStr;
 
-            String hql = "SELECT MAX(o.orderId) FROM Order o WHERE o.orderId LIKE :prefix";
+            String hql = "SELECT MAX(i.importId) FROM Import i WHERE i.importId LIKE :prefix";
             Query query = session.createQuery(hql);
             query.setParameter("prefix", prefix + "%");
             String maxId = (String) query.uniqueResult();
 
             if (maxId == null) {
-                return prefix + "001"; 
+                return prefix + "001";
             }
 
             int currentNum = Integer.parseInt(maxId.substring(prefix.length()));
-            return String.format("%s%03d", prefix, currentNum + 1); 
+            return String.format("%s%03d", prefix, currentNum + 1);
         } catch (Exception e) {
             e.printStackTrace();
             LocalDate currentDate = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
             String dateStr = currentDate.format(formatter);
-            return "ORD" + dateStr + "001";
+            return "IMP" + dateStr + "001";
         } finally {
             if (session != null) session.close();
         }
