@@ -1,6 +1,8 @@
 package com.controller;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +57,7 @@ public class AdminOrderController {
 		
 		switch (status) {
 			case "confirm":
-				orders = orderDao.getOrderByStatus("Wait for confirmation");
+				orders = orderDao.getOrderByStatus("Pending");
 				req.setAttribute("orders", orders);
 				return "adminview/order/orderConfirm/index";
 			case "processing":
@@ -91,11 +93,11 @@ public class AdminOrderController {
 	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
 	public String addOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req) {
 		// Tạo tài khoản khách hàng
-		Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active");
+		Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 		accountDao.add(acc);
 		
 		// Lưu khách hàng
-		Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active");
+		Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 		customerDao.add(cus);
 		
 		// Đặt các giá trị mặc định
@@ -163,11 +165,11 @@ public class AdminOrderController {
 		// Tìm thông tin khách hàng
 		Customer existedCus = customerDao.getByPhone(order.getUserPhone());
 		if (existedCus == null) {
-			Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active");
+			Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active",  Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false); 
 			accountDao.add(acc);
 			
 			// Lưu khách hàng
-			Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active");
+			Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active",Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()) );
 			customerDao.add(cus);
 		}
 		

@@ -20,6 +20,8 @@ public class Cart {
 
     @Column(name = "createDate")
     private Timestamp  createDate;
+    
+    
 
     @ElementCollection
     @CollectionTable(name = "ProductsInCart", 

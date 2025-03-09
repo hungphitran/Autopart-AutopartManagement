@@ -1,5 +1,7 @@
 package com.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -25,6 +27,13 @@ public class Customer
     @Column(name = "status")
     private String status;
     
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    
     
 
 	public Customer() {
@@ -32,61 +41,114 @@ public class Customer
 		// TODO Auto-generated constructor stub
 	}
 
-	public Customer(String cartId, String fullName, String phone, String address, String status) {
+
+
+	public Customer(String cartId, String fullName, String phone, String address, String status, Timestamp createdAt,
+			Timestamp updatedAt) {
 		super();
 		this.cartId = cartId;
 		this.fullName = fullName;
 		this.phone = phone;
 		this.address = address;
 		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
+
+
 
 	public String getCartId() {
 		return cartId;
 	}
 
+
+
 	public void setCartId(String cartId) {
 		this.cartId = cartId;
 	}
+
+
 
 	public String getFullName() {
 		return fullName;
 	}
 
+
+
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
+
+
 
 	public String getPhone() {
 		return phone;
 	}
 
+
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
+
 
 	public String getAddress() {
 		return address;
 	}
 
+
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+
 
 	public String getStatus() {
 		return status;
 	}
 
+
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
 
+
+
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+
+
+
 	@Override
 	public String toString() {
 		return "Customer [cartId=" + cartId + ", fullName=" + fullName + ", phone=" + phone + ", address=" + address
-				+ ", status=" + status + "]";
+				+ ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt 
+				 + "]";
 	}
-    
-	
+
+		
     
 }

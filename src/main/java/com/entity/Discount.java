@@ -3,6 +3,7 @@ package com.entity;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,18 @@ public class Discount {
 
     @Column(name = "status")
     private String status;
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name ="deletedAt")
+    private Timestamp deletedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
 	public Discount() {
 		super();
@@ -42,7 +55,8 @@ public class Discount {
 	}
 
 	public Discount(String discountId, String discountDesc, Integer discountAmount, BigDecimal minimumAmount,
-			Integer usageLimit, Date applyStartDate, Date applyEndDate, String status) {
+			Integer usageLimit, Date applyStartDate, Date applyEndDate, String status, Timestamp createdAt,
+			Timestamp updatedAt, Timestamp deletedAt, boolean deleted) {
 		super();
 		this.discountId = discountId;
 		this.discountDesc = discountDesc;
@@ -52,6 +66,10 @@ public class Discount {
 		this.applyStartDate = applyStartDate;
 		this.applyEndDate = applyEndDate;
 		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deletedAt = deletedAt;
+		this.deleted = deleted;
 	}
 
 	public String getDiscountId() {
@@ -118,12 +136,47 @@ public class Discount {
 		this.status = status;
 	}
 
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Timestamp getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(Timestamp deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	@Override
 	public String toString() {
 		return "Discount [discountId=" + discountId + ", discountDesc=" + discountDesc + ", discountAmount="
 				+ discountAmount + ", minimumAmount=" + minimumAmount + ", usageLimit=" + usageLimit
-				+ ", applyStartDate=" + applyStartDate + ", applyEndDate=" + applyEndDate + ", status=" + status + "]";
+				+ ", applyStartDate=" + applyStartDate + ", applyEndDate=" + applyEndDate + ", status=" + status
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", deleted="
+				+ deleted + "]";
 	}
-    
+
+	
     
 }

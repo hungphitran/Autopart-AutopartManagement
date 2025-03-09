@@ -19,16 +19,29 @@ public class Brand {
 
     @Column(name = "deletedAt") // Thời điểm bị xóa
     private Timestamp  deletedAt;
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
     // Default constructor
     public Brand() {}
 
-	public Brand(String brandId, String brandName, String status, Timestamp  deletedAt) {
+	public Brand(String brandId, String brandName, String status, Timestamp deletedAt, Timestamp createdAt,
+			Timestamp updatedAt, boolean deleted) {
 		super();
 		this.brandId = brandId;
 		this.brandName = brandName;
 		this.status = status;
 		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
 	public String getBrandId() {
@@ -55,19 +68,44 @@ public class Brand {
 		this.status = status;
 	}
 
-	public Timestamp  getDeletedAt() {
+	public Timestamp getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(Timestamp  deletedAt) {
+	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
+	}
+
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	@Override
 	public String toString() {
 		return "Brand [brandId=" + brandId + ", brandName=" + brandName + ", status=" + status + ", deletedAt="
-				+ deletedAt + "]";
+				+ deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted=" + deleted + "]";
 	}
 
+	
    
 }
