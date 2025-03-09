@@ -5,14 +5,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sửa sản phẩm</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sửa sản phẩm</title>
 
-    <link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="<c:url value="/resources/vendor/bootstrap/css/bootstrap.css" />" rel="stylesheet" type="text/css">
-    <link href="<c:url value="/resources/css/admincss/base.css" />" rel="stylesheet">
+	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<link href="<c:url value="/resources/vendor/bootstrap/css/bootstrap.css" />" rel="stylesheet" type="text/css">
+	<link href="<c:url value="/resources/css/admincss/base.css" />" rel="stylesheet">
 
     <style>
         .custom-file {
@@ -36,33 +36,24 @@
             border-radius: 0.25rem;
             background-color: #fff;
         }
-        
-        #previewContainer img {
-            max-width: 100px;
-            max-height: 100px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body id="page-top">
-    <div id="wrapper">
-        <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
-        
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <jsp:include page="/WEB-INF/mixins/adminheader.jsp" />
+	<div id="wrapper">
+	    <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
+	    
+	    <div id="content-wrapper" class="d-flex flex-column">
+			<div id="content">
+	    		<jsp:include page="/WEB-INF/mixins/adminheader.jsp" />
 
-                <div class="container-fluid" id="container-wrapper">
+				<div class="container-fluid" id="container-wrapper">
                     <div class="card mb-4">
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Sửa Sản Phẩm</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Sửa Sản Phẩm</h6>
                         </div>
                         <div class="card-body">
-                            <form:form action="${pageContext.request.contextPath}/admin/product/edit.htm" 
-                                       method="post" 
-                                       modelAttribute="product" 
-                                       enctype="multipart/form-data">
+                            <form:form action="${pageContext.request.contextPath}/admin/product/edit.htm" method="post" modelAttribute="product">
+                            	<input type="hidden" name="_method" value="patch"/>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
@@ -132,39 +123,28 @@
                                         <div class="form-group">
                                             <label for="unit">Đơn vị <span class="required-text">*</span></label>
                                             <form:select required="true" path="unit" class="form-control mb-3">
-                                                <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
-                                                <form:option value="Cái" label="Cái" />
-                                                <form:option value="Bộ" label="Bộ" />
-                                                <form:option value="Bình" label="Bình" />
-                                            </form:select>
+											    <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
+											    <form:option value="Cái" label="Cái" />
+											    <form:option value="Bộ" label="Bộ" />
+											    <form:option value="Bình" label="Bình" />
+											</form:select>
                                         </div>
                                         <div class="form-group">
                                             <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>
-                                            <!-- Trường ẩn để lưu danh sách ảnh cũ -->
-                                            <c:if test="${not empty product.imageUrls}">
-											    <form:input type="hidden" path="imageUrls" value="${product.imageUrls}" />
-											</c:if>
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" name="imageFiles" id="customFile" accept="image/*" multiple onchange="previewImages(this)" />
+                                                <form:input type="file" class="custom-file-input" path="imageUrls" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)" />
                                                 <label class="custom-file-label" for="customFile">Chọn ảnh</label>
                                             </div>
-                                            <div class="mt-2" id="fileNameList" style="font-size: 0.9em; color: #666;"></div>
-                                            <div class="mt-3" id="previewContainer">
-                                                <!-- Preview ảnh sẽ được thêm vào đây -->
-                                                <c:if test="${not empty product.imageUrls}">
-                                                    <c:forEach items="${product.imageUrls.split(',')}" var="existingUrl">
-                                                        <c:choose>
-                                                            <c:when test="${existingUrl.startsWith('https')}">
-                                                                <img src="${existingUrl}" alt="Current Image (External)" class="img-fluid" style="max-width: 100px; max-height: 100px; margin-right: 10px;">
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <img src="${pageContext.request.contextPath}/resources/img/${existingUrl}" alt="Current Image (Local)" class="img-fluid" style="max-width: 100px; max-height: 100px; margin-right: 10px;">
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:forEach>
-                                                </c:if>
+                                            <div class="mt-3">
+                                                <c:choose>
+                                                    <c:when test="${not empty product.imageUrls}">
+                                                        <img id="preview" src="${product.imageUrls}" alt="Preview" style="max-width: 200px; max-height: 200px; display: block;">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img id="preview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; display: none;">
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </div>
-                                            <input type="checkbox" name="confirmDeleteImg" id="confirmDeleteImg" value="confirm" /> Xóa ảnh cũ
                                         </div>
                                         <div class="form-group">
                                             <label for="weight">Khối lượng <span class="required-text">*</span></label>
@@ -183,13 +163,13 @@
                                             <label for="status" class="mr-4">Trạng thái hoạt động <span class="required-text">*</span></label>
                                             <div class="custom-control custom-switch ml-4">
                                                 <c:choose>
-                                                    <c:when test="${product.status == 'Active'}">
-                                                        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active" checked>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active">
-                                                    </c:otherwise>
-                                                </c:choose>
+												    <c:when test="${product.status == 'Active'}">
+												        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active" checked>
+												    </c:when>
+												    <c:otherwise>
+												        <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active">
+												    </c:otherwise>
+												</c:choose>
                                                 <label class="custom-control-label" for="status">Hoạt động</label>
                                             </div>
                                         </div>
@@ -204,74 +184,61 @@
 
                     <!-- Modal Logout -->
                     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-                         aria-hidden="true">
+                    aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Bạn có muốn đăng xuất không?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-                                    <a href="login.html" class="btn btn-primary">Đăng xuất</a>
-                                </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có muốn đăng xuất không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
+                                <a href="login.html" class="btn btn-primary">Đăng xuất</a>
+                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 
-    <!-- Scroll to top -->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
+	<!-- Scroll to top -->
+	<a class="scroll-to-top rounded" href="#page-top">
+		<i class="fas fa-angle-up"></i>
+	</a>
 
     <script>
-        function previewImages(input) {
-            const previewContainer = document.getElementById('previewContainer');
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
             const fileLabel = input.nextElementSibling;
-            const fileNameList = document.getElementById('fileNameList');
-            previewContainer.innerHTML = ''; // Xóa preview cũ
-            fileNameList.innerHTML = '';
-
-            if (input.files && input.files.length > 0) {
-                fileLabel.textContent = 'Đã chọn ' + input.files.length + ' file';
-                const fileNames = Array.from(input.files)
-                    .map(file => file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name)
-                    .join(', ');
-                fileNameList.textContent = fileNames.length > 50 ? fileNames.substring(0, 47) + '...' : fileNames;
-
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = 'Preview';
-                        img.style.maxWidth = '100px';
-                        img.style.maxHeight = '100px';
-                        img.style.marginRight = '10px';
-                        img.style.marginBottom = '10px';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
+    
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    fileLabel.textContent = input.files[0].name;
+                }
+    
+                reader.readAsDataURL(input.files[0]);
             } else {
+                preview.src = '';
+                preview.style.display = 'none';
                 fileLabel.textContent = 'Chọn ảnh';
-                fileNameList.innerHTML = '';
             }
         }
     </script>
 
-    <script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>
-    <script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
-    <script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
-    <script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
+	<script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>
+	<script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
+	<script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
+	<script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
 </body>
 </html>

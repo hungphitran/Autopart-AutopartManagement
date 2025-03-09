@@ -54,8 +54,8 @@ public class AdminOrderController {
 		List<Order> orders;
 		
 		switch (status) {
-			case "confirm":
-				orders = orderDao.getOrderByStatus("Wait for confirmation");
+			case "pending":
+				orders = orderDao.getOrderByStatus("Pending");
 				req.setAttribute("orders", orders);
 				return "adminview/order/orderConfirm/index";
 			case "processing":
@@ -173,7 +173,7 @@ public class AdminOrderController {
 		
 	    // Đặt các giá trị mặc định nếu cần
 	    if (order.getStatus() == null) {
-	        order.setStatus("Wait for confirmation");
+	        order.setStatus("Pending");
 	    }
 	    if (order.getOrderDate() == null) {
 	        order.setOrderDate(new java.sql.Date(System.currentTimeMillis()));
@@ -211,7 +211,7 @@ public class AdminOrderController {
 	        }
 	    }
 
-	    return "redirect:/admin/order.htm?status=confirm";
+	    return "redirect:/admin/order.htm?status=pending";
 	}
 	
 	@RequestMapping(value = "/order/detail", method= RequestMethod.GET)
@@ -241,10 +241,10 @@ public class AdminOrderController {
 		Order order = orderDao.getById(orderId);
 
 		if (order != null) {
-			if ("Wait for confirmation".equals(status)) {
+			if ("Pending".equals(status)) {
 				order.setStatus("Processing");
 				orderDao.update(order);	
-				return "redirect:/admin/order.htm?status=processing";
+				return "redirect:/admin/order.htm?status=pending";
 			}
 			else if ("Cancelled".equals(status)) {
 				order.setStatus("Cancelled");

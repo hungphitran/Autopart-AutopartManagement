@@ -49,14 +49,13 @@ public class Blog {
     // Default constructor
     public Blog() {}
 
-	public Blog(String blogGroupName, String blogId, String blogGroupId, BlogGroup blogGroup, String title,
+	public Blog(String blogGroupName, String blogId, String blogGroupId, String title,
 			String description, String status, String content, String createdBy, Timestamp createdAt,
 			Timestamp updatedAt, Timestamp deletedAt) {
 		super();
 		this.blogGroupName = blogGroupName;
 		this.blogId = blogId;
 		this.blogGroupId = blogGroupId;
-		this.blogGroup = blogGroup;
 		this.title = title;
 		this.description = description;
 		this.status = status;

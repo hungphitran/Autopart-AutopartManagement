@@ -22,7 +22,7 @@ public class Employee_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e WHERE e.status = 'Active'";
+            String hql = "FROM Employee e WHERE e.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -44,6 +44,37 @@ public class Employee_DAO {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean changeStatus(String empPhone) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            String getStatusHql = "SELECT e.status FROM Employee e WHERE e.phone = :empPhone";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("empPhone", empPhone);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            String updateHql = "UPDATE Employee e SET e.status = :newStatus WHERE e.phone= :empPhone";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("empPhone", empPhone);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }

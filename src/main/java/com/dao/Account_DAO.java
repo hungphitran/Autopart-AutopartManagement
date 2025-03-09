@@ -22,9 +22,19 @@ public class Account_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Account a WHERE a.status = 'Active'";
+            // Sử dụng LEFT JOIN FETCH để lấy thông tin roleGroup cùng với Account
+            String hql = "FROM Account a LEFT JOIN FETCH a.roleGroup WHERE a.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
-            return query.list();
+            List<Account> accounts = (List<Account>) query.list();
+
+            // Gán roleName từ roleGroup nếu tồn tại
+            for (Account account : accounts) {
+                if (account.getRoleGroup() != null) {
+                    account.setRoleName(account.getRoleGroup().getRoleGroupName());
+                }
+            }
+
+            return accounts;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -37,10 +47,17 @@ public class Account_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Account a WHERE a.phone = :phone";
+            String hql = "FROM Account a LEFT JOIN FETCH a.roleGroup WHERE a.phone = :phone";
             Query query = session.createQuery(hql);
             query.setParameter("phone", phone);
-            return (Account) query.uniqueResult();
+            Account account = (Account) query.uniqueResult();
+
+            // Gán roleName nếu roleGroup tồn tại
+            if (account != null && account.getRoleGroup() != null) {
+                account.setRoleName(account.getRoleGroup().getRoleGroupName()); 
+            }
+
+            return account;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -115,6 +132,37 @@ public class Account_DAO {
             query.setParameter("phone", phone);
             return query.uniqueResult() != null;
         } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean changeStatus(String accPhone) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            String getStatusHql = "SELECT a.status FROM Account a WHERE a.phone= :accPhone";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("accPhone", accPhone);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            String updateHql = "UPDATE Account a SET a.status = :newStatus WHERE a.phone = :accPhone";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("accPhone", accPhone);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
             return false;
         } finally {

@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Employee")
 public class Employee {
+	@Transient // Not stored in the database, just for convenience
+    private String permission;
+	
 	@Column(name = "citizenId")
 	private String citizenId;
 	
@@ -72,6 +75,18 @@ public class Employee {
 		this.educationLevel = educationLevel;
 		this.status = status;
 		this.deletedAt = deletedAt;
+	}
+
+
+
+	public String getPermission() {
+		return permission;
+	}
+
+
+
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 
 

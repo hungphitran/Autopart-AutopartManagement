@@ -33,7 +33,7 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                     	 <div class="form-group">
-                                            <label for="brandId">Mã nhãn hàng<span class="required-text">*</span></label>
+                                            <label for="brandId">Mã nhãn hàng <span class="required-text">*</span></label>
                                             <input required type="text" class="form-control" id="brandId" name="brandId" value="${nextBrandId}" readonly>
                                         </div>
                                         <div class="form-group">

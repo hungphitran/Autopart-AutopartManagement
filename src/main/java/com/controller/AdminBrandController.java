@@ -63,7 +63,6 @@ public class AdminBrandController {
 	
 	@RequestMapping(value = "/brand/edit", method= RequestMethod.POST)
 	public String editBrandPatch(@ModelAttribute("brand") Brand brand) {
-		System.out.println("-----------------------\n\n" + brand + "-----------------\n\n");
 		if (brand.getStatus() == null) {
 			brand.setStatus("Inactive");
 	    }

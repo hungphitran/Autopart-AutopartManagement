@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách nhân viên</title>
+	<title>Danh sách sản phẩm</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,54 +28,48 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Nhân Viên</h6>
-								<a href="${pageContext.request.contextPath}/admin/employee/add.htm" class="btn btn-primary">+ Thêm nhân viên</a>
+								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Sản Phẩm</h6>
+								<a href="${pageContext.request.contextPath}/admin/product/add.htm" class="btn btn-primary">+ Thêm sản phẩm</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Họ Tên Nhân Viên</th>
-										<th>Email</th>
-										<th>Số Điện Thoại</th>
-										<th>Giới Tính</th>
-										<th>Trạng Thái</th>
+										<th>Ảnh Sản Phẩm</th>
+										<th>Tên Sản Phẩm</th>
+										<th>Giá Bán</th>
+										<th>Số Lượng</th>
+										<th>Trạng thái</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${employees}" var="emp">
+									<c:forEach items="${products}" var="product">
 										<tr class="product-item">
-											<td class="align-middle">${emp.fullName}</td>
-											<td class="align-middle">${emp.email}</td>
-											<td class="align-middle">${emp.phone}</td>
-											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${emp.gender == 'Male'}">
-												    	<span class="align-middle">Nam</span>			
-												    </c:when>
-												    <c:otherwise>
-												        <span class="align-middle">Nữ</span>
-												    </c:otherwise>
-												</c:choose>
+											<td>
+												<img alt="" src="${product.imageUrls}" style="max-width: 100px; max-height: 100px; display: block;">
 											</td>
+											<td class="align-middle">${product.productName}</td>
+											<td class="align-middle"><fmt:formatNumber value="${product.salePrice}" type="number" maxFractionDigits="0" groupingUsed="true"/> ₫</td>
+											<td class="align-middle">${product.stock}</td>
 											<td class="align-middle">
 												<c:choose>
-												    <c:when test="${emp.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												    <c:when test="${product.status == 'Active'}">
+												    	<a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-product-id="${product.productId}" data-product-status="${product.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empPhone=${emp.phone}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="javascript:void(0);" data-product-id="${product.productId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
+												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -101,6 +95,27 @@
 							<div class="modal-footer">
 							<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
 							<a href="login.html" class="btn btn-primary">Đăng xuất</a>
+							</div>
+						</div>
+						</div>
+					</div>
+					
+					<!-- Modal Delete Item -->
+					<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabelLogout">Xóa sản phẩm</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<p>Bạn chắc chắn muốn xóa sản phẩm này không?</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
+								<a href="#" id="delete-link" class="btn btn-primary">Xóa</a>
 							</div>
 						</div>
 						</div>
@@ -141,23 +156,22 @@
 			$('#dataTable').on('click', '.change-status-link', function(event) {
 			      event.preventDefault(); 
 
-			      var empPhone = $(this).data('emp-phone');
-			      var empStatus = $(this).data('emp-status');
+			      var productId = $(this).data('product-id');
+			      var productStatus = $(this).data('product-status');
 
 			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/employee/changeStatus.htm',
+			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
 			        type: 'POST',
-			        data: { empPhone: empPhone },
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');
 			          
-			          if (empStatus === "Inactive") { 
+			          if (productStatus === "Inactive") { 
 			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('emp-status', 'Active');
+			              link.data('product-status', 'Active');
 			          } else {
 			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('emp-status', 'Inactive');
+			              link.data('product-status', 'Inactive');
 			          }
 
 			        },
@@ -167,6 +181,11 @@
 			        }
 				});
 		    });
+			
+			$('#dataTable').on('click', '.delete-btn', function() {
+			    var productId = $(this).data('product-id');
+			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/product/delete.htm?productId=' + productId);
+		  	});
 		});
   	</script>
 </body>

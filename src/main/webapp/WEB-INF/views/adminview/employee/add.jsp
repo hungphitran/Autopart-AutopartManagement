@@ -1,206 +1,155 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Thêm sản phẩm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Nhân Viên</title>
 
-	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-	<link href="<c:url value="/resources/vendor/bootstrap/css/bootstrap.css" />" rel="stylesheet" type="text/css">
-	<link href="<c:url value="/resources/css/admincss/base.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="<c:url value="/resources/vendor/bootstrap/css/bootstrap.css" />" rel="stylesheet" type="text/css">
+    <link href="<c:url value="/resources/css/admincss/base.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/vendor/datatables/dataTables.bootstrap4.css" />" rel="stylesheet">
 
     <style>
-        .custom-file {
-            position: relative;
+        .selected-products {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .selected-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         
-        .custom-file-input {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        
-        .custom-file-label {
+        .selected-item span {
             flex-grow: 1;
-            padding: 0.375rem 0.75rem;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            background-color: #fff;
+        }
+        
+        .order-info-column {
+            padding: 15px;
+        }
+        
+        .order-info-column label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .form-control {
+            border-radius: 4px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body id="page-top">
-	<div id="wrapper">
-	    <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
-	    
-	    <div id="content-wrapper" class="d-flex flex-column">
-			<div id="content">
-	    		<jsp:include page="/WEB-INF/mixins/adminheader.jsp" />
+    <div id="wrapper">
+        <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
+        
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <jsp:include page="/WEB-INF/mixins/adminheader.jsp" />
 
-				<div class="container-fluid" id="container-wrapper">
+                <div class="container-fluid" id="container-wrapper">
                     <div class="card mb-4">
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Thêm Sản Phẩm</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Thêm Nhân Viên</h6>
                         </div>
                         <div class="card-body">
-                            <form:form action="${pageContext.request.contextPath}/admin/product/add.htm" method="post" modelAttribute="product">
+                            <form:form modelAttribute="emp" action="${pageContext.request.contextPath}/admin/employee/add.htm" method="post">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <!-- Cột 1 -->
+                                    <div class="col-lg-6 order-info-column">
                                         <div class="form-group">
-                                            <label for="productId">Mã sản phẩm <span class="required-text">*</span></label>
-                                            <input required type="text" class="form-control" id="productId" name="productId" value="${nextProductId}" readonly>
+                                            <label for="fullName">Họ và Tên <span class="text-danger">*</span></label>
+                                            <form:input path="fullName" type="text" class="form-control" id="fullName" required="true"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productName">Tên sản phẩm <span class="required-text">*</span></label>
-                                            <input required type="text" class="form-control" id="productName" name="productName" placeholder="Nhập tên sản phẩm">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="brandId">Nhãn hàng sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="brandId" class="form-control mb-3">
-                                                <form:option value="" label="-- Chọn nhãn hàng của sản phẩm --" disabled="true"/>
-                                                <c:forEach items="${brandList}" var="brand">
-                                                    <form:option value="${brand.brandId}" label="${brand.brandName}"/>
-                                                </c:forEach>
+                                            <label for="gender">Giới Tính <span class="text-danger">*</span></label>
+                                            <form:select path="gender" class="form-control" id="gender" required="true">
+                                                <form:option value="Male" label="Nam"/>
+                                                <form:option value="Female" label="Nữ"/>
                                             </form:select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="productGroupId">Danh mục sản phẩm <span class="required-text">*</span></label>
-                                            <form:select required="true" path="productGroupId" class="form-control mb-3">
-                                                <form:option value="" label="-- Chọn danh mục của sản phẩm --" disabled="true"/>
-                                                <c:forEach items="${productGroupList}" var="productGroup">
-                                                    <form:option value="${productGroup.productGroupId}" label="${productGroup.groupName}"/>
-                                                </c:forEach>
+                                            <label for="phone">Số Điện Thoại <span class="text-danger">*</span></label>
+                                            <form:input path="phone" type="text" class="form-control" id="phone" required="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email <span class="text-danger">*</span></label>
+                                            <form:input path="email" type="email" class="form-control" id="email" required="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="citizenId">Số CCCD <span class="text-danger">*</span></label>
+                                            <form:input path="citizenId" type="text" class="form-control" id="citizenId" required="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="permission">Nhóm Quyền <span class="text-danger">*</span></label>
+                                            <form:select path="permission" class="form-control mb-3" required="true">
+                                                <form:option value="" label="-- Chọn nhóm quyền --" disabled="true"/>
+                                                <form:options items="${roleGroup}" itemValue="roleGroupId" itemLabel="roleGroupName"/>
                                             </form:select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="costPrice">Giá gốc <span class="required-text">*</span></label>
-                                            <input required type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="salePrice">Giá bán <span class="required-text">*</span></label>
-                                            <input required type="number" class="form-control" id="salePrice" name="salePrice" placeholder="Nhập giá tiền bán của sản phẩm">
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <!-- Cột 2 -->
+                                    <div class="col-lg-6 order-info-column">
                                         <div class="form-group">
-                                            <label for="stock">Số lượng <span class="required-text">*</span></label>
-                                            <input required type="text" class="form-control" id="stock" name="stock" placeholder="Nhập số lượng sản phẩm">
+                                            <label for="birthDate">Ngày Sinh <span class="text-danger">*</span></label>
+                                            <form:input path="birthDate" type="date" class="form-control" id="birthDate" required="true"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="unit">Đơn vị <span class="required-text">*</span></label>
-                                            <select required class="form-control mb-3" id="unit" name="unit">
-                                                <option disabled>-- Chọn đơn vị của sản phẩm --</option>
-                                                <option>Bình</option>
-                                                <option>Cái</option>
-                                                <option>Bộ</option>
-                                            </select>
+                                            <label for="startDate">Ngày Bắt Đầu Làm Việc <span class="text-danger">*</span></label>
+                                            <form:input path="startDate" type="date" class="form-control" id="startDate" required="true"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>
-                                            <div class="custom-file">
-                                                <input required type="file" class="custom-file-input" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)">
-                                                <label class="custom-file-label" for="customFile">Chọn ảnh</label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <img id="preview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; display: none;">
-                                            </div>
+                                            <label for="address">Địa Chỉ <span class="text-danger">*</span></label>
+                                            <form:input path="address" type="text" class="form-control" id="address" required="true"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="weight">Khối lượng <span class="required-text">*</span></label>
-                                            <div class="input-group mb-3">
-                                                <input required type="number" class="form-control" name="weight" placeholder="Nhập khối lượng sản phẩm">
-                                                <div class="input-group-append">
-                                                  <span class="input-group-text">kg</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="description">Mô tả sản phẩm <span class="required-text">*</span></label>
-                                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                                            <label for="educationLevel">Trình Độ Học Vấn <span class="text-danger">*</span></label>
+                                            <form:input path="educationLevel" type="text" class="form-control" id="educationLevel" required="true"/>
                                         </div>
                                         <div class="form-group d-flex">
-                                            <label for="status" class="mr-4">Trạng thái hoạt động <span class="required-text">*</span></label>
+                                            <label for="status" class="mr-4">Trạng thái hoạt động <span class="text-danger">*</span></label>
                                             <div class="custom-control custom-switch ml-4">
-                                                <input type="checkbox" class="custom-control-input" name="status" id="status" value="Active" checked>
+                                                <form:checkbox path="status" class="custom-control-input" id="status" value="Active" checked="true"/>
                                                 <label class="custom-control-label" for="status">Hoạt động</label>
                                             </div>
                                         </div>
-                                        <div class="d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-primary">Lưu sản phẩm</button>
-                                        </div>
                                     </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button type="submit" class="btn btn-primary">Thêm Nhân Viên</button>
+                                    <a href="${pageContext.request.contextPath}/admin/employee.htm" class="btn btn-secondary ml-2">Quay Lại</a>
                                 </div>
                             </form:form>
                         </div>
                     </div>
-		
-                    <!-- Modal Logout -->
-                    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-                        aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            </div>
-                            <div class="modal-body">
-                            <p>Bạn có muốn đăng xuất không?</p>
-                            </div>
-                            <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-                            <a href="login.html" class="btn btn-primary">Đăng xuất</a>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<!-- Scroll to top -->
-	<a class="scroll-to-top rounded" href="#page-top">
-		<i class="fas fa-angle-up"></i>
-	</a>
+    <!-- Scroll to top -->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
 
-    <script>
-        function previewImage(input) {
-            const preview = document.getElementById('preview');
-            const fileLabel = input.nextElementSibling;
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    fileLabel.textContent = input.files[0].name;
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
-                fileLabel.textContent = 'Chọn ảnh';
-            }
-        }
-    </script>
-
-	<script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>
-	<script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
-	<script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
-	<script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
+    <script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>
+    <script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
+    <script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
+    <script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
 </body>
 </html>
