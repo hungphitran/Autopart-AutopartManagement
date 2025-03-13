@@ -27,10 +27,6 @@ public class Import {
     @OneToMany(mappedBy = "importId", fetch = FetchType.EAGER)
     private List<ImportDetail> importDetails;
 
-    // Foreign key reference to Employee
-    @ManyToOne
-    @JoinColumn(name = "employeePhone", referencedColumnName = "phone", insertable = false, updatable = false)
-    private Employee employee;
 
     public Import() {
         super();
@@ -83,14 +79,6 @@ public class Import {
 
     public void setImportDetails(List<ImportDetail> importDetails) {
         this.importDetails = importDetails;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
     }
 
     @Override

@@ -84,6 +84,9 @@ public class LoginController {
 	
 	@Autowired
 	Cart_DAO cdao;
+	
+	@Autowired
+	Import_DAO importDao;
 
 	
 	@RequestMapping(value="/login",method=RequestMethod.POST)
@@ -93,7 +96,7 @@ public class LoginController {
 		String phone= req.getParameter("phone");
 		String pass = req.getParameter("password");
 		
-//		test();
+		test();
 		
 		Account acc = accountDao.getByPhone(phone);
 		
@@ -323,6 +326,8 @@ public class LoginController {
 //	     
 //	     System.out.println(oddao.getAllByOrderId("ORD001"));
 	     
+//		System.out.println(rgdao.getAll());
 	     
+		System.out.println(importDao.getAll());
 	}
 }

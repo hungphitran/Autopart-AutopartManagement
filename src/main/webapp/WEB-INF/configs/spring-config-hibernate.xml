@@ -97,6 +97,10 @@
 <bean id="Discount_DAO" class="com.dao.Discount_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
+
+<bean id="Import_DAO" class="com.dao.Import_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
 	
 	<!-- Transaction Manager -->
     <bean id="transactionManager" 

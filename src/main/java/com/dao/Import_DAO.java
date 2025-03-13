@@ -24,7 +24,7 @@ public class Import_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Import i WHERE i.deleted = FALSE";
+            String hql = "FROM Import i";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -107,26 +107,26 @@ public class Import_DAO {
         }
     }
 
-    public boolean delete(String importId) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            String hql = "UPDATE Import i SET i.deleted = TRUE, i.deletedAt = GETDATE() WHERE i.importId = :importId";
-            Query query = session.createQuery(hql);
-            query.setParameter("importId", importId);
-            int rowsAffected = query.executeUpdate();
-            transaction.commit();
-            return rowsAffected > 0;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) session.close();
-        }
-    }
+//    public boolean delete(String importId) {
+//        Session session = null;
+//        Transaction transaction = null;
+//        try {
+//            session = factory.openSession();
+//            transaction = session.beginTransaction();
+//            String hql = "UPDATE Import i SET i.deleted = TRUE, i.deletedAt = GETDATE() WHERE i.importId = :importId";
+//            Query query = session.createQuery(hql);
+//            query.setParameter("importId", importId);
+//            int rowsAffected = query.executeUpdate();
+//            transaction.commit();
+//            return rowsAffected > 0;
+//        } catch (Exception e) {
+//            if (transaction != null) transaction.rollback();
+//            e.printStackTrace();
+//            return false;
+//        } finally {
+//            if (session != null) session.close();
+//        }
+//    }
 
     public boolean checkExistById(String importId) {
         Session session = null;
