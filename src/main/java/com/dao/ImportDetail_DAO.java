@@ -1,84 +1,44 @@
 package com.dao;
 
 import java.util.List;
-import java.util.Map;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.Query;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.entity.Brand;
-import com.entity.Cart;
-import com.entity.Product;
+import com.entity.ImportDetail;
 
-public class Cart_DAO {
+public class ImportDetail_DAO {
 
     private final SessionFactory factory;
 
-    public Cart_DAO(SessionFactory factory) {
+    public ImportDetail_DAO(SessionFactory factory) {
         this.factory = factory;
     }
 
-
-    @Transactional
-    public Cart getById(String cartId) {
+    public List<ImportDetail> getAllByImportId(String importId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT c FROM Cart c LEFT JOIN FETCH c.products WHERE c.cartId = :cartId";
+            String hql = "FROM ImportDetail id WHERE id.importId = :importId";
             Query query = session.createQuery(hql);
-            query.setParameter("cartId", cartId);
-            return (Cart) query.uniqueResult();
+            query.setParameter("importId", importId);
+            return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return List.of();
         } finally {
             if (session != null) session.close();
         }
     }
 
-    public boolean add(Cart cart) {
+    public boolean add(ImportDetail importDetail) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-
-            // Save the cart
-            session.save(cart);
-            session.flush();
-
-            
-//            // For ProductsInCart, use SQL with createSQLQuery()
-//            for (Map.Entry<Product, Integer> entry : cart.getProducts().entrySet()) {
-//                String sql = "INSERT INTO ProductsInCart (cartId, productId, amount) VALUES (?, ?, ?)";
-//                session.createSQLQuery(sql)
-//                      .setParameter(0, cart.getCartId())
-//                      .setParameter(1, entry.getKey().getProductId())
-//                      .setParameter(2, entry.getValue())
-//                      .executeUpdate();
-//            }
-//
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) session.close();
-        }
-    }
-    
-    public boolean update(Cart cart) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            session.update(cart);
+            session.save(importDetail);
             transaction.commit();
             return true;
         } catch (Exception e) {
@@ -90,15 +50,32 @@ public class Cart_DAO {
         }
     }
 
-    
-    
-    public boolean checkExistById(String cartId) {
+    public boolean update(ImportDetail importDetail) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            session.update(importDetail);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    public boolean checkExistById(String importId, String productId) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT 1 FROM Cart c WHERE c.cartId = :cartId";
+            String hql = "SELECT 1 FROM ImportDetail id WHERE id.importId = :importId AND id.productId = :productId";
             Query query = session.createQuery(hql);
-            query.setParameter("cartId", cartId);
+            query.setParameter("importId", importId);
+            query.setParameter("productId", productId);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,24 +85,24 @@ public class Cart_DAO {
         }
     }
 
-    public String generateNextCartId() {
+    public boolean delete(String importId) {
         Session session = null;
+        Transaction transaction = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT MAX(c.cartId) FROM Cart c WHERE c.cartId LIKE 'CART%'";
+            transaction = session.beginTransaction();
+            String hql = "DELETE FROM ImportDetail id WHERE id.importId = :importId";
             Query query = session.createQuery(hql);
-            String maxId = (String) query.uniqueResult();
-            if (maxId == null) {
-                return "CART001";
-            }
-            int currentNum = Integer.parseInt(maxId.substring(4));
-            return String.format("CART%03d", currentNum + 1);
+            query.setParameter("importId", importId);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
         } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return "CART001";
+            return false;
         } finally {
             if (session != null) session.close();
         }
     }
-    
 }

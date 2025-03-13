@@ -1,5 +1,7 @@
 package com.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +75,7 @@ public class AdminEmployeeController {
 			emp.setStatus("Inactive");
         }
         
-		Account acc = new Account(emp.getPhone(), "1111", null, permission, emp.getStatus());
+		Account acc = new Account(emp.getPhone(), "1111", null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 		accountDao.add(acc);
 		
 		employeeDao.add(emp);

@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách đơn hàng</title>
+	<title>Lịch sử phiếu nhập</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,41 +28,29 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Đơn Hàng</h6>
+								<h6 class="m-0 font-weight-bold text-primary">Lịch Sử Phiếu Nhập</h6>
+								<a href="${pageContext.request.contextPath}/admin/product/import/add.htm" class="btn btn-primary">+ Tạo phiếu nhập</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Mã Đơn Hàng</th>
-										<th>Số Điện Thoại KH</th>
-										<th>Địa Chỉ Giao Hàng</th>
-										<th>Ngày Đặt Hàng</th>
+										<th>Mã Phiếu Nhập</th>
+										<th>Nhân Viên Phụ Trách</th>
+										<th>Ngày Nhập Hàng</th>
 										<th>Tổng Tiền</th>
-										<th>Trạng Thái</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${orders}" var="order">
+									<c:forEach items="${imports}" var="imp">
 										<tr class="product-item">
-											<td class="align-middle">${order.orderId}</td>
-											<td class="align-middle">${order.userPhone}</td>
-											<td class="align-middle">${order.shipAddress}</td>
-											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
-											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
+											<td class="align-middle">${imp.importId}</td>
+											<td class="align-middle">${imp.employeeName}</td>
+											<td class="align-middle"><fmt:formatDate value="${imp.importDate}" pattern="dd/MM/yyyy" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${imp.importCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
 											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${order.status == 'Completed'}">
-												    	<span class="badge badge-success">Hoàn thành</span>		
-												    </c:when>
-												    <c:otherwise>
-												        <span class="badge badge-danger">Đã hủy</span>		
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/product/import/detail.htm?importId=${imp.importId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -92,6 +80,7 @@
 						</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
 		</div>

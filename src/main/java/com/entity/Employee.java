@@ -50,6 +50,15 @@ public class Employee {
     @Column(name = "deletedAt", columnDefinition = "DATETIME")
     private Timestamp  deletedAt;
     
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
+    
     
 
 	public Employee() {
@@ -59,9 +68,9 @@ public class Employee {
 
 
 
-	public Employee(String citizenId, String phone, String fullName, String email,
-			Date birthDate, String gender, Date startDate, String address, String avatar,
-			String educationLevel, String status, Timestamp  deletedAt) {
+	public Employee(String citizenId, String phone, String fullName, String email, Date birthDate, String gender,
+			Date startDate, String address, String avatar, String educationLevel, String status, Timestamp deletedAt,
+			Timestamp createdAt, Timestamp updatedAt, boolean deleted) {
 		super();
 		this.citizenId = citizenId;
 		this.phone = phone;
@@ -75,6 +84,9 @@ public class Employee {
 		this.educationLevel = educationLevel;
 		this.status = status;
 		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
 
@@ -112,6 +124,7 @@ public class Employee {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
 
 
 	public String getFullName() {
@@ -234,16 +247,53 @@ public class Employee {
 
 
 
-	@Override
-	public String toString() {
-		return "Employee [citizenId=" + citizenId + ", phone=" + phone + ", fullName="
-				+ fullName + ", email=" + email + ", birthDate=" + birthDate + ", gender=" + gender + ", startDate="
-				+ startDate + ", address=" + address + ", avatar=" + avatar + ", educationLevel=" + educationLevel
-				+ ", status=" + status + ", deletedAt=" + deletedAt + "]";
+	public Timestamp getCreatedAt() {
+		return createdAt;
 	}
 
+
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Employee [citizenId=" + citizenId + ", phone=" + phone + ", fullName=" + fullName + ", email=" + email
+				+ ", birthDate=" + birthDate + ", gender=" + gender + ", startDate=" + startDate + ", address="
+				+ address + ", avatar=" + avatar + ", educationLevel=" + educationLevel + ", status=" + status
+				+ ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
+				+ deleted + "]";
+	}
+
+
+
 	
-    
-    
     
 }

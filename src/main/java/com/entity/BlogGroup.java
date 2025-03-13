@@ -20,17 +20,29 @@ public class BlogGroup {
 
     @Column(name = "deletedAt")
     private Timestamp  deletedAt; // Timestamp for when the group was deleted
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
     // Default constructor
     public BlogGroup() {}
 
-	public BlogGroup(String blogGroupId, String groupName, String status,
-			Timestamp  deletedAt) {
+	public BlogGroup(String blogGroupId, String groupName, String status, Timestamp deletedAt, Timestamp createdAt,
+			Timestamp updatedAt, boolean deleted) {
 		super();
 		this.blogGroupId = blogGroupId;
 		this.groupName = groupName;
 		this.status = status;
 		this.deletedAt = deletedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
 	public String getBlogGroupId() {
@@ -49,7 +61,6 @@ public class BlogGroup {
 		this.groupName = groupName;
 	}
 
-
 	public String getStatus() {
 		return status;
 	}
@@ -58,21 +69,45 @@ public class BlogGroup {
 		this.status = status;
 	}
 
-	
-
-	public Timestamp  getDeletedAt() {
+	public Timestamp getDeletedAt() {
 		return deletedAt;
 	}
 
-	public void setDeletedAt(Timestamp  deletedAt) {
+	public void setDeletedAt(Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
+	}
+
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	@Override
 	public String toString() {
-		return "BlogGroup [blogGroupId=" + blogGroupId + ", groupName=" + groupName 
-				+ ", status=" + status +  ", deletedAt=" + deletedAt + "]";
+		return "BlogGroup [blogGroupId=" + blogGroupId + ", groupName=" + groupName + ", status=" + status
+				+ ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
+				+ deleted + "]";
 	}
 
+	
    
 }

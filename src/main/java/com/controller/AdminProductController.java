@@ -2,6 +2,7 @@ package com.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.Brand_DAO;
+import com.dao.Employee_DAO;
+import com.dao.Import_DAO;
 import com.dao.ProductGroup_DAO;
 import com.dao.Product_DAO;
 import com.entity.Brand;
+import com.entity.Employee;
+import com.entity.Import;
+import com.entity.ImportDetailId;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
@@ -36,6 +43,12 @@ public class AdminProductController {
 	
 	@Autowired
 	ProductGroup_DAO productGroupDao;
+	
+	@Autowired
+	Import_DAO importDao;
+	
+	@Autowired
+	Employee_DAO employeeDao;
 	
 	@RequestMapping("/product")
 	public String showProducts(HttpServletRequest req) {
@@ -201,9 +214,81 @@ public class AdminProductController {
 	
 	@RequestMapping(value = "/product/import", method= RequestMethod.GET)
 	public String importProduct(Model model, HttpServletRequest req) {
-		
-		return "adminview/product/import";
+		List<Import> imports = importDao.getAll();
+		req.setAttribute("imports", imports);
+		return "adminview/product/import/index";
 	}
+	
+	@RequestMapping(value = "/product/import/add", method = RequestMethod.GET)
+    public String addImportProduct(Model model, HttpServletRequest req) {
+        Import importEntity = new Import();
+        importEntity.setImportId(importDao.generateNextImportId());
+        importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
+        model.addAttribute("importForm", importEntity);
+
+        List<Employee> employeeList = employeeDao.getAll();
+        List<Product> productList = productDao.getAll();
+
+        model.addAttribute("employeeList", employeeList);
+        model.addAttribute("productList", productList);
+
+        return "adminview/product/import/add";
+    }
+	
+	@RequestMapping(value = "/product/import/add", method = RequestMethod.POST)
+	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
+	                                   BindingResult result, 
+	                                   Model model) {
+	    if (result.hasErrors()) {
+	        model.addAttribute("employeeList", employeeDao.getAll());
+	        model.addAttribute("productList", productDao.getAll());
+	        model.addAttribute("error", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
+	        return "adminview/product/import/add";
+	    }
+	    System.out.println(importForm);
+	    if (importForm.getImportDetails() != null) {
+	        importForm.getImportDetails().forEach(detail -> {
+	        	// Gán importId cho các ImportDetail
+	            ImportDetailId id = new ImportDetailId();
+	            id.setImportId(importForm.getImportId());
+	            id.setProductId(detail.getId().getProductId());
+	            detail.setId(id);
+	            detail.setImportEntity(importForm);
+	            
+	            // Cập nhật số lượng sản phẩm vào kho
+	            String productId = detail.getId().getProductId();
+	            Product product = productDao.getById(productId);
+	            product.setStock(product.getStock() + detail.getAmount());
+	            productDao.update(product);
+	        });
+	    }
+
+	    importDao.add(importForm);
+	    return "redirect:/admin/product/import.htm";
+	}
+	
+	@RequestMapping(value = "/product/import/detail", method = RequestMethod.GET)
+    public String detailImportProduct(@RequestParam("importId") String importId, Model model, HttpServletRequest req) {
+        // Lấy thông tin phiếu nhập từ database
+        Import importEntity = importDao.getById(importId); // Giả định Import_DAO có phương thức getById
+        if (importEntity == null) {
+            model.addAttribute("error", "Phiếu nhập không tồn tại!");
+            return "adminview/product/import/detail"; // Trả về trang với thông báo lỗi
+        }
+
+        // Lấy thông tin nhân viên để hiển thị tên đầy đủ
+        String employeeFullName = employeeDao.getByPhone(importEntity.getEmployeePhone()) != null
+                ? employeeDao.getByPhone(importEntity.getEmployeePhone()).getFullName()
+                : "Không xác định";
+
+        // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
+        List<Product> productList = productDao.getAll();
+        model.addAttribute("importEntity", importEntity);
+        model.addAttribute("employeeFullName", employeeFullName);
+        model.addAttribute("productList", productList);
+
+        return "adminview/product/import/detail";
+    }
 	// -- End product --
 
 }

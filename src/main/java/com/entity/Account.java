@@ -1,5 +1,7 @@
 package com.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.*;
 
 @Entity
@@ -27,17 +29,30 @@ public class Account {
     
     @Column(name="status")
     private String status;
+    
+    @Column(name = "createdAt")
+    private Timestamp createdAt;
+    
+    @Column(name = "updatedAt")
+    private Timestamp updatedAt;
+    
+    @Column(name="deleted")
+    private boolean deleted;
 
     // Default constructor
     public Account() {}
 
-	public Account(String phone, String password, String token, String permission, String status) {
+	public Account(String phone, String password, String token, String permission, String status, Timestamp createdAt,
+			Timestamp updatedAt, boolean deleted) {
 		super();
 		this.phone = phone;
 		this.password = password;
 		this.token = token;
 		this.permission = permission;
 		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deleted = deleted;
 	}
 
 	public String getRoleName() {
@@ -96,11 +111,37 @@ public class Account {
 		this.status = status;
 	}
 
+	public Timestamp getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Timestamp getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	@Override
 	public String toString() {
 		return "Account [phone=" + phone + ", password=" + password + ", token=" + token + ", permission=" + permission
-				+ ", status=" + status + "]";
+				+ ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
+				+ deleted + "]";
 	}
 
+	
     
    }
