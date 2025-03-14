@@ -40,7 +40,7 @@ public class Import {
     }
 
     public Import(String importId, String employeePhone, Date importDate, BigDecimal importCost,  List<ImportDetail> importDetails, String employeeName) {
-        super();
+		super();
         this.importId = importId;
         this.employeePhone = employeePhone;
         this.importDate = importDate;
