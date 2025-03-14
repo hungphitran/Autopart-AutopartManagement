@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,19 +41,27 @@
 						<div class="col-lg-4">
 							<!-- Ảnh sản phẩm -->
 							<div class="card mb-4">
-								<div class="card-header py-3">
-									<h6 class="m-0 font-weight-bold text-primary">Ảnh Sản Phẩm</h6>
-								</div>
-								<div class="card-list" style="display:table-row;">
-									<c:forEach items="${imgUrls}" var="url">
-										<div class="card-body">
-											<img src="${url}" alt="Sản phẩm" class="img-fluid"
-												style="max-width: 100px; max-height: 100px;">
-										</div>
-									</c:forEach>
-								</div>
-
-
+							    <div class="card-header py-3">
+							        <h6 class="m-0 font-weight-bold text-primary">Ảnh Sản Phẩm</h6>
+							    </div>
+							    <div class="card-body">
+							        <c:forEach items="${imgUrls}" var="url">
+							            <c:choose>
+										    <c:when test="${fn:startsWith(url, 'https')}">
+										        <img src="${url}" 
+										             alt="Sản phẩm" 
+										             class="img-fluid" 
+										             style="max-width: 100px; max-height: 100px; margin-right: 10px;">
+										    </c:when>
+										    <c:otherwise>
+										        <img src="${pageContext.request.contextPath}/resources/img/${url}" 
+										             alt="Sản phẩm" 
+										             class="img-fluid" 
+										             style="max-width: 100px; max-height: 100px; margin-right: 10px;">
+										    </c:otherwise>
+										</c:choose>
+							        </c:forEach>
+							    </div>
 							</div>
 
 							<!-- Thông tin trạng thái -->

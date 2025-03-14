@@ -8,12 +8,17 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.entity.Blog;
+import com.entity.Employee;
 import com.entity.Import;
 
-public class Import_DAO {
+import org.hibernate.Query;
 
+
+public class Import_DAO {
+	@Autowired
     private final SessionFactory factory;
 
     public Import_DAO(SessionFactory factory) {
@@ -24,9 +29,18 @@ public class Import_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Import i WHERE i.deleted = FALSE";
+            String hql = "SELECT i FROM Import i LEFT JOIN FETCH i.employee";
             Query query = session.createQuery(hql);
-            return query.list();
+            
+            List<Import> imports = (List<Import>) query.list();
+            
+            for (Import imp : imports) {
+                if (imp.getEmployee() != null) {
+                    imp.setEmployeeName(imp.getEmployee().getFullName());
+                }
+            }
+            
+            return imports;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();

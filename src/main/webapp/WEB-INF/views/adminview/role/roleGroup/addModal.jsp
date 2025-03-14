@@ -53,7 +53,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">Thêm Sản Phẩm</h6>
                         </div>
                         <div class="card-body">
-                            <form:form action="${pageContext.request.contextPath}/admin/product/add.htm" method="post" modelAttribute="product" enctype="multipart/form-data">
+                            <form:form action="${pageContext.request.contextPath}/admin/product/add.htm" method="post" modelAttribute="product">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
@@ -106,16 +106,15 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-										    <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>
-										    <div class="custom-file">
-										        <input required type="file" class="custom-file-input" name="imageFiles" id="customFile" accept="image/*" multiple onchange="previewImages(this)">
-										        <label class="custom-file-label" for="customFile">Chọn ảnh</label>
-										    </div>
-										    <div class="mt-2" id="fileNameList" style="font-size: 0.9em; color: #666;"></div> 
-										    <div class="mt-3" id="previewContainer">
-										        <!-- Preview ảnh sẽ được thêm vào đây -->
-										    </div>
-										</div>
+                                            <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>
+                                            <div class="custom-file">
+                                                <input required type="file" class="custom-file-input" name="imageUrls" id="customFile" accept="image/*" onchange="previewImage(this)">
+                                                <label class="custom-file-label" for="customFile">Chọn ảnh</label>
+                                            </div>
+                                            <div class="mt-3">
+                                                <img id="preview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; display: none;">
+                                            </div>
+                                        </div>
                                         <div class="form-group">
                                             <label for="weight">Khối lượng <span class="required-text">*</span></label>
                                             <div class="input-group mb-3">
@@ -177,39 +176,26 @@
 	</a>
 
     <script>
-	    function previewImages(input) {
-	        const previewContainer = document.getElementById('previewContainer');
-	        const fileLabel = input.nextElementSibling;
-	        const fileNameList = document.getElementById('fileNameList');
-	        previewContainer.innerHTML = '';
-	        fileNameList.innerHTML = '';
-	        
-	        if (input.files && input.files.length > 0) {
-	            fileLabel.textContent = 'Đã chọn ' + input.files.length + ' file'; 
-	            const fileNames = Array.from(input.files)
-	                .map(file => file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name)
-	                .join(', ');
-	            fileNameList.textContent = fileNames.length > 50 ? fileNames.substring(0, 47) + '...' : fileNames;
-	            
-	            Array.from(input.files).forEach(file => {
-	                const reader = new FileReader();
-	                reader.onload = function(e) {
-	                    const img = document.createElement('img');
-	                    img.src = e.target.result;
-	                    img.alt = 'Preview';
-	                    img.style.maxWidth = '100px';
-	                    img.style.maxHeight = '100px';
-	                    img.style.marginRight = '10px';
-	                    previewContainer.appendChild(img);
-	                };
-	                reader.readAsDataURL(file);
-	            });
-	        } else {
-	            previewContainer.innerHTML = '';
-	            fileLabel.textContent = 'Chọn ảnh';
-	            fileNameList.innerHTML = '';
-	        }
-	    }
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
+            const fileLabel = input.nextElementSibling;
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    fileLabel.textContent = input.files[0].name;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                fileLabel.textContent = 'Chọn ảnh';
+            }
+        }
     </script>
 
 	<script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>

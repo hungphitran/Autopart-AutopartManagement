@@ -14,8 +14,8 @@ public class Blog {
     private String blogId; // Primary key: Blog ID
 
     // Store the foreign key directly as a column
-    @Column(name = "blogGroupId", nullable = true) // Allow nullable if a blog can exist without a group
-    private String blogGroupId; // Foreign key to BlogGroup table
+    @Column(name = "blogGroupId", nullable = true) 
+    private String blogGroupId;
 
     // Maintain the relationship with BlogGroup for object navigation
     @ManyToOne(fetch = FetchType.EAGER) // EAGER fetch for immediate loading, or LAZY if you prefer
@@ -61,7 +61,6 @@ public class Blog {
 		this.blogGroupName = blogGroupName;
 		this.blogId = blogId;
 		this.blogGroupId = blogGroupId;
-		this.blogGroup = blogGroup;
 		this.title = title;
 		this.description = description;
 		this.status = status;

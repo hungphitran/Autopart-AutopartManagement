@@ -7,7 +7,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Account")
 public class Account {
-
+	@Transient // Not stored in the database, just for convenience
+    private String roleName;
+	
     @Id
     @Column(name = "phone")
     private String phone;
@@ -20,6 +22,10 @@ public class Account {
 
     @Column(name ="permission")
     private String permission;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "permission", insertable = false, updatable = false, referencedColumnName = "roleGroupId")
+    private RoleGroup roleGroup;
     
     @Column(name="status")
     private String status;
@@ -49,6 +55,22 @@ public class Account {
 		this.deleted = deleted;
 	}
 
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	
+	public RoleGroup getRoleGroup() {
+		return roleGroup;
+	}
+
+	public void setRoleGroup(RoleGroup roleGroup) {
+		this.roleGroup = roleGroup;
+	}
+	
 	public String getPhone() {
 		return phone;
 	}

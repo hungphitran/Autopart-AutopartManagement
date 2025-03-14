@@ -57,9 +57,10 @@ public class AdminBlogController {
         if (blogGroupId != null && !blogGroupId.isEmpty()) {
             BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
             blog.setBlogGroupId(blogGroupId);
-            blog.setBlogGroup(blogGroup);
+            //blog.setBlogGroup(blogGroup);
         }
-        
+        blog.setCreatedBy("0901234001");
+
         blogDao.add(blog);
         return "redirect:/admin/blog.htm";
     }
@@ -83,7 +84,9 @@ public class AdminBlogController {
         // Set blogGroupId and blogGroup based on the selected blogGroupId
         BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
         blog.setBlogGroupId(blogGroupId);
-        blog.setBlogGroup(blogGroup);
+        //blog.setBlogGroup(blogGroup);
+        
+        blog.setCreatedBy("0901234001");
         
         blogDao.update(blog);
         return "redirect:/admin/blog.htm";

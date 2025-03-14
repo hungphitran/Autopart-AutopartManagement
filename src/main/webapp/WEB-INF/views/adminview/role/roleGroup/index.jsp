@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách nhân viên</title>
+	<title>Danh sách nhóm quyền</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,54 +28,43 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Nhân Viên</h6>
-								<a href="${pageContext.request.contextPath}/admin/employee/add.htm" class="btn btn-primary">+ Thêm nhân viên</a>
+								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Nhóm Quyền</h6>
+								<a href="${pageContext.request.contextPath}/admin/role/add.htm" class="btn btn-primary">+ Thêm nhóm quyền</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Họ Tên Nhân Viên</th>
-										<th>Email</th>
-										<th>Số Điện Thoại</th>
-										<th>Giới Tính</th>
+										<th>Mã Nhóm Quyền</th>
+										<th>Tên Nhóm Quyền</th>
+										<th>Mô Tả</th>
 										<th>Trạng Thái</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${employees}" var="emp">
+									<c:forEach items="${roleGroup}" var="RG">
 										<tr class="product-item">
-											<td class="align-middle">${emp.fullName}</td>
-											<td class="align-middle">${emp.email}</td>
-											<td class="align-middle">${emp.phone}</td>
+											<td class="align-middle">${RG.roleGroupId}</td>
+											<td class="align-middle">${RG.roleGroupName}</td>
+											<td class="align-middle">${RG.description}</td>
 											<td class="align-middle">
 												<c:choose>
-												    <c:when test="${emp.gender == 'Male'}">
-												    	<span class="align-middle">Nam</span>			
-												    </c:when>
-												    <c:otherwise>
-												        <span class="align-middle">Nữ</span>
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${emp.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												    <c:when test="${RG.status == 'Active'}">
+												    	<a href="javascript:void(0);" data-role-id="${RG.roleGroupId}" data-role-status="${RG.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-role-id="${RG.roleGroupId}" data-role-status="${RG.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empPhone=${emp.phone}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="javascript:void(0);" data-role-id="${RG.roleGroupId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
+												<a href="javascript:void(0);" data-role-id="${RG.roleGroupId}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-dark edit-btn">Sửa</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -105,6 +94,36 @@
 						</div>
 						</div>
 					</div>
+					
+					<!-- Modal Delete Item -->
+					<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabelLogout">Xóa nhóm quyền</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<p>Bạn chắc chắn muốn xóa nhóm quyền này không?</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
+								<a href="#" id="delete-link" class="btn btn-primary">Xóa</a>
+							</div>
+						</div>
+						</div>
+					</div>
+					
+					<!-- Modal Edit Item -->
+					<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModal" aria-hidden="true">
+			            <div class="modal-dialog modal-dialog-centered" role="document">
+			              <div class="modal-content">
+			               	
+			              </div>
+			            </div>
+			      	</div>
 
 				</div>
 			</div>
@@ -141,23 +160,23 @@
 			$('#dataTable').on('click', '.change-status-link', function(event) {
 			      event.preventDefault(); 
 
-			      var empPhone = $(this).data('emp-phone');
-			      var empStatus = $(this).data('emp-status');
+			      var roleGroupId = $(this).data('role-id');
+			      var roleStatus = $(this).data('role-status');
 
 			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/employee/changeStatus.htm',
+			        url: '${pageContext.request.contextPath}/admin/role/changeStatus.htm',
 			        type: 'POST',
-			        data: { empPhone: empPhone },
+					data: { roleGroupId: roleGroupId },
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');
 			          
-			          if (empStatus === "Inactive") { 
+			          if (roleStatus === "Inactive") { 
 			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('emp-status', 'Active');
+			              link.data('role-status', 'Active');
 			          } else {
 			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('emp-status', 'Inactive');
+			              link.data('role-status', 'Inactive');
 			          }
 
 			        },
@@ -166,6 +185,20 @@
 			          alert("Lỗi khi thay đổi trạng thái.");
 			        }
 				});
+		    });
+			
+			$('#dataTable').on('click', '.delete-btn', function() {
+			    var roleGroupId = $(this).data('role-id');
+			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/role/delete.htm?roleGroupId=' + roleGroupId);
+		  	});
+			
+			$('#dataTable').on('click', '.edit-btn', function() {
+		        var roleGroupId = $(this).data('role-id');
+
+		        // Load the edit modal content
+		        $('#EditModal .modal-content').load('${pageContext.request.contextPath}/admin/role/edit.htm?roleGroupId=' + roleGroupId, function() {
+		            $('#EditModal').modal('show');
+		        });
 		    });
 		});
   	</script>

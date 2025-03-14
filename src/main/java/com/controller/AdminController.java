@@ -103,12 +103,5 @@ public class AdminController {
 		return "adminview/statistic";
 	}
 	
-	@RequestMapping("/account")
-	public String showInfo(HttpServletRequest req) {
-		//HttpSession session = req.getSession();
-		//Account account= (Account) session.getAttribute("user");
-		req.setAttribute("title","Tài khoản");
-		return "adminview/profile";
-	}
 	
 }

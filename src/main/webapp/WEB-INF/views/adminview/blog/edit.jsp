@@ -73,9 +73,7 @@
                                             <label for="blogGroupId">Nhóm bài viết <span class="required-text">*</span></label>
                                             <form:select required="true" path="blogGroupId" name="blogGroupId" class="form-control mb-3">
 											    <form:option value="" label="-- Chọn nhóm blog --" disabled="true"/>
-											    <c:forEach items="${blogGroupList}" var="blogGroup">
-											        <form:option value="${blogGroup.blogGroupId}" label="${blogGroup.groupName}" />
-											    </c:forEach>
+											    <form:options items="${blogGroupList}" itemValue="blogGroupId" itemLabel="groupName"/>
 											</form:select>
                                         </div>
                                         <div class="form-group d-flex">

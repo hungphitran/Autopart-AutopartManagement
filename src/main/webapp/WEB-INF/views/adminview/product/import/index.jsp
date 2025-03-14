@@ -8,7 +8,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Danh sách nhân viên</title>
+	<title>Lịch sử phiếu nhập</title>
 
 	<link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,54 +28,29 @@
 					<div class="col-lg-12">
 						<div class="card mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Danh Sách Nhân Viên</h6>
-								<a href="${pageContext.request.contextPath}/admin/employee/add.htm" class="btn btn-primary">+ Thêm nhân viên</a>
+								<h6 class="m-0 font-weight-bold text-primary">Lịch Sử Phiếu Nhập</h6>
+								<a href="${pageContext.request.contextPath}/admin/product/import/add.htm" class="btn btn-primary">+ Tạo phiếu nhập</a>
 							</div>
 						  <div class="table-responsive p-3">
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Họ Tên Nhân Viên</th>
-										<th>Email</th>
-										<th>Số Điện Thoại</th>
-										<th>Giới Tính</th>
-										<th>Trạng Thái</th>
+										<th>Mã Phiếu Nhập</th>
+										<th>Nhân Viên Phụ Trách</th>
+										<th>Ngày Nhập Hàng</th>
+										<th>Tổng Tiền</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${employees}" var="emp">
+									<c:forEach items="${imports}" var="imp">
 										<tr class="product-item">
-											<td class="align-middle">${emp.fullName}</td>
-											<td class="align-middle">${emp.email}</td>
-											<td class="align-middle">${emp.phone}</td>
+											<td class="align-middle">${imp.importId}</td>
+											<td class="align-middle">${imp.employeeName}</td>
+											<td class="align-middle"><fmt:formatDate value="${imp.importDate}" pattern="dd/MM/yyyy" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${imp.importCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
 											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${emp.gender == 'Male'}">
-												    	<span class="align-middle">Nam</span>			
-												    </c:when>
-												    <c:otherwise>
-												        <span class="align-middle">Nữ</span>
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<c:choose>
-												    <c:when test="${emp.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
-													        <span class="badge badge-success">Hoạt động</span>											    	
-												    	</a>
-												    </c:when>
-												    <c:otherwise>
-												        <a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
-													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
-												    	</a>
-												    </c:otherwise>
-												</c:choose>
-											</td>
-											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empPhone=${emp.phone}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/product/import/detail.htm?importId=${imp.importId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -137,36 +112,6 @@
 					}
 				}
 			}); 
-			
-			$('#dataTable').on('click', '.change-status-link', function(event) {
-			      event.preventDefault(); 
-
-			      var empPhone = $(this).data('emp-phone');
-			      var empStatus = $(this).data('emp-status');
-
-			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/employee/changeStatus.htm',
-			        type: 'POST',
-			        data: { empPhone: empPhone },
-			        success: function(response) {
-			          var badge = $(event.target).closest('.change-status-link').find('.badge');
-			          var link = $(event.target).closest('.change-status-link');
-			          
-			          if (empStatus === "Inactive") { 
-			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('emp-status', 'Active');
-			          } else {
-			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('emp-status', 'Inactive');
-			          }
-
-			        },
-			        error: function(error) {
-			          console.error("Error changing status:", error);
-			          alert("Lỗi khi thay đổi trạng thái.");
-			        }
-				});
-		    });
 		});
   	</script>
 </body>

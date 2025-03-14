@@ -23,8 +23,7 @@ public class RoleGroup {
     private String description;
     
     @ElementCollection
-    @CollectionTable(name = "RoleGroupPermissions", 
-                     joinColumns = @JoinColumn(name = "roleGroupId"))
+    @CollectionTable(name = "RoleGroupPermissions", joinColumns = @JoinColumn(name = "roleGroupId"))
     @Column(name = "permissionName") // Specify the column name in RoleGroupPermissions
     private List<String> permissions = new ArrayList<>();
 

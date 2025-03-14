@@ -57,7 +57,7 @@
     <div id="orderPage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
       	<a class="collapse-item" href="${pageContext.request.contextPath}/admin/order/add.htm">Tạo đơn hàng</a>
-        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=confirm">Đơn hàng chờ xác nhận</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=pending">Đơn hàng chờ xác nhận</a>
         <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=processing">Đơn hàng chờ đóng gói</a>
         <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=delivery">Đơn hàng đang giao</a>
         <a class="collapse-item" href="${pageContext.request.contextPath}/admin/order.htm?status=history">Lịch sử đơn hàng</a>
@@ -71,8 +71,8 @@
     </a>
     <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-      	<a class="collapse-item" href="#">Danh sách</a>
-        <a class="collapse-item" href="#">Nhóm quyền</a>
+      	<a class="collapse-item" href="${pageContext.request.contextPath}/admin/account.htm">Danh sách</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/role.htm">Nhóm quyền</a>
         <a class="collapse-item" href="#">Phân quyền</a>
       </div>
     </div>

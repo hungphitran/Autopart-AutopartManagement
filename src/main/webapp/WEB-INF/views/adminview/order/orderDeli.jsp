@@ -49,7 +49,7 @@
 											<td class="align-middle">${order.userPhone}</td>
 											<td class="align-middle">${order.shipAddress}</td>
 											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
-											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
 											<td class="align-middle">
 												<button type="button" class="btn btn-primary confirm-btn" data-order-id="${order.orderId}" data-order-status="${order.status}" data-toggle="modal" data-target="#ConfirmModal">Hoàn Thành</button>
 												<a href="${pageContext.request.contextPath}/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-dark">Chi Tiết</a>

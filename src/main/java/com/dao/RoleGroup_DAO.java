@@ -24,7 +24,7 @@ public class RoleGroup_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT DISTINCT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.status = 'Active'";
+            String hql = "SELECT DISTINCT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -39,13 +39,44 @@ public class RoleGroup_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.roleGroupId = :roleGroupId AND rg.status = 'Active'";
+            String hql = "SELECT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.roleGroupId = :roleGroupId AND rg.status IN ('Active', 'Inactive')";
             Query query = session.createQuery(hql);
             query.setParameter("roleGroupId", roleGroupId);
             return (RoleGroup) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    public boolean changeStatus(String roleGroupId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            String getStatusHql = "SELECT RG.status FROM RoleGroup RG WHERE RG.roleGroupId = :roleGroupId";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("roleGroupId", roleGroupId);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            String updateHql = "UPDATE RoleGroup RG SET RG.status = :newStatus WHERE RG.roleGroupId= :roleGroupId";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("roleGroupId", roleGroupId);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }
