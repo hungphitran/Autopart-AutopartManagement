@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "Import")
 public class Import {
-	 @Transient // Not stored in the database, just for convenience
+	@Transient // Not stored in the database, just for convenience
     private String employeeName;
 	
     @Id
@@ -40,7 +40,7 @@ public class Import {
     }
 
     public Import(String importId, String employeePhone, Date importDate, BigDecimal importCost,  List<ImportDetail> importDetails, String employeeName) {
-        super();
+		super();
         this.importId = importId;
         this.employeePhone = employeePhone;
         this.importDate = importDate;

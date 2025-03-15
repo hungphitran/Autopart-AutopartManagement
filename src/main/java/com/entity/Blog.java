@@ -53,7 +53,8 @@ public class Blog {
     // Default constructor
     public Blog() {}
 
-	public Blog(String blogGroupName, String blogId, String blogGroupId, String title,
+
+	public Blog(String blogGroupName, String blogId, String blogGroupId, BlogGroup blogGroup, String title,
 			String description, String status, String content, String createdBy, Timestamp createdAt,
 			Timestamp updatedAt, boolean deleted, Timestamp deletedAt) {
 		super();
