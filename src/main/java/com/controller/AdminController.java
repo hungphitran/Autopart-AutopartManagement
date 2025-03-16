@@ -34,10 +34,14 @@ import com.entity.Account;
 import com.entity.Brand;
 import com.entity.Product;
 import com.entity.ProductGroup;
+
+import net.bytebuddy.matcher.ModifierMatcher.Mode;
+
 import com.entity.Customer;
 import com.entity.Blog;
 import com.entity.BlogGroup;
 import com.entity.Discount;
+import com.entity.Employee;
 import com.entity.Order;
 import com.entity.OrderDetail;
 
@@ -93,8 +97,16 @@ public class AdminController {
 	
 	@RequestMapping(value = "/login", method= RequestMethod.POST)
 	public String login(HttpServletRequest req) {
-		req.setAttribute("title","Tài khoản");
-		return "redirect:/admin/account.htm";
+		String phone = req.getParameter("phone");
+		String pass = req.getParameter("pass");
+		Account acc =accountDao.getByPhone(phone);
+		if(acc == null || !acc.getPassword().equals(pass)) {
+			return "redirect:/admin/login.htm";
+		}
+		HttpSession session = req.getSession();
+		session.setAttribute("account", acc);
+		//session.setAttribute("account", accountDao.getByPhone("0901234001"));
+		return "redirect:/admin/profile.htm";
 	}
 	
 	@RequestMapping("/statistic")
@@ -103,5 +115,51 @@ public class AdminController {
 		return "adminview/statistic";
 	}
 	
+	@RequestMapping("/profile")
+	public String showProfile(HttpServletRequest req, Model model) {
+		HttpSession session = req.getSession();
+		Account acc = (Account) session.getAttribute("account");
+		if(acc== null) {
+			return "redirect:/admin/login.htm";
+		}
+		model.addAttribute(employeeDao.getByPhone(acc.getPhone()));
+		return "adminview/profile";
+	}
+	
+	@RequestMapping(value="/profile/edit", method=RequestMethod.POST)
+	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e) {
+		HttpSession session = req.getSession();
+		Account acc = (Account) session.getAttribute("account");
+		Employee emp = employeeDao.getByPhone(acc.getPhone());
+		emp.setAddress(e.getAddress());
+		emp.setBirthDate(e.getBirthDate());
+		emp.setFullName(e.getFullName());
+		emp.setEmail(e.getEmail());
+		emp.setEducationLevel(e.getEducationLevel());
+		emp.setGender(e.getGender());
+		employeeDao.update(emp);
+		return "redirect:/admin/profile.htm";
+	}
+	@RequestMapping(value="/profile/changepass", method= RequestMethod.POST)
+	public String changePass(HttpServletRequest req) {
+		String pass= req.getParameter("pass");
+		String newPass = req.getParameter("newpass");
+		String confirmPass = req.getParameter("confirmpass");
+		HttpSession session = req.getSession();
+		Account acc = (Account) session.getAttribute("account");
+		if(pass.equals(acc.getPassword()) && newPass.equals(confirmPass)) {
+			acc.setPassword(newPass);
+			accountDao.update(acc);
+		}
+
+		return "redirect:/admin/profile.htm";
+	}
+	
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		session.removeAttribute("account");
+		return "redirect:/admin/login.htm";
+	}
 	
 }
