@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "Import")
 public class Import {
-	 @Transient // Not stored in the database, just for convenience
+	@Transient // Not stored in the database, just for convenience
     private String employeeName;
 	
     @Id

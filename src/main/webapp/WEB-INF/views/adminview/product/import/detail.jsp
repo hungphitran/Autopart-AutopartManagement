@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Tổng Chi Phí:</label>
-                                        <p><strong><fmt:formatNumber value="${importEntity.importCost}" type="currency" currencySymbol="₫" /></strong></p>
+                                        <p><strong><fmt:formatNumber value="${importEntity.importCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</strong></p>
                                     </div>
                                 </div>
                             </div>
@@ -90,8 +90,8 @@
                                                 <td>${detail.id.productId}</td>
                                                 <td>${product != null ? product.productName : 'Không xác định'}</td>
                                                 <td>${detail.amount}</td>
-                                                <td><fmt:formatNumber value="${detail.price}" type="currency" currencySymbol="₫" /></td>
-                                                <td><fmt:formatNumber value="${detail.price * detail.amount}" type="currency" currencySymbol="₫" /></td>
+                                                <td><fmt:formatNumber value="${detail.price}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
+                                                <td><fmt:formatNumber value="${detail.price * detail.amount}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>

@@ -73,7 +73,7 @@
       <div class="bg-white py-2 collapse-inner rounded">
       	<a class="collapse-item" href="${pageContext.request.contextPath}/admin/account.htm">Danh sách</a>
         <a class="collapse-item" href="${pageContext.request.contextPath}/admin/role.htm">Nhóm quyền</a>
-        <a class="collapse-item" href="#">Phân quyền</a>
+        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/role/permission.htm">Phân quyền</a>
       </div>
     </div>
   </li>
