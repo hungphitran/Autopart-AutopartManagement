@@ -1,7 +1,11 @@
 package com.controller;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -100,18 +104,109 @@ public class AdminController {
 		String phone = req.getParameter("phone");
 		String pass = req.getParameter("pass");
 		Account acc =accountDao.getByPhone(phone);
-		if(acc == null || !acc.getPassword().equals(pass)) {
+		System.out.println(acc);
+
+		if(acc == null || !acc.getPassword().equals(pass) || !employeeDao.checkExistByPhone(phone)) {
 			return "redirect:/admin/login.htm";
 		}
 		HttpSession session = req.getSession();
 		session.setAttribute("account", acc);
 		//session.setAttribute("account", accountDao.getByPhone("0901234001"));
+		//session.setAttribute("name", employeeDao.getByPhone("0901234001").getFullName());
+		session.setAttribute("name", employeeDao.getByPhone(acc.getPhone()).getFullName());
 		return "redirect:/admin/profile.htm";
 	}
 	
+	@SuppressWarnings("deprecation")
 	@RequestMapping("/statistic")
 	public String showStatistic(HttpServletRequest req) {
-		req.setAttribute("title","Thống kê");
+		HttpSession session = req.getSession();
+		Account acc = (Account) session.getAttribute("account");
+		
+		Date today = new Date(System.currentTimeMillis());
+		
+		List<Order> orders = orderDao.getOrderByStatus("Completed");
+		BigDecimal[] income = new BigDecimal[12];
+		
+		List<Order> ordersThisYear = new ArrayList<Order>();
+		List<Order> ordersThisMonth = new ArrayList<Order>();
+		int totalProductThisYear =0;
+		
+		
+		List<Order> ordersLastYear = new ArrayList<Order>();
+		List<Order> ordersLastMonth = new ArrayList<Order>();
+		int totalProductLastYear =0;
+		
+		Map<Product,Integer> products =  new HashMap();
+		List<String> ids = new ArrayList<String>();
+		//List<Order> 
+		for(Order o : orders) {
+			Date date = o.getOrderDate();
+			//if(date.getYear() == today.getYear()){
+				ordersThisYear.add(o);
+				int month = date.getMonth();
+				if(month == today.getMonth()) {
+					ordersThisMonth.add(o);
+				}
+				if(month == today.getMonth()-1) {
+					ordersThisMonth.add(o);
+				}
+				if(income[month]==null) {
+					income[month]= BigDecimal.ZERO;
+				}
+				income[month] = income[month].add(o.getTotalCost());
+			
+				totalProductThisYear += o.getOrderDetails().size();
+				
+				List<OrderDetail> details = orderDetailDao.getAllByOrderId(o.getOrderId()) ;
+				for(int j=0;j<details.size();j++) {
+					if(!ids.contains(details.get(j).getProductId())) {
+						products.put(productDao.getById(details.get(j).getProductId()), details.get(j).getAmount());
+					}
+				}
+			//}
+			
+			if(date.getYear() == today.getYear()-1){
+				ordersThisYear.add(o);
+			}
+			totalProductLastYear+=o.getOrderDetails().size();
+		}
+		
+		
+		
+		
+		req.setAttribute("income", income);
+		
+		req.setAttribute("totalProductThisYear", totalProductThisYear);
+		req.setAttribute("totalProductLastYear", totalProductLastYear);
+		req.setAttribute("ordersLastMonth", ordersLastMonth);
+		req.setAttribute("ordersThisMonth", ordersThisMonth);
+		
+		//orders need confirmation
+		List<Order> newOrders = orderDao.getOrderByStatus("Wait for confirmation");
+		req.setAttribute("newOrders", newOrders);
+		
+		//new account this month 
+		List<Account> accs = accountDao.getAll();
+		List<Account> accsThisMonth = new ArrayList<Account>();
+		List<Account> accsLastMonth = new ArrayList<Account>();
+
+		for(Account a: accs) {
+			if(a.getCreatedAt().getMonth()== today.getMonth()) {
+				accsThisMonth.add(a);
+			}
+			if(a.getCreatedAt().getMonth()== today.getMonth()-1) {
+				accsLastMonth.add(a);
+			}
+		}
+		req.setAttribute("accsLastMonth", accsLastMonth);
+		req.setAttribute("accsThisMonth", accsThisMonth);
+		System.out.println(income);
+		req.setAttribute("incomeLastMonth", income[today.getMonth()-1]);
+		req.setAttribute("incomeThisMonth", income[today.getMonth()]);
+		
+		req.setAttribute("products", products);
+		
 		return "adminview/statistic";
 	}
 	
@@ -138,6 +233,7 @@ public class AdminController {
 		emp.setEducationLevel(e.getEducationLevel());
 		emp.setGender(e.getGender());
 		employeeDao.update(emp);
+		session.setAttribute("name", emp.getFullName());
 		return "redirect:/admin/profile.htm";
 	}
 	@RequestMapping(value="/profile/changepass", method= RequestMethod.POST)
@@ -159,6 +255,7 @@ public class AdminController {
 	public String logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		session.removeAttribute("account");
+		session.removeAttribute("name");
 		return "redirect:/admin/login.htm";
 	}
 	

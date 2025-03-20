@@ -21,9 +21,8 @@ public class BlogController {
 	@RequestMapping("/blog")
 	public String showAll(HttpServletRequest req) {
 		req.setAttribute("blogs", blogDao.getAll());
-		
 		return "blog";
-	}
+	}   
 	
 	@RequestMapping("/blog/detail")
 	public String showOne(HttpServletRequest req) {
