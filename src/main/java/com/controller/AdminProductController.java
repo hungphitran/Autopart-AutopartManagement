@@ -1,17 +1,24 @@
 package com.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.Brand_DAO;
 import com.dao.Employee_DAO;
@@ -22,6 +29,7 @@ import com.entity.Brand;
 import com.entity.Employee;
 import com.entity.Import;
 import com.entity.ImportDetail;
+import com.entity.ImportDetailId;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
@@ -46,14 +54,24 @@ public class AdminProductController {
 	
 	@RequestMapping("/product")
 	public String showProducts(HttpServletRequest req) {
-		List<Product> products = productDao.getAll();
-		for(int i=0;i<products.size();i++) {
-			String img= products.get(i).getImageUrls();
-			products.get(i).setImageUrls(img.split(",", i)[0]);
-		}
-		req.setAttribute("products", products);
-		req.setAttribute("title","Sản phẩm");
-		return "adminview/product/index";
+	    List<Product> products = productDao.getAll();
+	    String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
+	    
+	    for (int i = 0; i < products.size(); i++) {
+	        String img = products.get(i).getImageUrls();
+	        if (img != null) {
+	        	String[] imgArray = img.split(",");
+	        	if (imgArray[0].startsWith("https")) {
+	        		products.get(i).setImageUrls(imgArray[0]);
+	        	}
+	        	else {
+	        		products.get(i).setImageUrls(baseUrl + imgArray[0]); 	        	
+	        	}	        	
+	        }
+	    }
+	    req.setAttribute("products", products);
+	    req.setAttribute("title", "Sản phẩm");
+	    return "adminview/product/index";
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.GET)
@@ -71,11 +89,41 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.POST)
-	public String addProductPost(@ModelAttribute("product") Product product, HttpServletRequest req) {
+	public String addProductPost(@ModelAttribute("product") Product product, @RequestParam("imageFiles") MultipartFile[] imageFiles, HttpServletRequest req) throws IOException {
 		if (product.getStatus() == null) {
 			product.setStatus("Inactive");
 	    }
 		
+		// Đường dẫn thư mục lưu ảnh
+	    String uploadDir = req.getServletContext().getRealPath("/resources/img/");
+	    File dir = new File(uploadDir);
+	    if (!dir.exists()) {
+	        dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+	    }
+
+	    // Xử lý và lưu từng file ảnh
+	    String imageUrls = "";
+	    if (imageFiles != null && imageFiles.length > 0) {
+	        imageUrls = Arrays.stream(imageFiles)
+	                .filter(file -> !file.isEmpty())
+	                .map(file -> {
+	                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename(); // Thêm timestamp để tránh trùng tên
+	                    try {
+	                        File destination = new File(uploadDir + fileName);
+	                        file.transferTo(destination); // Lưu file vào thư mục
+	                        return fileName;
+	                    } catch (IOException e) {
+	                        e.printStackTrace();
+	                        return "";
+	                    }
+	                })
+	                .filter(fileName -> !fileName.isEmpty())
+	                .collect(Collectors.joining(","));
+	    }
+
+	    // Gán danh sách tên file vào product
+	    product.setImageUrls(imageUrls);
+	    
 		productDao.add(product);
 		
 		return "redirect:/admin/product.htm";
@@ -93,10 +141,47 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/edit", method= RequestMethod.POST)
-	public String editProductPatch(@ModelAttribute("product") Product product) {
+	public String editProductPatch(@ModelAttribute("product") Product product,
+            @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
+            @RequestParam(value = "confirmDeleteImg", required = false) String confirmDeleteImg,
+            HttpServletRequest req) throws IOException {
 		if (product.getStatus() == null) {
 			product.setStatus("Inactive");
 	    }
+		
+		String uploadDir = req.getServletContext().getRealPath("/resources/img/");
+		File dir = new File(uploadDir);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		
+		String newImageUrls = "";
+		if (imageFiles != null && imageFiles.length > 0) {
+			newImageUrls = Arrays.stream(imageFiles)
+					.filter(file -> !file.isEmpty())
+					.map(file -> {
+						String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+						
+						try {
+							file.transferTo(new File(uploadDir + fileName));
+							return fileName;
+						} catch (IOException e) {
+							e.printStackTrace();
+							return "";
+						}
+					})
+					.filter(fileName -> !fileName.isEmpty())
+					.collect(Collectors.joining(","));
+		}
+		
+		if ("confirm".equals(confirmDeleteImg)) {
+			product.setImageUrls(newImageUrls.isEmpty() ? null : newImageUrls);
+		}
+		else {
+			product.setImageUrls((product.getImageUrls() == null ? "" : product.getImageUrls() + ",") + (newImageUrls.isEmpty() ? "" : newImageUrls));
+		}
+		
+		System.out.println(product);
 		productDao.update(product);
 		
 		return "redirect:/admin/product.htm";
@@ -110,7 +195,6 @@ public class AdminProductController {
 	
 	@RequestMapping(value = "/product/detail", method= RequestMethod.GET)
 	public String detailProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
-		System.out.println(productId);
 		Product product = productDao.getById(productId);
 		String[] imgUrls = product.getImageUrls().split(",");
 		
@@ -129,62 +213,84 @@ public class AdminProductController {
 		productDao.changeStatus(productId);
 		return "adminview/product/index";
 	}
-	// -- End product --
 	
-	@RequestMapping(value = "/product/import", method = RequestMethod.GET)
-	    public String importProduct(Model model, HttpServletRequest req) {
-	        Import importEntity = new Import();
-	        importEntity.setImportId(importDao.generateNextImportId());
-	        importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
-	        model.addAttribute("importForm", importEntity);
+	@RequestMapping(value = "/product/import", method= RequestMethod.GET)
+	public String importProduct(Model model, HttpServletRequest req) {
+		List<Import> imports = importDao.getAll();
+		req.setAttribute("imports", imports);
+		return "adminview/product/import/index";
+	}
+	
+	@RequestMapping(value = "/product/import/add", method = RequestMethod.GET)
+    public String addImportProduct(Model model, HttpServletRequest req) {
+        Import importEntity = new Import();
+        importEntity.setImportId(importDao.generateNextImportId());
+        importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
+        model.addAttribute("importForm", importEntity);
 
-	        List<Employee> employeeList = employeeDao.getAll();
-	        List<Product> productList = productDao.getAll();
+        List<Employee> employeeList = employeeDao.getAll();
+        List<Product> productList = productDao.getAll();
 
-	        model.addAttribute("employeeList", employeeList);
-	        model.addAttribute("productList", productList);
+        model.addAttribute("employeeList", employeeList);
+        model.addAttribute("productList", productList);
 
-	        return "adminview/product/import";
+        return "adminview/product/import/add";
+    }
+	
+	@RequestMapping(value = "/product/import/add", method = RequestMethod.POST)
+	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
+	                                   BindingResult result, 
+	                                   Model model) {
+	    if (result.hasErrors()) {
+	        model.addAttribute("employeeList", employeeDao.getAll());
+	        model.addAttribute("productList", productDao.getAll());
+	        model.addAttribute("error", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
+	        return "adminview/product/import/add";
+	    }
+	    System.out.println(importForm);
+	    if (importForm.getImportDetails() != null) {
+	        importForm.getImportDetails().forEach(detail -> {
+	        	// Gán importId cho các ImportDetail
+	            ImportDetailId id = new ImportDetailId();
+	            id.setImportId(importForm.getImportId());
+	            id.setProductId(detail.getId().getProductId());
+	            detail.setId(id);
+	            detail.setImportEntity(importForm);
+	            
+	            // Cập nhật số lượng sản phẩm vào kho
+	            String productId = detail.getId().getProductId();
+	            Product product = productDao.getById(productId);
+	            product.setStock(product.getStock() + detail.getAmount());
+	            productDao.update(product);
+	        });
 	    }
 
-	    @RequestMapping(value = "/product/import", method = RequestMethod.POST)
-	    public String importProductPost(
-	            @ModelAttribute("importForm") Import importEntity,
-	            @RequestParam(value = "importDetails", required = false) List<ImportDetail> importDetails,
-	            RedirectAttributes redirectAttributes,
-	            HttpServletRequest req) {
+	    importDao.add(importForm);
+	    return "redirect:/admin/product/import.htm";
+	}
+	
+	@RequestMapping(value = "/product/import/detail", method = RequestMethod.GET)
+    public String detailImportProduct(@RequestParam("importId") String importId, Model model, HttpServletRequest req) {
+        // Lấy thông tin phiếu nhập từ database
+        Import importEntity = importDao.getById(importId); // Giả định Import_DAO có phương thức getById
+        if (importEntity == null) {
+            model.addAttribute("error", "Phiếu nhập không tồn tại!");
+            return "adminview/product/import/detail"; // Trả về trang với thông báo lỗi
+        }
 
-	        // Kiểm tra dữ liệu
-	        if (importDetails == null || importDetails.isEmpty()) {
-	            redirectAttributes.addFlashAttribute("error", "Vui lòng chọn ít nhất một sản phẩm để nhập hàng!");
-	            return "redirect:/admin/product/import.htm";
-	        }
+        // Lấy thông tin nhân viên để hiển thị tên đầy đủ
+        String employeeFullName = employeeDao.getByPhone(importEntity.getEmployeePhone()) != null
+                ? employeeDao.getByPhone(importEntity.getEmployeePhone()).getFullName()
+                : "Không xác định";
 
-	        // Gán importId cho các chi tiết phiếu nhập
-	        for (ImportDetail detail : importDetails) {
-	            detail.setImportId(importEntity.getImportId());
-	        }
+        // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
+        List<Product> productList = productDao.getAll();
+        model.addAttribute("importEntity", importEntity);
+        model.addAttribute("employeeFullName", employeeFullName);
+        model.addAttribute("productList", productList);
 
-	        // Lưu phiếu nhập
-	        importEntity.setImportDetails(importDetails);
-	        boolean importSuccess = importDao.add(importEntity);
-	        if (!importSuccess) {
-	            redirectAttributes.addFlashAttribute("error", "Lưu phiếu nhập thất bại!");
-	            return "redirect:/admin/product/import.htm";
-	        }
-
-	        // Cập nhật số lượng sản phẩm trong bảng Product
-	        for (ImportDetail detail : importDetails) {
-	            Product product = productDao.getById(detail.getProductId());
-	            if (product != null) {
-	                int newStock = product.getStock() + detail.getAmount();
-	                product.setStock(newStock);
-	                productDao.update(product);
-	            }
-	        }
-
-	        redirectAttributes.addFlashAttribute("message", "Nhập hàng thành công!");
-	        return "redirect:/admin/product.htm";
-	    }
+        return "adminview/product/import/detail";
+    }
+	// -- End product -
 
 }

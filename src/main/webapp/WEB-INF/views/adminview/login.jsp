@@ -16,8 +16,8 @@
             <h1>Đăng nhập hệ thống quản lý</h1>
         </div>
         <form class="login-form"  action="/autopart/admin/login.htm" method="post">
-            <input type="text" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <input type="tel" name="phone" placeholder="Số điện thoại " required>
+            <input type="password" name="pass" placeholder="Mật khẩu" required>
             <button type="submit">Đăng nhập</button>
         </form>
     </div>

@@ -35,33 +35,47 @@
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Tiêu Đề</th>
-										<th>Trạng thái</th>
+										<th>Họ Tên Nhân Viên</th>
+										<th>Email</th>
+										<th>Số Điện Thoại</th>
+										<th>Giới Tính</th>
+										<th>Trạng Thái</th>
 										<th>Hoạt Động</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${productGroups}" var="group">
+									<c:forEach items="${employees}" var="emp">
 										<tr class="product-item">
-											<td class="align-middle">${group.groupName}</td>
+											<td class="align-middle">${emp.fullName}</td>
+											<td class="align-middle">${emp.email}</td>
+											<td class="align-middle">${emp.phone}</td>
 											<td class="align-middle">
 												<c:choose>
-												    <c:when test="${group.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-group-id="${group.productGroupId}" data-group-status="${group.status}" class="change-status-link">
+												    <c:when test="${emp.gender == 'Male'}">
+												    	<span class="align-middle">Nam</span>			
+												    </c:when>
+												    <c:otherwise>
+												        <span class="align-middle">Nữ</span>
+												    </c:otherwise>
+												</c:choose>
+											</td>
+											<td class="align-middle">
+												<c:choose>
+												    <c:when test="${emp.status == 'Active'}">
+												    	<a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-group-id="${group.productGroupId}" data-group-status="${group.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-group-id="${group.productGroupId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empPhone=${emp.phone}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -127,22 +141,23 @@
 			$('#dataTable').on('click', '.change-status-link', function(event) {
 			      event.preventDefault(); 
 
-			      var productId = $(this).data('product-id');
-			      var productStatus = $(this).data('product-status');
+			      var empPhone = $(this).data('emp-phone');
+			      var empStatus = $(this).data('emp-status');
 
 			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
+			        url: '${pageContext.request.contextPath}/admin/employee/changeStatus.htm',
 			        type: 'POST',
+			        data: { empPhone: empPhone },
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');
 			          
-			          if (productStatus === "Inactive") { 
+			          if (empStatus === "Inactive") { 
 			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('product-status', 'Active');
+			              link.data('emp-status', 'Active');
 			          } else {
 			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('product-status', 'Inactive');
+			              link.data('emp-status', 'Inactive');
 			          }
 
 			        },

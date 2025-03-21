@@ -120,7 +120,7 @@ public class OrderController {
 		return "orderdetail";
 	}
 	
-	@RequestMapping(value="/order",method=RequestMethod.POST)
+	@RequestMapping(value="/order",method=RequestMethod.POST)// redirect to payment page
 	public String showCart(HttpServletRequest req) {
 		
 		//check if user logged in
@@ -129,6 +129,8 @@ public class OrderController {
 		if(acc == null ) {
 			return "redirect:/login.htm";
 		}
+		
+		//get all product of user
 		Customer cus = customerDao.getByPhone(acc.getPhone());
 		Cart cart= cartDao.getById(cus.getCartId());
 		
@@ -141,11 +143,12 @@ public class OrderController {
 	
 		
 		for(String key : pids) {
+			// remove products that are not selected
 			if(req.getParameter(key)==null) {
 				productsInCart.remove(key);
 			}
 		}
-		
+		// show selected products
 		Map<Product,Integer> products= new HashMap<Product, Integer>();
 		for(String key : productsInCart.keySet()) {
 			products.put(productDao.getById(key),productsInCart.get(key));

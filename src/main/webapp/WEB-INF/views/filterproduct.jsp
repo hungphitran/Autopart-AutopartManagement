@@ -137,7 +137,7 @@
 				</div>
 				<div class="form-group">
 					<label for="brand">Hãng</label>
-					<select id="brand" name="brand" class="form-control">
+					<select id="brand-filter" name="brand" class="form-control">
 						<option value="">Tất cả</option>
 						<c:forEach var="b" items="${brands}">
 							<c:choose>
@@ -153,7 +153,7 @@
 				</div>
 				<div class="form-group">
 					<label for="category">Loại hàng</label>
-					<select id="category" name="category" class="form-control">
+					<select id="category-filter" name="category" class="form-control">
 						<option value="">Tất cả</option>
 						<c:forEach var="group" items="${categories}">
 							<c:choose>

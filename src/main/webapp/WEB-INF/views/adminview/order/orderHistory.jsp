@@ -50,7 +50,7 @@
 											<td class="align-middle">${order.userPhone}</td>
 											<td class="align-middle">${order.shipAddress}</td>
 											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
-											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" /></td>
+											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>
 											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${order.status == 'Completed'}">

@@ -117,7 +117,7 @@
                                     <div class="form-group">
                                         <label>Trạng Thái:</label>
                                         <c:choose>
-                                        	<c:when test="${order.status == 'Wait for confirmation'}">
+                                        	<c:when test="${order.status == 'Pending'}">
                                         		<span class="form-control-plaintext">Chờ xác nhận</span>
                                         	</c:when>
                                         	<c:when test="${order.status == 'Processing'}">
@@ -157,7 +157,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <c:if test="${order.status == 'Wait for confirmation'}">
+                            <c:if test="${order.status == 'Pending'}">
                                 <div class="d-flex justify-content-end mt-3">
 								    <button type="button" class="btn btn-primary confirm-btn" data-order-id="${order.orderId}" data-toggle="modal" data-target="#ConfirmModal">Xác Nhận Đơn Hàng</button>
 								    <button type="button" class="btn btn-danger ml-2 cancelled-btn" data-order-id="${order.orderId}" data-toggle="modal" data-target="#CancelledModal">Hủy Đơn Hàng</button>

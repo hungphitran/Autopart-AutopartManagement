@@ -10,13 +10,13 @@ import javax.persistence.*;
 @Table(name = "ImportDetail")
 public class ImportDetail implements Serializable {
 
-    @Id
-    @Column(name = "importId")
-    private String importId;
+    @EmbeddedId
+    private ImportDetailId id;
 
-    @Id
-    @Column(name = "productId")
-    private String productId;
+    @MapsId("importId") // Liên kết với importId trong composite key
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "importId")
+    private Import importEntity;
 
     @Column(name = "price")
     private BigDecimal price;
@@ -28,50 +28,48 @@ public class ImportDetail implements Serializable {
         super();
     }
 
-    public ImportDetail(String importId, String productId, BigDecimal price, int amount) {
-        super();
-        this.importId = importId;
-        this.productId = productId;
+    public ImportDetail(ImportDetailId id, Import importEntity, BigDecimal price, int amount) {
+        this.id = id;
+        this.importEntity = importEntity;
         this.price = price;
         this.amount = amount;
     }
 
-    public String getImportId() {
-        return importId;
+    // Getters và Setters
+    public ImportDetailId getId() { 
+    	return id;
     }
+    
+    public void setId(ImportDetailId id) { 
+		this.id = id; 
+	}
+    
+    public Import getImportEntity() { 
+		return importEntity; 
+	}
 
-    public void setImportId(String importId) {
-        this.importId = importId;
-    }
+    public void setImportEntity(Import importEntity) { 
+		this.importEntity = importEntity; 
+	}
 
-    public String getProductId() {
-        return productId;
-    }
+    public BigDecimal getPrice() { 
+		return price; 
+	}
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+    public void setPrice(BigDecimal price) { 
+		this.price = price; 
+	}
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+    public int getAmount() { 
+		return amount; 
+	}
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
+    public void setAmount(int amount) { 
+		this.amount = amount; 
+	}
 
     @Override
     public String toString() {
-        return "ImportDetail [importId=" + importId + ", productId=" + productId + ", price=" + price + ", amount="
-                + amount + "]";
+        return "ImportDetail [id=" + id + ", price=" + price + ", amount=" + amount + "]";
     }
 }

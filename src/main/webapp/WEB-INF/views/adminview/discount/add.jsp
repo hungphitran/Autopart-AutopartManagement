@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="discountAmount">Số tiền giảm giá <span class="required-text">*</span></label>
-                                            <input required type="number" class="form-control" id="discountAmount" name="discountAmount" placeholder="Nhập số tiền giảm (VND)">
+                                            <input required type="number" class="form-control" id="discountAmount" name="discountAmount" placeholder="Nhập số phần trăm giảm (%)">
                                         </div>
                                         <div class="form-group">
                                             <label for="minimumAmount">Số tiền tối thiểu <span class="required-text">*</span></label>

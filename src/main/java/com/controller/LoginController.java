@@ -144,6 +144,7 @@ public class LoginController {
 	public String logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		session.removeAttribute("user");
+		session.removeAttribute("productInCart");
 		return "login";
 	}
 	
