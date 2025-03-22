@@ -104,6 +104,8 @@
 								<div class="col">
 									<div class="row text-muted">${product.key.productId }</div>
 									<div class="row">${product.key.productName}</div>
+																		<input type="hidden" class="price" value="${product.key.salePrice}">
+									${product.key.salePrice } &#8363;
 								</div>
 								<div class="col updateQTY">
 									<button class="btn-updateQTY"
@@ -112,10 +114,8 @@
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
 								</div>
-								<div class="col" class="price">
+								<div class="col" >
 									<a href="/autopart/product/detailproduct.htm?productId=${product.key.productId }">Xem chi tiết -></a>
-								<!-- 	<input type="hidden" class="price" value="${product.key.salePrice}">
-									${product.key.salePrice } &#8363;<span class="close"> &#10005;</span> -->
 								</div>
 							</div>
 						</div>
@@ -160,7 +160,7 @@
 				<div class="row"
 					style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 					<div class="col">TỔNG TIỀN</div>
-					<input class="col text-right" id="total" name="totalCost" value=""> &#8363;
+					<input class="col text-right" id="total" name="totalCost" value="" readonly> &#8363;
 				</div>
 				<button  class="btn">ĐẶT HÀNG</button>
 			</form>
@@ -171,17 +171,21 @@
 <script>
 	
 let totalInput= document.getElementById("total");
-
 let priceInputs = document.querySelectorAll(".price");
 let quantityInputs = document.querySelectorAll(".quantity");
+
+console.log(totalInput, priceInputs , quantityInputs)
+
 
 function updateCost(){
 	let total = 0;
 	for(let i = 0; i < priceInputs.length; i++) {
 	    let price = parseFloat(priceInputs[i].value);
 	    let quantity = parseInt(quantityInputs[i].value);
+	    console.log(price, quantity)
 	    total += price * quantity;
 	}
+	console.log("update cost", total)
 
 	totalInput.value = total
 }
