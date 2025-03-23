@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +52,32 @@ public class AdminRoleController {
 		return "adminview/role/roleGroup/index";
 	}
 	
+	@RequestMapping(value = "/role/add", method = RequestMethod.GET)
+    public String showAddRoleGroup(Model model) {
+		String nextId = roleGroupDao.generateNextRoleGroupId();
+        model.addAttribute("roleGroup", new RoleGroup()); 
+        model.addAttribute("nextId", nextId);
+        return "adminview/role/roleGroup/add";
+    }
+	
+	@RequestMapping(value = "/role/add", method = RequestMethod.POST)
+    public String addRoleGroup(@ModelAttribute("roleGroup") RoleGroup roleGroup) {
+        //roleGroup.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        //roleGroup.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        //roleGroup.setDeleted(false);
+		
+		if (roleGroup.getStatus() == null) {
+			roleGroup.setStatus("Inactive");
+		}
+		
+        boolean success = roleGroupDao.add(roleGroup);
+        if (!success) {
+            System.err.println("Failed to add roleGroup: " + roleGroup);
+            return "adminview/role/roleGroup/addRoleGroup"; 
+        }
+        return "redirect:/admin/role.htm";
+    }
+	
 	@RequestMapping(value = "/role/changeStatus", method= RequestMethod.POST)
 	public String changeStatus(@RequestParam("roleGroupId") String roleGroupId) {
 		roleGroupDao.changeStatus(roleGroupId);
@@ -69,6 +96,13 @@ public class AdminRoleController {
 		req.setAttribute("roleGroup", roleGroup);
 
 		return "adminview/role/roleGroup/editModal";
+	}
+	
+	@RequestMapping(value = "/role/edit", method= RequestMethod.POST)
+	public String editRoleGroupPatch(@ModelAttribute("roleGroup") RoleGroup roleGroup) {
+		roleGroupDao.update(roleGroup);
+
+		return "redirect:/admin/role.htm";
 	}
 	
 	@RequestMapping("/role/permission")
