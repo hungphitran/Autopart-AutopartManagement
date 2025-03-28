@@ -120,7 +120,10 @@ public class AdminController {
     }
     
     @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
-    public String accessDenied(HttpSession session) {
+    public String accessDenied(HttpSession session,HttpServletRequest req) {
+    	String referer = req.getHeader("Referer");
+    	req.setAttribute("preUrl", referer);
+    	System.out.println(referer);
         return "adminview/account/access-denied";
     }
 	

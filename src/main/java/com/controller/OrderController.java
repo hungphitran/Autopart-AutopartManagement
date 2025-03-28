@@ -23,6 +23,7 @@ import com.dao.Product_DAO;
 import com.entity.Account;
 import com.entity.Cart;
 import com.entity.Customer;
+import com.entity.Discount;
 import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
@@ -160,6 +161,9 @@ public class OrderController {
 		}
 		
 		req.setAttribute("products", products);
+		
+		List<Discount> discounts = discountDao.getAll();
+		req.setAttribute("discounts", discounts);
 
 		return "order";
 	}

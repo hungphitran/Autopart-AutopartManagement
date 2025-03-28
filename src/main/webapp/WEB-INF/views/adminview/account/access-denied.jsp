@@ -85,7 +85,7 @@
             <h1>Truy cập bị từ chối</h1>
             <p>Bạn không có quyền truy cập vào trang này.</p>
             <p>Vui lòng kiểm tra lại quyền của bạn hoặc liên hệ với quản trị viên.</p>
-            <a href="${pageContext.request.contextPath}/admin/login.htm" class="btn-back">Quay lại trang đăng nhập</a>
+            <a href="${preUrl}" class="btn-back">Quay lại</a>
         </div>
     </div>
 </body>
