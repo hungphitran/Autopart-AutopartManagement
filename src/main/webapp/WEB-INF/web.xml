@@ -20,6 +20,31 @@
     <url-pattern>/resources/*</url-pattern>
 </servlet-mapping>
 
+	<!-- Đăng ký AuthenticationFilter -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>com.filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Đăng ký PermissionFilter -->
+    <filter>
+        <filter-name>PermissionFilter</filter-name>
+        <filter-class>com.filter.PermissionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>PermissionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Cấu hình session timeout -->
+    <session-config>
+        <session-timeout>60</session-timeout> <!-- 60 phút -->
+    </session-config>
+
   <!-- CharacterEncodingFilter -->
   <filter>
     <filter-name>utf8</filter-name>
