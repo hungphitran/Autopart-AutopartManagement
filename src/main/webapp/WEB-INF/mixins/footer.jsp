@@ -21,25 +21,19 @@
 		  <h3 class="footer__heading">Giới thiệu</h3>
 		  <ul class="footer-list">
 			<li class="footer-item">
-			  <a href="" class="footer-item__link">Giới thiệu</a>
+			  <a href="" class="footer-item__link">Email: ${general.email }</a>
 			</li>
 			<li class="footer-item">
-			  <a href="" class="footer-item__link">Tuyển dụng</a>
+			  <a href="" class="footer-item__link">SĐT: ${general.phone }</a>
 			</li>
 			<li class="footer-item">
-			  <a href="" class="footer-item__link">Điều khoản</a>
+			  <a href="" class="footer-item__link">Địa chỉ: ${general.address }</a>
 			</li>
 		  </ul>
 		</div>
 		<div class="grid__column-2-4">
 		  <h3 class="footer__heading">Danh mục</h3>
 		  <ul class="footer-list">
-			<li class="footer-item">
-			  <a href="" class="footer-item__link">Động cơ</a>
-			</li>
-			<li class="footer-item">
-			  <a href="" class="footer-item__link">Động cơ</a>
-			</li>
 			<li class="footer-item">
 			  <a href="/autopart/admin/login.htm" class="footer-item__link">Trang quản lý</a>
 			</li>
@@ -87,7 +81,7 @@
 	</div>
 	<div class="footer__bottom">
 	  <div class="footer__text">
-		<p class="footer__text">@ 2024 - No copyright</p>
+		<p class="footer__text">@ 2024 - ${general.copyright }</p>
 	  </div>
 	  <div class="footer__language-area">
 		<ul class="footer__language-area">

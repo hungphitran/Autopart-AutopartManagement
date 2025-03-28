@@ -18,12 +18,14 @@ import com.dao.BlogGroup_DAO;
 import com.dao.Brand_DAO;
 import com.dao.Cart_DAO;
 import com.dao.Customer_DAO;
+import com.dao.GeneralSettings_DAO;
 import com.dao.ProductGroup_DAO;
 import com.dao.Product_DAO;
 import com.entity.Account;
 import com.entity.BlogGroup;
 import com.entity.Cart;
 import com.entity.Customer;
+import com.entity.GeneralSettings;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
@@ -47,6 +49,9 @@ public class DashboardController {
 	
 	@Autowired 
 	BlogGroup_DAO blogGroupDao;
+	
+	@Autowired
+	GeneralSettings_DAO generalDao;
 	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
@@ -92,7 +97,7 @@ public class DashboardController {
 		parentGroups.clear();
 		session.setAttribute("groups", groups);
 		session.setAttribute("brands", brandDao.getAll());
-
+		
 		
 		List<BlogGroup> blogGroups = blogGroupDao.getAll();
 		session.setAttribute("blogGroups", blogGroups);
@@ -110,6 +115,9 @@ public class DashboardController {
 			}
 			req.setAttribute("productInCart", products);
 		}
+		
+		GeneralSettings g=  generalDao.get();
+		session.setAttribute("general", g);
 
 		return "dashboard";
 	}

@@ -109,7 +109,7 @@ footer {
     </main>
 
     <footer>
-        <p>&copy; 2025 Auto Parts Shop</p>
+        		<jsp:include page="/WEB-INF/mixins/footer.jsp" />
     </footer>
 
     <script src="blog.js"></script>

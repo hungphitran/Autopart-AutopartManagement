@@ -91,6 +91,11 @@ public class OrderController {
 			}
 			cart.setProducts(productsInCart);
 			cartDao.update(cart);
+			Map<Product,Integer> p= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				p.put(productDao.getById(key),productsInCart.get(key));
+			}
+			session.setAttribute("productInCart",p);
 			
 			return "success";
 

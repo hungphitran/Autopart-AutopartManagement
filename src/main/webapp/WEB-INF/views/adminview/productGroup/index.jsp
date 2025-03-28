@@ -60,8 +60,6 @@
 											</td>
 											<td class="align-middle">
 												<a href="javascript:void(0);" data-group-id="${group.productGroupId}" data-toggle="modal" data-target="#DeleteModal" class="btn btn-sm btn-danger delete-btn">Xóa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/product/detail.htm?productId=${product.productId}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -148,22 +146,23 @@
 			$('#dataTable').on('click', '.change-status-link', function(event) {
 			      event.preventDefault(); 
 
-			      var productId = $(this).data('product-id');
-			      var productStatus = $(this).data('product-status');
+			      var groupId = $(this).data('group-id');
+			      var groupStatus = $(this).data('group-status');
 
 			      $.ajax({
-			        url: '${pageContext.request.contextPath}/admin/product/changeStatus.htm?productId=' + productId,
+			        url: '${pageContext.request.contextPath}/admin/productGroup/changeStatus.htm?groupId=' + groupId,
 			        type: 'POST',
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');
-			          
-			          if (productStatus === "Inactive") { 
+			          console.log()
+			          if (groupStatus === "Inactive") { 
+			        	  
 			              badge.removeClass('badge-danger').addClass('badge-success').text('Hoạt động');
-			              link.data('product-status', 'Active');
+			              link.data('group-status', 'Active');
 			          } else {
 			              badge.removeClass('badge-success').addClass('badge-danger').text('Ngừng hoạt động');
-			              link.data('product-status', 'Inactive');
+			              link.data('group-status', 'Inactive');
 			          }
 
 			        },
@@ -175,8 +174,8 @@
 		    });
 			
 			$('#dataTable').on('click', '.delete-btn', function() {
-			    var productId = $(this).data('product-id');
-			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/product/delete.htm?productId=' + productId);
+			    var productGroupId = $(this).data('group-id');
+			    $('#delete-link').attr('href', '${pageContext.request.contextPath}/admin/productGroup/delete.htm?productGroupId=' + productGroupId);
 		  	});
 		});
   	</script>

@@ -110,6 +110,10 @@ public class LoginController {
 			// add user info to session
 			req.getSession().setAttribute("user", acc);
 			Customer c = customerDao.getByPhone(phone);
+			if(c==null) {
+				req.getSession().removeAttribute("user");
+				return "redirect:/login.htm";
+			}
 			req.getSession().setAttribute("userName", c.getFullName());	
 			Customer cus = customerDao.getByPhone(acc.getPhone());
 			Cart cart =cdao.getById(cus.getCartId());
