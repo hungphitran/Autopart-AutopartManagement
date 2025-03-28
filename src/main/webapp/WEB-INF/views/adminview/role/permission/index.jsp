@@ -7,13 +7,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách tài khoản</title>
+    <title>Phân Quyền</title>
 
     <link href="<c:url value="/resources/img/logo.webp" />" rel="icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="<c:url value="/resources/vendor/bootstrap/css/bootstrap.css" />" rel="stylesheet" type="text/css">
     <link href="<c:url value="/resources/css/admincss/base.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/vendor/datatables/dataTables.bootstrap4.css" />" rel="stylesheet">
+    
+    <style>
+	    .roleName:hover {
+	        cursor: pointer;
+	    }
+	</style>
 </head>
 <body id="page-top">
     <div id="wrapper">
@@ -36,8 +42,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>Tính năng</th>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <th class="text-center">${role.roleGroupName}</th>
+                                                    <c:forEach items="${roleGroup}" var="role" varStatus="loop">
+                                                        <th class="text-center roleName" onclick="toggleColumn(${loop.index})">${role.roleGroupName}</th>
                                                     </c:forEach>
                                                 </tr>
                                             </thead>
@@ -220,17 +226,6 @@
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
-                                                <tr data-name="QUAN_LY_NHAN_HANG_XOA">
-                                                    <td>Xóa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="QUAN_LY_NHAN_HANG_XOA" 
-                                                                   ${role.permissions.contains('QUAN_LY_NHAN_HANG_XOA') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
 
                                                 <!-- Danh sách khách hàng -->
                                                 <tr><td colspan="${roleGroup.size() + 1}"><b>Danh sách khách hàng</b></td></tr>
@@ -242,39 +237,6 @@
                                                                    name="permissions[${role.roleGroupId}]" 
                                                                    value="DANH_SACH_KHACH_HANG_XEM" 
                                                                    ${role.permissions.contains('DANH_SACH_KHACH_HANG_XEM') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="DANH_SACH_KHACH_HANG_THEM">
-                                                    <td>Thêm mới</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_KHACH_HANG_THEM" 
-                                                                   ${role.permissions.contains('DANH_SACH_KHACH_HANG_THEM') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="DANH_SACH_KHACH_HANG_SUA">
-                                                    <td>Chỉnh sửa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_KHACH_HANG_SUA" 
-                                                                   ${role.permissions.contains('DANH_SACH_KHACH_HANG_SUA') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="DANH_SACH_KHACH_HANG_XOA">
-                                                    <td>Xóa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_KHACH_HANG_XOA" 
-                                                                   ${role.permissions.contains('DANH_SACH_KHACH_HANG_XOA') ? 'checked' : ''}>
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
@@ -311,17 +273,6 @@
                                                                    name="permissions[${role.roleGroupId}]" 
                                                                    value="DANH_SACH_NHAN_VIEN_SUA" 
                                                                    ${role.permissions.contains('DANH_SACH_NHAN_VIEN_SUA') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="DANH_SACH_NHAN_VIEN_XOA">
-                                                    <td>Xóa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_NHAN_VIEN_XOA" 
-                                                                   ${role.permissions.contains('DANH_SACH_NHAN_VIEN_XOA') ? 'checked' : ''}>
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
@@ -469,17 +420,6 @@
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
-                                                <tr data-name="DANH_SACH_TAI_KHOAN_THEM">
-                                                    <td>Thêm mới</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_TAI_KHOAN_THEM" 
-                                                                   ${role.permissions.contains('DANH_SACH_TAI_KHOAN_THEM') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
                                                 <tr data-name="DANH_SACH_TAI_KHOAN_SUA">
                                                     <td>Chỉnh sửa</td>
                                                     <c:forEach items="${roleGroup}" var="role">
@@ -488,17 +428,6 @@
                                                                    name="permissions[${role.roleGroupId}]" 
                                                                    value="DANH_SACH_TAI_KHOAN_SUA" 
                                                                    ${role.permissions.contains('DANH_SACH_TAI_KHOAN_SUA') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="DANH_SACH_TAI_KHOAN_XOA">
-                                                    <td>Xóa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="DANH_SACH_TAI_KHOAN_XOA" 
-                                                                   ${role.permissions.contains('DANH_SACH_TAI_KHOAN_XOA') ? 'checked' : ''}>
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
@@ -516,17 +445,6 @@
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
-                                                <tr data-name="CAI_DAT_CHUNG_THEM">
-                                                    <td>Thêm mới</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="CAI_DAT_CHUNG_THEM" 
-                                                                   ${role.permissions.contains('CAI_DAT_CHUNG_THEM') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
                                                 <tr data-name="CAI_DAT_CHUNG_SUA">
                                                     <td>Chỉnh sửa</td>
                                                     <c:forEach items="${roleGroup}" var="role">
@@ -535,17 +453,6 @@
                                                                    name="permissions[${role.roleGroupId}]" 
                                                                    value="CAI_DAT_CHUNG_SUA" 
                                                                    ${role.permissions.contains('CAI_DAT_CHUNG_SUA') ? 'checked' : ''}>
-                                                        </td>
-                                                    </c:forEach>
-                                                </tr>
-                                                <tr data-name="CAI_DAT_CHUNG_XOA">
-                                                    <td>Xóa</td>
-                                                    <c:forEach items="${roleGroup}" var="role">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="permissions[${role.roleGroupId}]" 
-                                                                   value="CAI_DAT_CHUNG_XOA" 
-                                                                   ${role.permissions.contains('CAI_DAT_CHUNG_XOA') ? 'checked' : ''}>
                                                         </td>
                                                     </c:forEach>
                                                 </tr>
@@ -655,5 +562,36 @@
     <script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
     <script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
     <script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
+    
+    <script>
+	    function toggleColumn(columnIndex) {
+	        const rows = document.querySelectorAll('tbody tr:not(.d-none)');
+	        
+	        // Tìm hàng đầu tiên có checkbox
+	        let firstCheckbox = null;
+	        let shouldCheck = true;
+	        for (let row of rows) {
+	            const cells = row.getElementsByTagName('td');
+	            if (cells.length > columnIndex + 1) {
+	                firstCheckbox = cells[columnIndex + 1].querySelector('input[type="checkbox"]');
+	                if (firstCheckbox) {
+	                    shouldCheck = !firstCheckbox.checked;
+	                    break;
+	                }
+	            }
+	        }
+	
+	        // Duyệt qua tất cả các hàng để tích/bỏ tích
+	        rows.forEach(row => {
+	            const cells = row.getElementsByTagName('td');
+	            if (cells.length > columnIndex + 1) {
+	                const checkbox = cells[columnIndex + 1].querySelector('input[type="checkbox"]');
+	                if (checkbox) {
+	                    checkbox.checked = shouldCheck;
+	                }
+	            }
+	        });
+	    }
+	</script>
 </body>
 </html>

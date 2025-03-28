@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dao.Account_DAO;
 import com.dao.BlogGroup_DAO;
@@ -93,28 +94,35 @@ public class AdminController {
 	
 	@Autowired
 	GeneralSettings_DAO gsdao;
-	@RequestMapping(value ="/login",method=RequestMethod.GET )
-	public String showLogin(HttpServletRequest req) {
-		return "adminview/login";
-	}
 	
-	@RequestMapping(value = "/login", method= RequestMethod.POST)
-	public String login(HttpServletRequest req) {
-		String phone = req.getParameter("phone");
-		String pass = req.getParameter("pass");
-		Account acc =accountDao.getByPhone(phone);
-		System.out.println(acc);
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String showLogin() {
+        return "adminview/account/login";
+    }
 
-		if(acc == null || !acc.getPassword().equals(pass) || !employeeDao.checkExistByPhone(phone)) {
-			return "redirect:/admin/login.htm";
-		}
-		HttpSession session = req.getSession();
-		session.setAttribute("account", acc);
-		//session.setAttribute("account", accountDao.getByPhone("0901234001"));
-		//session.setAttribute("name", employeeDao.getByPhone("0901234001").getFullName());
-		session.setAttribute("name", employeeDao.getByPhone(acc.getPhone()).getFullName());
-		return "redirect:/admin/profile.htm";
-	}
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(@RequestParam String phone, @RequestParam String password, HttpSession session, Model model) {
+        Account account = accountDao.getByPhone(phone);
+        if (account != null && account.getPassword().equals(password) && !"Deleted".equals(account.getStatus())) {
+        	session.setAttribute("account", account);
+        	session.setAttribute("permissions", rgdao.getById(account.getPermission()).getPermissions());
+    		session.setAttribute("name", employeeDao.getByPhone(account.getPhone()).getFullName());
+    		return "redirect:/admin/profile.htm";
+        }
+        model.addAttribute("error", "Sai số điện thoại hoặc mật khẩu!");
+        return "adminview/account/login";
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/admin/login.htm";
+    }
+    
+    @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
+    public String accessDenied(HttpSession session) {
+        return "adminview/account/access-denied";
+    }
 	
 	@SuppressWarnings("deprecation")
 	@RequestMapping("/statistic")
@@ -246,7 +254,7 @@ public class AdminController {
 
 		return "redirect:/admin/profile.htm";
 	}
-	
+
 	@RequestMapping("/logout")
 	public String logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
@@ -256,3 +264,4 @@ public class AdminController {
 	}
 	
 }
+
