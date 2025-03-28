@@ -113,13 +113,19 @@ body {
                 <strong>Tổng:</strong> ${order.totalCost }
             </p>
             <p>
-                <strong>Mã giảm giá:</strong> ${order.discountId }
+                <strong>Mã giảm giá:</strong> <c:if test="${!order.discountId}">Không có mã</c:if> ${order.discountId }
             </p>
             <p>
                 <strong>Ngày đặt hàng:</strong> ${order.orderDate }
             </p>
             <p>
-                <strong>Trạng thái:</strong> ${order.status}
+                <strong>Trạng thái:</strong>
+                <c:choose>
+   					<c:when test="${order.status == 'Pending'}">Chờ xác nhận</c:when>
+   					<c:when test="${order.status == 'Shipping'}">Đang giao hàng</c:when>
+   					<c:when test="${order.status == 'Completed'}">Đã hoàn thành</c:when>
+   					<c:when test="${order.status == 'Processing'}">Đang xử lý</c:when>
+				</c:choose>
             </p>
         </div>
 

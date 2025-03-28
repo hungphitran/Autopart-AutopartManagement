@@ -86,6 +86,7 @@
 			<header class="header">
 				<h1>Lịch sử đơn hàng</h1>
 			</header>
+			<c:if test="${orders.size()==0}"> <h2>Bạn chưa có đơn hàng nào</h2> </c:if>
 			<c:forEach items="${orders}" var="order">
 				<div class="order-item" data-order="${order}">
 					<p>
@@ -96,7 +97,12 @@
 					<p>
 						<strong>Tổng tiền: </strong>${order.totalCost}</p>
 					<p>
-						<strong>Trạng thái: </strong>${order.status}</p>
+						<strong>Trạng thái: </strong>                <c:choose>
+   					<c:when test="${order.status == 'Pending'}">Chờ xác nhận</c:when>
+   					<c:when test="${order.status == 'Shipping'}">Đang giao hàng</c:when>
+   					<c:when test="${order.status == 'Completed'}">Đã hoàn thành</c:when>
+   					<c:when test="${order.status == 'Processing'}">Đang xử lý</c:when>
+				</c:choose></p>
 					<a href="/autopart/order.htm?orderId=${order.orderId}"
 						class="button nav-btn">Xem chi tiết đơn hàng</a>
 

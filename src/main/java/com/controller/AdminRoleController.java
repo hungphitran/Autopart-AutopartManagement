@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dao.Account_DAO;
 import com.dao.RoleGroup_DAO;
+import com.entity.Account;
 import com.entity.Brand;
 import com.entity.Employee;
 import com.entity.RoleGroup;
@@ -43,6 +46,9 @@ public class AdminRoleController {
 	
 	@Autowired
 	RoleGroup_DAO roleGroupDao;
+	
+	@Autowired 
+	Account_DAO accountDao;
 	
 	@RequestMapping("/role")
 	public String showRoleGroup(HttpServletRequest req) {
@@ -118,7 +124,9 @@ public class AdminRoleController {
 	public String updatePermissions(
 	        @RequestParam("roleGroupIds") List<String> roleGroupIds,
 	        HttpServletRequest req) {
-	    
+		HttpSession session = req.getSession();
+	    Account acc =(Account) session.getAttribute("account");
+		
 	    for (String roleGroupId : roleGroupIds) {
 	        String[] permissions = req.getParameterValues("permissions[" + roleGroupId + "]");
 	        List<String> permissionList = (permissions != null) ? Arrays.asList(permissions) : Arrays.asList();
@@ -129,6 +137,9 @@ public class AdminRoleController {
 	            roleGroup.setPermissions(permissionList);
 	            roleGroup.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 	            roleGroupDao.update(roleGroup);
+	            Account account = accountDao.getByPhone(acc.getPhone());
+	            session.setAttribute("account", account);
+	        	session.setAttribute("permissions", roleGroupDao.getById(account.getPermission()).getPermissions());
 	        }
 	    }
 

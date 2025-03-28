@@ -23,6 +23,7 @@ import com.dao.Product_DAO;
 import com.entity.Account;
 import com.entity.Cart;
 import com.entity.Customer;
+import com.entity.Discount;
 import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
@@ -91,6 +92,11 @@ public class OrderController {
 			}
 			cart.setProducts(productsInCart);
 			cartDao.update(cart);
+			Map<Product,Integer> p= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				p.put(productDao.getById(key),productsInCart.get(key));
+			}
+			session.setAttribute("productInCart",p);
 			
 			return "success";
 
@@ -155,6 +161,9 @@ public class OrderController {
 		}
 		
 		req.setAttribute("products", products);
+		
+		List<Discount> discounts = discountDao.getAll();
+		req.setAttribute("discounts", discounts);
 
 		return "order";
 	}

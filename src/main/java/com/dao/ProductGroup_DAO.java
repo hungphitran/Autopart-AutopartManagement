@@ -22,7 +22,8 @@ public class ProductGroup_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM ProductGroup pg WHERE pg.status = 'Active'";
+//            String hql = "FROM ProductGroup pg WHERE pg.status = 'Active'";
+            String hql = "FROM ProductGroup";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
@@ -137,6 +138,41 @@ public class ProductGroup_DAO {
         } catch (Exception e) {
             e.printStackTrace();
             return "PG001";
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
+    
+    public boolean changeStatus(String groupId) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            
+            // Lấy sản phẩm hiện tại
+            String getStatusHql = "SELECT pg.status FROM ProductGroup pg WHERE pg.productGroupId = :groupId";
+            Query statusQuery = session.createQuery(getStatusHql);
+            statusQuery.setParameter("groupId", groupId);
+            String currentStatus = (String) statusQuery.uniqueResult();
+            System.out.println("current status of id: "+groupId +" "+": "+ currentStatus);
+            // Xác định trạng thái mới
+            String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
+            
+            // Cập nhật trạng thái
+            String updateHql = "UPDATE ProductGroup pg SET pg.status = :newStatus WHERE pg.productGroupId = :groupId";
+            Query updateQuery = session.createQuery(updateHql);
+            updateQuery.setParameter("newStatus", newStatus);
+            updateQuery.setParameter("groupId", groupId);
+            
+            int rowsAffected = updateQuery.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
         } finally {
             if (session != null) session.close();
         }

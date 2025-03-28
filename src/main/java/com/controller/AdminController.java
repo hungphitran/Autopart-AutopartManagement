@@ -3,14 +3,15 @@ package com.controller;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +40,6 @@ import com.entity.Brand;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
-import net.bytebuddy.matcher.ModifierMatcher.Mode;
 
 import com.entity.Customer;
 import com.entity.Blog;
@@ -120,7 +120,10 @@ public class AdminController {
     }
     
     @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
-    public String accessDenied(HttpSession session) {
+    public String accessDenied(HttpSession session,HttpServletRequest req) {
+    	String referer = req.getHeader("Referer");
+    	req.setAttribute("preUrl", referer);
+    	System.out.println(referer);
         return "adminview/account/access-denied";
     }
 	
@@ -144,7 +147,7 @@ public class AdminController {
 		List<Order> ordersLastMonth = new ArrayList<Order>();
 		int totalProductLastYear =0;
 		
-		Map<Product,Integer> products =  new HashMap();
+		Map<Product,Integer> products =  new TreeMap<Product, Integer>();
 		List<String> ids = new ArrayList<String>();
 		//List<Order> 
 		for(Order o : orders) {
@@ -179,9 +182,7 @@ public class AdminController {
 			totalProductLastYear+=o.getOrderDetails().size();
 		}
 		
-		
-		
-		
+
 		req.setAttribute("income", income);
 		
 		req.setAttribute("totalProductThisYear", totalProductThisYear);
@@ -190,7 +191,7 @@ public class AdminController {
 		req.setAttribute("ordersThisMonth", ordersThisMonth);
 		
 		//orders need confirmation
-		List<Order> newOrders = orderDao.getOrderByStatus("Wait for confirmation");
+		List<Order> newOrders = orderDao.getOrderByStatus("Pending");
 		req.setAttribute("newOrders", newOrders);
 		
 		//new account this month 
@@ -208,7 +209,6 @@ public class AdminController {
 		}
 		req.setAttribute("accsLastMonth", accsLastMonth);
 		req.setAttribute("accsThisMonth", accsThisMonth);
-		System.out.println(income);
 		req.setAttribute("incomeLastMonth", income[today.getMonth()-1]);
 		req.setAttribute("incomeThisMonth", income[today.getMonth()]);
 		
@@ -257,4 +257,14 @@ public class AdminController {
 
 		return "redirect:/admin/profile.htm";
 	}
+
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		session.removeAttribute("account");
+		session.removeAttribute("name");
+		return "redirect:/admin/login.htm";
+	}
+	
 }
+
