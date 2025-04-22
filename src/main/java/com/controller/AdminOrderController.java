@@ -54,7 +54,7 @@ public class AdminOrderController {
 	@RequestMapping("/order")
 	public String showOrders(@RequestParam("status") String status, HttpServletRequest req) {
 		List<Order> orders;
-		
+		System.out.println("status: "+status);
 		switch (status) {
 			case "pending":
 				orders = orderDao.getOrderByStatus("Pending");

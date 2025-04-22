@@ -3,14 +3,15 @@ package com.controller;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +40,6 @@ import com.entity.Brand;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
-import net.bytebuddy.matcher.ModifierMatcher.Mode;
 
 import com.entity.Customer;
 import com.entity.Blog;
@@ -94,28 +94,38 @@ public class AdminController {
 	
 	@Autowired
 	GeneralSettings_DAO gsdao;
-	@RequestMapping(value ="/login",method=RequestMethod.GET )
-	public String showLogin(HttpServletRequest req) {
-		return "adminview/login";
-	}
 	
-	@RequestMapping(value = "/login", method= RequestMethod.POST)
-	public String login(HttpServletRequest req) {
-		String phone = req.getParameter("phone");
-		String pass = req.getParameter("pass");
-		Account acc =accountDao.getByPhone(phone);
-		System.out.println(acc);
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String showLogin() {
+        return "adminview/account/login";
+    }
 
-		if(acc == null || !acc.getPassword().equals(pass) || !employeeDao.checkExistByPhone(phone)) {
-			return "redirect:/admin/login.htm";
-		}
-		HttpSession session = req.getSession();
-		session.setAttribute("account", acc);
-		//session.setAttribute("account", accountDao.getByPhone("0901234001"));
-		//session.setAttribute("name", employeeDao.getByPhone("0901234001").getFullName());
-		session.setAttribute("name", employeeDao.getByPhone(acc.getPhone()).getFullName());
-		return "redirect:/admin/profile.htm";
-	}
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(@RequestParam String phone, @RequestParam String password, HttpSession session, Model model) {
+        Account account = accountDao.getByPhone(phone);
+        if (account != null && account.getPassword().equals(password) && !"Deleted".equals(account.getStatus())) {
+        	session.setAttribute("account", account);
+        	session.setAttribute("permissions", rgdao.getById(account.getPermission()).getPermissions());
+    		session.setAttribute("name", employeeDao.getByPhone(account.getPhone()).getFullName());
+    		return "redirect:/admin/profile.htm";
+        }
+        model.addAttribute("error", "Sai số điện thoại hoặc mật khẩu!");
+        return "adminview/account/login";
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/admin/login.htm";
+    }
+    
+    @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
+    public String accessDenied(HttpSession session,HttpServletRequest req) {
+    	String referer = req.getHeader("Referer");
+    	req.setAttribute("preUrl", referer);
+    	System.out.println(referer);
+        return "adminview/account/access-denied";
+    }
 	
 	@SuppressWarnings("deprecation")
 	@RequestMapping("/statistic")
@@ -137,7 +147,7 @@ public class AdminController {
 		List<Order> ordersLastMonth = new ArrayList<Order>();
 		int totalProductLastYear =0;
 		
-		Map<Product,Integer> products =  new HashMap();
+		Map<Product,Integer> products =  new TreeMap<Product, Integer>();
 		List<String> ids = new ArrayList<String>();
 		//List<Order> 
 		for(Order o : orders) {
@@ -172,9 +182,7 @@ public class AdminController {
 			totalProductLastYear+=o.getOrderDetails().size();
 		}
 		
-		
-		
-		
+
 		req.setAttribute("income", income);
 		
 		req.setAttribute("totalProductThisYear", totalProductThisYear);
@@ -183,7 +191,7 @@ public class AdminController {
 		req.setAttribute("ordersThisMonth", ordersThisMonth);
 		
 		//orders need confirmation
-		List<Order> newOrders = orderDao.getOrderByStatus("Wait for confirmation");
+		List<Order> newOrders = orderDao.getOrderByStatus("Pending");
 		req.setAttribute("newOrders", newOrders);
 		
 		//new account this month 
@@ -201,7 +209,6 @@ public class AdminController {
 		}
 		req.setAttribute("accsLastMonth", accsLastMonth);
 		req.setAttribute("accsThisMonth", accsThisMonth);
-		System.out.println(income);
 		req.setAttribute("incomeLastMonth", income[today.getMonth()-1]);
 		req.setAttribute("incomeThisMonth", income[today.getMonth()]);
 		
@@ -250,7 +257,7 @@ public class AdminController {
 
 		return "redirect:/admin/profile.htm";
 	}
-	
+
 	@RequestMapping("/logout")
 	public String logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
@@ -260,3 +267,4 @@ public class AdminController {
 	}
 	
 }
+

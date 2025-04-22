@@ -47,8 +47,10 @@
 				<div class="header__cart-wrap">
 					<div class="header__cart-info">
 						<i class="header__cart-icon fa-solid fa-cart-shopping"></i> <span
-							class="header__cart-text">Giỏ hàng</span> <span
-							class="header__cart-notice">${productInCart.size()}</span>
+							class="header__cart-text">Giỏ hàng</span> 
+							<c:if test="${user==null}"> <span class="header__cart-notice">0</span> </c:if>
+							
+						<c:if test="${user!=null }"><span class="header__cart-notice">${productInCart.size()}</span></c:if>
 					</div>
 
 					<!-- No cart: header__cart-list--no-cart-->
@@ -58,32 +60,31 @@
 
 
 						<h4 class="header__cart-heading">Sản phẩm đã thêm</h4>
-						<c:if test="${productInCart.size()==0}">
-							<p>Chưa có sản phẩm nào</p>
-
-						</c:if>
+						<c:if test="${user==null}"> <p>Đăng nhập để xem giỏ hàng</p> </c:if>
+						<c:if test="${user!=null }">
+						<c:if test="${productInCart.size()==0}"><p>Bạn chưa thêm sản phẩm nào</p></c:if>
 						<c:if test="${productInCart.size()>0}">
 							<ul class="header__cart-list-item">
 								<!-- Cart item -->
-								<c:forEach items="${productInCart}" var="product">
+								<c:forEach items="${productInCart}" var="p">
 									<li class="header__cart-item"><input type="checkbox"
-										name="${product.key.productId}" value="${product.value}">
+										name="${p.key.productId}" value="${p.value}">
 										<img
 										src="https://img.freepik.com/free-photo/fashion-portrait-young-elegant-woman_1328-2743.jpg?w=1480&t=st=1701357403~exp=1701358003~hmac=435f00eded774f42e172f48f4be677658485206407baa84eaef2058b11f1431f"
 										alt="" class="header__cart-img">
 										<div class="header__cart-item-info">
 											<div class="header__cart-item-head">
-												<h5 class="header__cart-item-name">${product.key.productName }</h5>
+												<h5 class="header__cart-item-name">${p.key.productName }</h5>
 												<div class="header__cart-item-wrap">
 													<span class="header__cart-item-price"></span> <span
 														class="header__cart-item-multiply">x</span> <span
-														class="header__cart-item-qnt">${product.value }</span>
+														class="header__cart-item-qnt">${p.value }</span>
 												</div>
 											</div>
 
 											<div class="header__cart-item-body">
-												<span class="header__cart-item-description"> <a href="/autopart/product/detailproduct.htm?productId=${product.key.productId}">${product.key.productId }</a> </span>
-												<span class="header__cart-item-remove"><a href="/autopart/product/delete.htm?productId=${product.key.productId}">Xóa</a></span>
+												<span class="header__cart-item-description"> <a href="/autopart/product/detailproduct.htm?productId=${p.key.productId}">${p.key.productId }</a> </span>
+												<span class="header__cart-item-remove"><a href="/autopart/product/delete.htm?productId=${p.key.productId}">Xóa</a></span>
 											</div>
 										</div></li>
 								</c:forEach>
@@ -93,7 +94,9 @@
 								class="btn btn--primary header__cart-view-cart">Thanh
 								toán</button>
 						</c:if>
+						</c:if>	
 					</form>
+
 				</div>
 			</div>
 		</div>
@@ -101,7 +104,7 @@
 
 	<div class="header_menu">
 		<ul class="header_menu-list">
-			<li><a href="#dashboard">Trang chủ</a></li>
+			<li><a href="/autopart/index.htm">Trang chủ</a></li>
 			<li><a href="#categories" class="menu-item"> Danh mục <i
 					class="fa fa-angle-down" aria-hidden="true"></i>
 					<div class="items">
@@ -119,11 +122,9 @@
 						</c:forEach>
 					</div>
 			</a></li>
-			<li><a href="#products" class="menu-item"> Sản phẩm <i
-					class="fa fa-angle-down" aria-hidden="true"></i>
+			<li><a href="#products" class="menu-item"> Sản phẩm
 			</a></li>
-			<li><a href="#contact"> Liên hệ <i class="fa fa-angle-down"
-					aria-hidden="true"></i>
+			<li><a href="#contact"> Liên hệ 
 			</a></li>
 			<li><a href="#" class="menu-item" id="brand"> Nhãn hàng <i class="fa fa-angle-down"
 					aria-hidden="true"></i>

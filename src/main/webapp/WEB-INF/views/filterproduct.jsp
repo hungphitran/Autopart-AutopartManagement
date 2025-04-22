@@ -185,7 +185,9 @@
 				</c:forEach>
 			</div>
 		</div>
+		
 	</div>
+	
 	<script src="<c:url value="/resources/js/filterproduct.js" />"></script>
 </body>
 </html>
