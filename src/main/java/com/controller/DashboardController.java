@@ -104,7 +104,7 @@ public class DashboardController {
 		
 		
 		if(acc != null ) {//get cart if user logged in
-			Customer cus = customerDao.getByPhone(acc.getPhone());
+			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cartDao.getById(cus.getCartId());
 			req.setAttribute("cart", cart);
 			Map<String,Integer> productsInCart =cart.getProducts();

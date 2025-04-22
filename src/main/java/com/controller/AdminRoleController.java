@@ -137,7 +137,7 @@ public class AdminRoleController {
 	            roleGroup.setPermissions(permissionList);
 	            roleGroup.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 	            roleGroupDao.update(roleGroup);
-	            Account account = accountDao.getByPhone(acc.getPhone());
+	            Account account = accountDao.getByEmail(acc.getEmail());
 	            session.setAttribute("account", account);
 	        	session.setAttribute("permissions", roleGroupDao.getById(account.getPermission()).getPermissions());
 	        }

@@ -77,7 +77,7 @@ public class ProductController {
 		if(acc == null ) {//user need to log in
 			return "redirect:/login.htm";
 		}
-		Customer cus = customerDao.getByPhone(acc.getPhone());
+		Customer cus = customerDao.getByEmail(acc.getEmail());
 		Cart cart =cartDao.getById(cus.getCartId());
 		productDao.getById(productId);
 		Map<String,Integer> productInCart =cart.getProducts();
@@ -110,7 +110,7 @@ public class ProductController {
 		
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("user");
-		Customer cus = customerDao.getByPhone(acc.getPhone());
+		Customer cus = customerDao.getByEmail(acc.getEmail());
 		Cart cart =cartDao.getById(cus.getCartId());
 		Map<String,Integer> productsInCart =cart.getProducts();
 		productsInCart.remove(productId);

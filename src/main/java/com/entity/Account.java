@@ -11,8 +11,8 @@ public class Account {
     private String roleName;
 	
     @Id
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "email")
+    private String email;
     
     @Column(name = "password")
     private String password;
@@ -42,10 +42,10 @@ public class Account {
     // Default constructor
     public Account() {}
 
-	public Account(String phone, String password, String token, String permission, String status, Timestamp createdAt,
+	public Account(String email, String password, String token, String permission, String status, Timestamp createdAt,
 			Timestamp updatedAt, boolean deleted) {
 		super();
-		this.phone = phone;
+		this.email = email;
 		this.password = password;
 		this.token = token;
 		this.permission = permission;
@@ -71,12 +71,12 @@ public class Account {
 		this.roleGroup = roleGroup;
 	}
 	
-	public String getPhone() {
-		return phone;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
@@ -137,7 +137,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		return "Account [phone=" + phone + ", password=" + password + ", token=" + token + ", permission=" + permission
+		return "Account [email=" + email + ", password=" + password + ", token=" + token + ", permission=" + permission
 				+ ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
 				+ deleted + "]";
 	}

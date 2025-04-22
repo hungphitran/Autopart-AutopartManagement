@@ -34,7 +34,7 @@
 							<table class="table align-items-center table-flush" id="dataTable">
 								<thead class="thead-light">
 									<tr>
-										<th>Số Điện Thoại</th>
+										<th>Email</th>
 										<th>Phân Quyền</th>
 										<th>Trạng Thái</th>
 										<th>Hoạt Động</th>
@@ -43,24 +43,24 @@
 								<tbody>
 									<c:forEach items="${accounts}" var="acc">
 										<tr class="brand-item">
-											<td class="align-middle">${acc.phone}</td>
+											<td class="align-middle">${acc.email}</td>
 											<td class="align-middle">${acc.roleName}</td>
 											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${acc.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-acc-phone="${acc.phone}" data-acc-status="${acc.status}" class="change-status-link">
+												    	<a href="javascript:void(0);" data-acc-phone="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-acc-phone="${acc.phone}" data-acc-status="${acc.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-acc-phone="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-acc-phone="${acc.phone}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-danger edit-btn">Sửa</a>
+												<a href="javascript:void(0);" data-acc-phone="${acc.email}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-danger edit-btn">Sửa</a>
 											</td>
 										</tr>
 									</c:forEach>

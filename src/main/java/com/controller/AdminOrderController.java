@@ -93,11 +93,11 @@ public class AdminOrderController {
 	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
 	public String addOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req) {
 		// Tạo tài khoản khách hàng
-		Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+		Account acc = new Account(order.getUserEmail(), "1111", null, "RG002", "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 		accountDao.add(acc);
 		
 		// Lưu khách hàng
-		Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
+		Customer cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(),  order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 		customerDao.add(cus);
 		
 		// Đặt các giá trị mặc định
@@ -139,7 +139,7 @@ public class AdminOrderController {
 	        return "redirect:/admin/order.htm?status=processing"; // Nếu không tìm thấy đơn hàng
 	    }
 	    
-	    Customer cus = customerDao.getByPhone(order.getUserPhone());
+	    Customer cus = customerDao.getByEmail(order.getUserEmail());
 
 	    // Lấy danh sách chi tiết đơn hàng
 	    List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(orderId);
@@ -163,13 +163,13 @@ public class AdminOrderController {
 	@RequestMapping(value = "/order/edit", method = RequestMethod.POST)
 	public String editOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req) {
 		// Tìm thông tin khách hàng
-		Customer existedCus = customerDao.getByPhone(order.getUserPhone());
+		Customer existedCus = customerDao.getByEmail(order.getUserEmail());
 		if (existedCus == null) {
-			Account acc = new Account(order.getUserPhone(), "1111", null, "RG002", "Active",  Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false); 
+			Account acc = new Account(order.getUserEmail(), "1111", null, "RG002", "Active",  Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false); 
 			accountDao.add(acc);
 			
 			// Lưu khách hàng
-			Customer cus = new Customer(null, req.getParameter("userName"), order.getUserPhone(), order.getShipAddress(), "Active",Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()) );
+			Customer cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(), order.getShipAddress(), "Active",Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()) );
 			customerDao.add(cus);
 		}
 		
@@ -223,7 +223,7 @@ public class AdminOrderController {
 	        return "redirect:/admin/order.htm?status=processing"; 
 	    }
 	    
-	    Customer cus = customerDao.getByPhone(order.getUserPhone());
+	    Customer cus = customerDao.getByEmail(order.getUserEmail());
 
 	    // Lấy danh sách chi tiết đơn hàng
 	    List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(orderId);

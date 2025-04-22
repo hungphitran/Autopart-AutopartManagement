@@ -10,7 +10,7 @@
 </div>
 <div class="modal-body">
     <p><strong>Họ và Tên:</strong> ${customer.fullName}</p>
-    <p><strong>Số Điện Thoại:</strong> ${customer.phone}</p>
+    <p><strong>Số Điện Thoại:</strong> ${customer.email}</p>
     <p><strong>Địa Chỉ:</strong> ${customer.address}</p>
     <p><strong>Trạng Thái:</strong> ${customer.status}</p>
 </div>

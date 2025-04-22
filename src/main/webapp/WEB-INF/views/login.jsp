@@ -22,7 +22,7 @@
 
 			<div class="input-field">
 				<input type="text" name="phone" required>
-				<label>Nhập số điện thoại</label>
+				<label>Nhập số email</label>
 			</div>
 
 			<div class="input-field">

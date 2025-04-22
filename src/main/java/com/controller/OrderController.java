@@ -60,7 +60,7 @@ public class OrderController {
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
 		if(acc != null ) {//get cart if user logged in
-			Customer cus = customerDao.getByPhone(acc.getPhone());
+			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cartDao.getById(cus.getCartId());
 			
 			//get all products that user choosed
@@ -79,7 +79,7 @@ public class OrderController {
 			String shipAddress= req.getParameter("shipAddress");
 			
 			//create new order then add it to database
-			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getPhone() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getEmail() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 			orderDao.add(newOrder);
 			
 			//update cart
@@ -137,7 +137,7 @@ public class OrderController {
 		}
 		
 		//get all product of user
-		Customer cus = customerDao.getByPhone(acc.getPhone());
+		Customer cus = customerDao.getByEmail(acc.getEmail());
 		Cart cart= cartDao.getById(cus.getCartId());
 		
 		Map<String,Integer> productsInCart =cart.getProducts();

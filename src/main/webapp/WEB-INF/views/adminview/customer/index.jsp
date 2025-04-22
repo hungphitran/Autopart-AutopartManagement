@@ -45,11 +45,11 @@
 									<c:forEach items="${customers}" var="customer">
 										<tr class="brand-item">
 											<td class="align-middle">${customer.fullName}</td>
-											<td class="align-middle">${customer.phone}</td>
+											<td class="align-middle">${customer.email}</td>
 											<td class="align-middle">${customer.address}</td>
 											<td class="align-middle text-center">${customer.status}</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-customer-phone="${customer.phone}" data-customer-name="${customer.fullName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
+												<a href="javascript:void(0);" data-customer-email="${customer.email}" data-customer-name="${customer.fullName}" data-toggle="modal" data-target="#DetailModal" class="btn btn-sm btn-dark detail-btn">Chi tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -122,10 +122,10 @@
 		    
 		 // Use event delegation for dynamically created elements
 		    $('#dataTable').on('click', '.detail-btn', function() {
-		        var cusPhone = $(this).data('customer-phone');
+		        var cusEmail = $(this).data('customer-email');
 
 		        // Load the detail modal content
-		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/customer/detail.htm?cusPhone=' + cusPhone, function() {
+		        $('#DetailModal .modal-content').load('${pageContext.request.contextPath}/admin/customer/detail.htm?cusEmail=' + cusEmail, function() {
 		            $('#DetailModal').modal('show');
 		        });
 		    });

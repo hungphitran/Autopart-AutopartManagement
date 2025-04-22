@@ -134,7 +134,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-3">
-							    <a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Chỉnh Sửa Thông Tin</a>
+							    <a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.email}" class="btn btn-sm btn-primary">Chỉnh Sửa Thông Tin</a>
 							</div>
                         </div>
                     </div>

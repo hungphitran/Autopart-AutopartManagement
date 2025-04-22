@@ -16,13 +16,13 @@ public class Employee {
 	@Column(name = "citizenId")
 	private String citizenId;
 	
-	@Id
 	@Column(name = "phone")
     private String phone;
 
     @Column(name = "fullName")
     private String fullName;
     
+	@Id
     @Column(name = "email")
     private String email;
 

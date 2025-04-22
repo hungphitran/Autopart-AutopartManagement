@@ -36,8 +36,8 @@ public class AccountController {
 		if(acc==null) {
 			return "redirect:/login.htm";
 		}
-		List<Order> orderLst= orderDao.getOrderByPhone(acc.getPhone());
-		model.addAttribute("customer",customerDao.getByPhone(acc.getPhone()));
+		List<Order> orderLst= orderDao.getOrderByEmail(acc.getEmail());
+		model.addAttribute("customer",customerDao.getByEmail(acc.getEmail()));
 		System.out.println(orderLst);
 		req.setAttribute("orders", orderLst);
 		return "profile";
@@ -47,7 +47,7 @@ public class AccountController {
 		System.out.println(customerDao.update(cus));
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("user");
-		Customer c = customerDao.getByPhone(acc.getPhone());
+		Customer c = customerDao.getByEmail(acc.getEmail());
 		req.getSession().setAttribute("userName", c.getFullName());	
 		return "redirect:/account.htm";
 	}

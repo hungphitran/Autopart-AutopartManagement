@@ -17,11 +17,11 @@ public class Import {
     @Column(name = "importId")
     private String importId;
 
-    @Column(name = "employeePhone", nullable = false)
-    private String employeePhone;
+    @Column(name = "employeeEmail", nullable = false)
+    private String employeeEmail;
     
     @ManyToOne(fetch = FetchType.EAGER) 
-    @JoinColumn(name = "employeePhone", insertable = false, updatable = false, referencedColumnName = "phone")
+    @JoinColumn(name = "employeeEmail", insertable = false, updatable = false, referencedColumnName = "email")
     private Employee employee; 
 
     @Column(name = "importDate", nullable = false)
@@ -39,75 +39,95 @@ public class Import {
         super();
     }
 
-    public Import(String importId, String employeePhone, Date importDate, BigDecimal importCost,  List<ImportDetail> importDetails, String employeeName) {
+
+	public Import(String employeeName, String importId, String employeeEmail, Employee employee, Date importDate,
+			BigDecimal importCost, List<ImportDetail> importDetails) {
 		super();
-        this.importId = importId;
-        this.employeePhone = employeePhone;
-        this.importDate = importDate;
-        this.importCost = importCost;
-        this.importDetails = importDetails;
-        this.employeeName = employeeName;
-    }
+		this.employeeName = employeeName;
+		this.importId = importId;
+		this.employeeEmail = employeeEmail;
+		this.employee = employee;
+		this.importDate = importDate;
+		this.importCost = importCost;
+		this.importDetails = importDetails;
+	}
 
-    public String getImportId() {
-        return importId;
-    }
 
-    public void setImportId(String importId) {
-        this.importId = importId;
-    }
-
-    public String getEmployeePhone() {
-        return employeePhone;
-    }
-
-    public void setEmployeePhone(String employeePhone) {
-        this.employeePhone = employeePhone;
-    }
-
-    public java.sql.Date getImportDate() {
-        return importDate;
-    }
-
-    public void setImportDate(java.sql.Date importDate) {
-        this.importDate = importDate;
-    }
-
-    public BigDecimal getImportCost() {
-        return importCost;
-    }
-
-    public void setImportCost(BigDecimal importCost) {
-        this.importCost = importCost;
-    }
-
-    public List<ImportDetail> getImportDetails() {
-        return importDetails;
-    }
-
-    public void setImportDetails(List<ImportDetail> importDetails) {
-        this.importDetails = importDetails;
-    }
-    
-    public String getEmployeeName() {
+	public String getEmployeeName() {
 		return employeeName;
 	}
+
 
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
 	}
 
+
+	public String getImportId() {
+		return importId;
+	}
+
+
+	public void setImportId(String importId) {
+		this.importId = importId;
+	}
+
+
+	public String getEmployeeEmail() {
+		return employeeEmail;
+	}
+
+
+	public void setEmployeeEmail(String employeeEmail) {
+		this.employeeEmail = employeeEmail;
+	}
+
+
 	public Employee getEmployee() {
 		return employee;
 	}
+
 
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
 	}
 
+
+	public java.sql.Date getImportDate() {
+		return importDate;
+	}
+
+
+	public void setImportDate(java.sql.Date importDate) {
+		this.importDate = importDate;
+	}
+
+
+	public BigDecimal getImportCost() {
+		return importCost;
+	}
+
+
+	public void setImportCost(BigDecimal importCost) {
+		this.importCost = importCost;
+	}
+
+
+	public List<ImportDetail> getImportDetails() {
+		return importDetails;
+	}
+
+
+	public void setImportDetails(List<ImportDetail> importDetails) {
+		this.importDetails = importDetails;
+	}
+
+
 	@Override
-    public String toString() {
-        return "Import [importId=" + importId + ", employeePhone=" + employeePhone + ", importDate=" + importDate
-                + ", importCost=" + importCost + ", importDetails=" + importDetails + "]";
-    }
+	public String toString() {
+		return "Import [employeeName=" + employeeName + ", importId=" + importId + ", employeeEmail=" + employeeEmail
+				+ ", employee=" + employee + ", importDate=" + importDate + ", importCost=" + importCost
+				+ ", importDetails=" + importDetails + "]";
+	}
+
 }

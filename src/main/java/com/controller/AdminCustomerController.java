@@ -29,8 +29,8 @@ public class AdminCustomerController {
 	}
 	
 	@RequestMapping(value = "/customer/detail", method= RequestMethod.GET)
-	public String detailCustomer(@RequestParam("cusPhone") String cusPhone, HttpServletRequest req) {
-		Customer customer = customerDao.getByPhone(cusPhone);
+	public String detailCustomer(@RequestParam("cusEmail") String cusPhone, HttpServletRequest req) {
+		Customer customer = customerDao.getByEmail(cusPhone);
 		req.setAttribute("customer", customer);
 		return "adminview/customer/detailModal";
 	}

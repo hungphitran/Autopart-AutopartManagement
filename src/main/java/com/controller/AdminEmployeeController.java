@@ -46,14 +46,14 @@ public class AdminEmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/changeStatus", method= RequestMethod.POST)
-	public String changeStatus(@RequestParam("empPhone") String empPhone) {
-		employeeDao.changeStatus(empPhone);
+	public String changeStatus(@RequestParam("empEmail") String empEmail) {
+		employeeDao.changeStatus(empEmail);
 		return "adminview/employee/index";
 	}
 	
 	@RequestMapping(value = "/employee/detail", method= RequestMethod.GET)
-	public String detail(@RequestParam("empPhone") String empPhone, HttpServletRequest req) {
-		Employee employee = employeeDao.getByPhone(empPhone);
+	public String detail(@RequestParam("empEmail") String empPhone, HttpServletRequest req) {
+		Employee employee = employeeDao.getByEmail(empPhone);
 		
 		req.setAttribute("emp", employee);
 		return "adminview/employee/detail";
@@ -83,8 +83,8 @@ public class AdminEmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.GET)
-	public String edit(@RequestParam("empPhone") String empPhone, HttpServletRequest req) {
-		Employee emp = employeeDao.getByPhone(empPhone);
+	public String edit(@RequestParam("empEmail") String empPhone, HttpServletRequest req) {
+		Employee emp = employeeDao.getByEmail(empPhone);
 		req.setAttribute("emp", emp);
 		
 		List<RoleGroup> roleGroup = roleGroupDao.getAll();

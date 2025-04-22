@@ -43,13 +43,13 @@ public class Account_DAO {
         }
     }
 
-    public Account getByPhone(String phone) {
+    public Account getByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Account a LEFT JOIN FETCH a.roleGroup WHERE a.phone = :phone";
+            String hql = "FROM Account a LEFT JOIN FETCH a.roleGroup WHERE a.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             Account account = (Account) query.uniqueResult();
 
             // Gán roleName nếu roleGroup tồn tại
@@ -102,15 +102,15 @@ public class Account_DAO {
         }
     }
 
-    public boolean delete(String phone) {
+    public boolean delete(String email) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Account a SET a.status = 'Deleted', a.deletedAt = GETDATE() WHERE a.phone = :phone";
+            String hql = "UPDATE Account a SET a.status = 'Deleted', a.deletedAt = GETDATE() WHERE a.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -123,13 +123,13 @@ public class Account_DAO {
         }
     }
 
-    public boolean checkExistByPhone(String phone) {
+    public boolean checkExistByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Account a WHERE a.phone = :phone";
+            String hql = "FROM Account a WHERE a.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,24 +139,24 @@ public class Account_DAO {
         }
     }
     
-    public boolean changeStatus(String accPhone) {
+    public boolean changeStatus(String email) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
             
-            String getStatusHql = "SELECT a.status FROM Account a WHERE a.phone= :accPhone";
+            String getStatusHql = "SELECT a.status FROM Account a WHERE a.email= :email";
             Query statusQuery = session.createQuery(getStatusHql);
-            statusQuery.setParameter("accPhone", accPhone);
+            statusQuery.setParameter("email", email);
             String currentStatus = (String) statusQuery.uniqueResult();
             
             String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
             
-            String updateHql = "UPDATE Account a SET a.status = :newStatus WHERE a.phone = :accPhone";
+            String updateHql = "UPDATE Account a SET a.status = :newStatus WHERE a.email = :email";
             Query updateQuery = session.createQuery(updateHql);
             updateQuery.setParameter("newStatus", newStatus);
-            updateQuery.setParameter("accPhone", accPhone);
+            updateQuery.setParameter("email", email);
             
             int rowsAffected = updateQuery.executeUpdate();
             transaction.commit();

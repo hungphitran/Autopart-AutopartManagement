@@ -66,13 +66,13 @@ public class Import_DAO {
         }
     }
     
-    public List<Import> getImportByPhone(String employeePhone) {
+    public List<Import> getImportByEmail(String employeeEmail) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Import i WHERE i.employeePhone = :phone";
+            String hql = "FROM Import i WHERE i.employeeEmail = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", employeePhone);
+            query.setParameter("email", employeeEmail);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();

@@ -279,8 +279,8 @@ public class AdminProductController {
         }
 
         // Lấy thông tin nhân viên để hiển thị tên đầy đủ
-        String employeeFullName = employeeDao.getByPhone(importEntity.getEmployeePhone()) != null
-                ? employeeDao.getByPhone(importEntity.getEmployeePhone()).getFullName()
+        String employeeFullName = employeeDao.getByEmail(importEntity.getEmployeeEmail()) != null
+                ? employeeDao.getByEmail(importEntity.getEmployeeEmail()).getFullName()
                 : "Không xác định";
 
         // Lấy danh sách sản phẩm để hiển thị tên sản phẩm

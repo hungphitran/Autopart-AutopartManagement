@@ -102,11 +102,11 @@ public class AdminController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(@RequestParam String phone, @RequestParam String password, HttpSession session, Model model) {
-        Account account = accountDao.getByPhone(phone);
+        Account account = accountDao.getByEmail(phone);
         if (account != null && account.getPassword().equals(password) && !"Deleted".equals(account.getStatus())) {
         	session.setAttribute("account", account);
         	session.setAttribute("permissions", rgdao.getById(account.getPermission()).getPermissions());
-    		session.setAttribute("name", employeeDao.getByPhone(account.getPhone()).getFullName());
+    		session.setAttribute("name", employeeDao.getByEmail(account.getEmail()).getFullName());
     		return "redirect:/admin/profile.htm";
         }
         model.addAttribute("error", "Sai số điện thoại hoặc mật khẩu!");
@@ -224,7 +224,7 @@ public class AdminController {
 		if(acc== null) {
 			return "redirect:/admin/login.htm";
 		}
-		model.addAttribute(employeeDao.getByPhone(acc.getPhone()));
+		model.addAttribute(employeeDao.getByEmail(acc.getEmail()));
 		return "adminview/profile";
 	}
 	
@@ -232,7 +232,7 @@ public class AdminController {
 	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e) {
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("account");
-		Employee emp = employeeDao.getByPhone(acc.getPhone());
+		Employee emp = employeeDao.getByEmail(acc.getEmail());
 		emp.setAddress(e.getAddress());
 		emp.setBirthDate(e.getBirthDate());
 		emp.setFullName(e.getFullName());

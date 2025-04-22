@@ -11,8 +11,8 @@
 <div class="modal-body">
     <form:form id="editAccountForm" modelAttribute="account" action="${pageContext.request.contextPath}/admin/account/edit.htm" method="post">
         <div class="form-group">
-            <label for="phone"><strong>Số Điện Thoại:</strong></label>
-            <form:input type="text" class="form-control" path="phone" readonly="true" required="true"/>
+            <label for="email"><strong>Email:</strong></label>
+            <form:input type="text" class="form-control" path="email" readonly="true" required="true"/>
         </div>
         <div class="form-group">
             <label for="password"><strong>Mật Khẩu:</strong></label>
