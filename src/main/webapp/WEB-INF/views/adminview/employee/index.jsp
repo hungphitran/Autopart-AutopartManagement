@@ -62,20 +62,20 @@
 											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${emp.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												    	<a href="javascript:void(0);" data-emp-email="${emp.email}" data-emp-status="${emp.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-emp-phone="${emp.phone}" data-emp-status="${emp.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-emp-email="${emp.email}" data-emp-status="${emp.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empPhone=${emp.phone}" class="btn btn-sm btn-primary">Sửa</a>
-												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empPhone=${emp.phone}" class="btn btn-sm btn-dark">Chi Tiết</a>
+												<a href="${pageContext.request.contextPath}/admin/employee/edit.htm?empEmail=${emp.email}" class="btn btn-sm btn-primary">Sửa</a>
+												<a href="${pageContext.request.contextPath}/admin/employee/detail.htm?empEmail=${emp.email}" class="btn btn-sm btn-dark">Chi Tiết</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -141,13 +141,13 @@
 			$('#dataTable').on('click', '.change-status-link', function(event) {
 			      event.preventDefault(); 
 
-			      var empPhone = $(this).data('emp-phone');
+			      var empEmail = $(this).data('emp-email');
 			      var empStatus = $(this).data('emp-status');
 
 			      $.ajax({
 			        url: '${pageContext.request.contextPath}/admin/employee/changeStatus.htm',
 			        type: 'POST',
-			        data: { empPhone: empPhone },
+			        data: { empEmail: empEmail },
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');

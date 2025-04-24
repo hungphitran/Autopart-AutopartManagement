@@ -39,13 +39,13 @@ public class Order_DAO {
         }
     }
     
-    public List<Order> getOrderByPhone(String phone){
+    public List<Order> getOrderByEmail(String email){
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Order o WHERE o.userPhone = :phone";
+            String hql = "FROM Order o WHERE o.userEmail = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();

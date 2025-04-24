@@ -83,9 +83,9 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="employeePhone">Nhân Viên Nhập <span class="text-danger">*</span></label>
-                                            <form:select path="employeePhone" name="employeePhone" class="form-control" required="true">
+                                            <form:select path="employeeEmail" name="employeeEmail" class="form-control" required="true">
                                                 <form:option value="" label="-- Chọn nhân viên --" disabled="true"/>
-                                                <form:options items="${employeeList}" itemValue="phone" itemLabel="fullName"/>
+                                                <form:options items="${employeeList}" itemValue="email" itemLabel="fullName"/>
                                             </form:select>
                                         </div>
                                         <div class="form-group">

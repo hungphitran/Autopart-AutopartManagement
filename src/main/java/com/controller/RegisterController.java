@@ -43,13 +43,13 @@ public class RegisterController {
 			if(cartDao.add(newCart)) {
 				Account acc =new Account(phone,password,"","RG002","Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false) ;
 				if(accountDao.add(acc)) {
-					Customer cus = new Customer(newCart.getCartId(),fullName,phone, address, "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
+					Customer cus = new Customer(newCart.getCartId(),fullName, email,phone, address, "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 					if(customerDao.add(cus)) {
 						req.setAttribute("message", "Đăng ký thành công, vui lòng đăng nhập");
 						return "redirect:/login.htm";
 					}
 					else {
-						accountDao.delete(phone);
+						accountDao.delete(email);
 						req.setAttribute("message", "Không thể thêm tài khoản");
 						return "register";
 					}

@@ -171,8 +171,8 @@
                                             <input class="form-control" value="${userName}" name="userName" required placeholder="Nhập họ và tên"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="userPhone">Số điện thoại khách hàng <span class="required-text">*</span></label>
-                                            <form:input class="form-control" path="userPhone" name="userPhone" required="true" placeholder="Nhập số điện thoại"/>
+                                            <label for="userPhone">Email khách hàng <span class="required-text">*</span></label>
+                                            <form:input class="form-control" path="userEmail" name="userEmail" required="true" placeholder="Nhập số email"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="shipAddress">Địa chỉ giao hàng <span class="required-text">*</span></label>

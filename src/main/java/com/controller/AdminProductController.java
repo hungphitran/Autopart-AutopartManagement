@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.Brand_DAO;
@@ -27,6 +28,7 @@ import com.dao.Product_DAO;
 import com.entity.Brand;
 import com.entity.Employee;
 import com.entity.Import;
+import com.entity.ImportDetail;
 import com.entity.ImportDetailId;
 import com.entity.Product;
 import com.entity.ProductGroup;
@@ -277,8 +279,8 @@ public class AdminProductController {
         }
 
         // Lấy thông tin nhân viên để hiển thị tên đầy đủ
-        String employeeFullName = employeeDao.getByPhone(importEntity.getEmployeePhone()) != null
-                ? employeeDao.getByPhone(importEntity.getEmployeePhone()).getFullName()
+        String employeeFullName = employeeDao.getByEmail(importEntity.getEmployeeEmail()) != null
+                ? employeeDao.getByEmail(importEntity.getEmployeeEmail()).getFullName()
                 : "Không xác định";
 
         // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
@@ -289,6 +291,6 @@ public class AdminProductController {
 
         return "adminview/product/import/detail";
     }
-	// -- End product --
+	// -- End product -
 
 }

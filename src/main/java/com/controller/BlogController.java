@@ -28,7 +28,7 @@ public class BlogController {
 	public String showOne(HttpServletRequest req) {
 		String id = req.getParameter("id");
 		Blog blog = blogDao.getById(id);
-		String employee = edao.getByPhone(blog.getCreatedBy()).getFullName();
+		String employee = edao.getByEmail(blog.getCreatedBy()).getFullName();
 		req.setAttribute("blog",blog);
 		req.setAttribute("author",employee);
 		return "blogdetail";

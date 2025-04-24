@@ -35,7 +35,7 @@
 								<thead class="thead-light">
 									<tr>
 										<th>Mã Đơn Hàng</th>
-										<th>Số Điện Thoại KH</th>
+										<th>Email KH</th>
 										<th>Địa Chỉ Giao Hàng</th>
 										<th>Ngày Đặt Hàng</th>
 										<th>Tổng Tiền</th>
@@ -46,7 +46,7 @@
 									<c:forEach items="${orders}" var="order">
 										<tr class="product-item">
 											<td class="align-middle">${order.orderId}</td>
-											<td class="align-middle">${order.userPhone}</td>
+											<td class="align-middle">${order.userEmail}</td>
 											<td class="align-middle">${order.shipAddress}</td>
 											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
 											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" />₫</td>

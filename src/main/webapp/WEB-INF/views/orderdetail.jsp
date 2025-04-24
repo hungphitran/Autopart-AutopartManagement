@@ -104,7 +104,7 @@ body {
                 <strong>Tên khách hàng:</strong> ${userName}
             </p>
             <p>
-                <strong>Số điện thoại:</strong> ${user.phone }
+                <strong>Email:</strong> ${user.email }
             </p>
             <p>
                 <strong>Địa chỉ:</strong> ${order.shipAddress }

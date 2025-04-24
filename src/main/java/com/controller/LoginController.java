@@ -84,6 +84,9 @@ public class LoginController {
 	
 	@Autowired
 	Cart_DAO cdao;
+	
+	@Autowired
+	Import_DAO importDao;
 
 	
 	@RequestMapping(value="/login",method=RequestMethod.POST)
@@ -93,9 +96,9 @@ public class LoginController {
 		String phone= req.getParameter("phone");
 		String pass = req.getParameter("password");
 		
-//		test();
+		test();
 		
-		Account acc = accountDao.getByPhone(phone);
+		Account acc = accountDao.getByEmail(phone);
 		
 
 		if(pass==null||phone==null||pass.length()<4|| phone.length()<10) {//check valid password
@@ -109,13 +112,13 @@ public class LoginController {
 		else if(pass.equals(acc.getPassword())) {
 			// add user info to session
 			req.getSession().setAttribute("user", acc);
-			Customer c = customerDao.getByPhone(phone);
+			Customer c = customerDao.getByEmail(phone);
 			if(c==null) {
 				req.getSession().removeAttribute("user");
 				return "redirect:/login.htm";
 			}
 			req.getSession().setAttribute("userName", c.getFullName());	
-			Customer cus = customerDao.getByPhone(acc.getPhone());
+			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cdao.getById(cus.getCartId());
 			Map<String,Integer> productsInCart =cart.getProducts();
 			Map<Product,Integer> products= new HashMap<Product, Integer>();
@@ -328,6 +331,8 @@ public class LoginController {
 //	     
 //	     System.out.println(oddao.getAllByOrderId("ORD001"));
 	     
+//		System.out.println(rgdao.getAll());
 	     
+		System.out.println(importDao.getAll());
 	}
 }

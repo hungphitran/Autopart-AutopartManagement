@@ -52,7 +52,7 @@ public class AdminAccountController {
             return "redirect:/admin/login.htm";
         }
 
-        Account account = accountDao.getByPhone(accPhone);
+        Account account = accountDao.getByEmail(accPhone);
         List<RoleGroup> roleGroup = roleGroupDao.getAll();
         req.setAttribute("account", account);
         req.setAttribute("roleGroup", roleGroup);

@@ -19,8 +19,8 @@ public class Order {
     @Column(name = "discountId")
     private String discountId;
 
-    @Column(name = "userPhone")
-    private String userPhone;
+    @Column(name = "userEmail")
+    private String userEmail;
 
     @Column(name = "shipAddress")
     private String shipAddress;
@@ -57,13 +57,13 @@ public class Order {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Order(String orderId, String discountId, String userPhone, String shipAddress, BigDecimal totalCost,
+	public Order(String orderId, String discountId, String userEmail, String shipAddress, BigDecimal totalCost,
 			Date orderDate, String confirmedBy, String status, Timestamp deletedAt, Timestamp createdAt,
 			Timestamp updatedAt, boolean deleted) {
 		super();
 		this.orderId = orderId;
 		this.discountId = discountId;
-		this.userPhone = userPhone;
+		this.userEmail = userEmail;
 		this.shipAddress = shipAddress;
 		this.totalCost = totalCost;
 		this.orderDate = orderDate;
@@ -91,12 +91,12 @@ public class Order {
 		this.discountId = discountId;
 	}
 
-	public String getUserPhone() {
-		return userPhone;
+	public String getUserEmail() {
+		return userEmail;
 	}
 
-	public void setUserPhone(String userPhone) {
-		this.userPhone = userPhone;
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
 	}
 
 	public String getShipAddress() {
@@ -181,7 +181,7 @@ public class Order {
 
 	@Override
 	public String toString() {
-		return "Order [orderId=" + orderId + ", discountId=" + discountId + ", userPhone=" + userPhone
+		return "Order [orderId=" + orderId + ", discountId=" + discountId + ", userEmail=" + userEmail
 				+ ", shipAddress=" + shipAddress + ", totalCost=" + totalCost + ", orderDate=" + orderDate
 				+ ", confirmedBy=" + confirmedBy + ", status=" + status + ", deletedAt=" + deletedAt + ", createdAt="
 				+ createdAt + ", updatedAt=" + updatedAt + ", deleted=" + deleted + ", orderDetails=" + orderDetails
