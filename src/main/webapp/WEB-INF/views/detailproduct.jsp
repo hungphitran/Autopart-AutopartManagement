@@ -73,20 +73,18 @@
 					<button class="btn btn-danger" type="submit">Thêm vào giỏ
 						hàng</button>
 					<input type="hidden" name="productId" value="${product.productId}">
-					<c:if test="${message!=null}">
-						<p id="message" style="font-size: 12px; color: blue;">${message}</p>
-					</c:if> 
+
 				</form>
 			</c:if>
-			
+
 			<c:if test="${product.stock<=0}">
-			<ul>
-				<li><p>Hết hàng</p></li>
-			</ul>
+				<ul>
+					<li><p>Hết hàng</p></li>
+				</ul>
 
 			</c:if>
-			
-			
+
+
 		</div>
 	</div>
 

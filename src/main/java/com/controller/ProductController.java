@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Account_DAO;
 import com.dao.Brand_DAO;
@@ -67,7 +68,7 @@ public class ProductController {
 		return "detailproduct";
 	}
 	@RequestMapping("/addproduct") // quantity && id
-	public String addProduct(HttpServletRequest req) {
+	public String addProduct(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		String productId=  req.getParameter("productId");
 		String quantity = req.getParameter("quantity");
 		
@@ -79,9 +80,13 @@ public class ProductController {
 		}
 		Customer cus = customerDao.getByEmail(acc.getEmail());
 		Cart cart =cartDao.getById(cus.getCartId());
-		productDao.getById(productId);
+		Product pro=productDao.getById(productId);
 		Map<String,Integer> productInCart =cart.getProducts();
 		if(productInCart.containsKey(productId)) {//this product was in cart before
+			if(productInCart.get(productId) + Integer.parseInt(quantity) > pro.getStock()) {//check if quantity is enough
+				redirectAttributes.addFlashAttribute("errorMessage", "Số lượng sản phẩm không đủ");
+				return "redirect:/product/detailproduct.htm?productId="+productId;
+			}
 			productInCart.put(productId,Integer.parseInt(quantity)+productInCart.get(productId));
 		}
 		else {//product is not in cart
@@ -95,15 +100,17 @@ public class ProductController {
 				products.put(productDao.getById(key),productInCart.get(key));
 			}
 			req.getSession().setAttribute("productInCart", products);
-		}
-		else {
-
-		}
+	        // Add flash attribute for success message
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm vào giỏ hàng thành công");
+	    } else {
+	        // Add flash attribute for error message
+	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm vào giỏ hàng thất bại");
+	    }
 		return "redirect:/product/detailproduct.htm?productId="+productId;
 	}
 	
 	@RequestMapping("/delete")
-	public String delete(HttpServletRequest req) {
+	public String delete(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		String referer = req.getHeader("Referer");
 		System.out.println(referer);
 		String productId=  req.getParameter("productId");
@@ -120,15 +127,23 @@ public class ProductController {
 			products.put(productDao.getById(key),productsInCart.get(key));
 		}
 		session.setAttribute("productInCart", products);
+		// Add flash attribute for success message
+		redirectAttributes.addFlashAttribute("successMessage", "Xóa sản phẩm thành công");
+		// Redirect to the referer URL
 		return "redirect:"+referer;
 	}
 	
-	
-	
 	@RequestMapping("/search")
 	public String showFilter(HttpServletRequest req) {
-		String key = req.getParameter("keyword").toLowerCase().strip();
-
+		String key = req.getParameter("keyword");
+		if(key == null) {
+			key="";
+		}
+		else {
+			 key = key.toLowerCase().trim();
+		}
+		String brand = req.getParameter("brandName");
+		String group = req.getParameter("groupName");
 		req.setAttribute("keyword", key);
 		List<Product> filteredLst = new ArrayList<Product>();		
 		List<Brand> brands = brandDao.getAll();
@@ -155,6 +170,9 @@ public class ProductController {
 		req.setAttribute("brands",brands);
 		req.setAttribute("categories", categories);
 		req.setAttribute("products", filteredLst);
+		req.setAttribute("brand", brand);
+		req.setAttribute("group", group);
+		
 
 		
 		return "filterproduct";

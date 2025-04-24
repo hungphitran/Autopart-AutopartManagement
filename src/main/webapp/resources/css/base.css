@@ -154,9 +154,9 @@
 	.header_menu li a:hover {
 		color: var(--main-color);
 	}
-	
 		
-	.header_menu li a .items{
+		
+	.header_menu li .menu-item .items{
 		display:none;
 	}
 	.header_menu li a:hover .items{
@@ -407,6 +407,7 @@
 	    align-items: center;
 	    justify-content: center;
 	}
+	
 	
 	.footer {
 	    border-top: 4px solid var(--main-color);

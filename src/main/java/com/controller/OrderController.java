@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Cart_DAO;
 import com.dao.Customer_DAO;
@@ -56,7 +57,7 @@ public class OrderController {
 	Discount_DAO discountDao;
 	
 	@RequestMapping(value="/order/create", method = RequestMethod.POST)
-	public String showOrder(HttpServletRequest req) {
+	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
 		if(acc != null ) {//get cart if user logged in
@@ -72,6 +73,7 @@ public class OrderController {
 				if(quantity != null) {
 					products.put(productDao.getById(key),productsInCart.get(key));
 				}
+				
 			}			
 			
 			Double totalCost= Double.valueOf(req.getParameter("totalCost"));
@@ -80,7 +82,6 @@ public class OrderController {
 			
 			//create new order then add it to database
 			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getEmail() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-			orderDao.add(newOrder);
 			
 			//update cart
 			for(Product p : products.keySet()) {
@@ -127,7 +128,7 @@ public class OrderController {
 	}
 	
 	@RequestMapping(value="/order",method=RequestMethod.POST)// redirect to payment page
-	public String showCart(HttpServletRequest req) {
+	public String showCart(HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		
 		//check if user logged in
 		HttpSession session = req.getSession();
@@ -136,6 +137,7 @@ public class OrderController {
 			return "redirect:/login.htm";
 		}
 		
+		//check if user has products in cart
 		//get all product of user
 		Customer cus = customerDao.getByEmail(acc.getEmail());
 		Cart cart= cartDao.getById(cus.getCartId());
@@ -160,6 +162,10 @@ public class OrderController {
 			products.put(productDao.getById(key),productsInCart.get(key));
 		}
 		
+		if(products.size() == 0) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng trống");
+			return "redirect:/index.htm";
+		}
 		req.setAttribute("products", products);
 		
 		List<Discount> discounts = discountDao.getAll();

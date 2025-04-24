@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	categoryFilter.onchange=function(){
 		filterProducts();
 	}
+	
+	filterProducts();
 });
 /**
  * 
