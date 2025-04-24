@@ -41,42 +41,42 @@
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/1.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[1].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/2.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[2].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/3.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[3].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/4.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[4].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/5.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[5].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/6.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[6].groupName }</span>
 					</div>
 				</div>
 			</div>

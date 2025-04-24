@@ -1,5 +1,35 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+
 let inputs = document.querySelectorAll(".input-field input[type='text']");
 let phoneInput = document.querySelector(".input-field input[type='phone']")
+let emailInput = document.querySelector(".input-field input[type='email']")
 let editBtn = document.querySelector(".edit-btn");
 let form = document.querySelector("form"); // Assuming your form element is present
 
@@ -8,13 +38,14 @@ console.log(inputs, editBtn, form, phoneInput);
 editBtn.onclick = function(event) {
 	event.preventDefault();
 	if (editBtn.innerHTML == "Lưu") {
-		phoneInput.disabled = false;
+		emailInput.disabled = false; // Disable email input
 		form.submit(); // Submit the form
 	} else {
 		for (let i = 0; i < inputs.length; i++) {
 			console.log(inputs[i]);
 			inputs[i].disabled = false;
 		}
+		phoneInput.disabled = false;
 		editBtn.innerHTML = "Lưu";
 	}
 };

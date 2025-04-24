@@ -72,31 +72,30 @@ public class DashboardController {
 		
 		//separate parentgroup and childgroup
 		List<ProductGroup> pgLst = pgDao.getAll();
-		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
-		for(ProductGroup pg: pgLst) {
-			if(pg.getParentGroupId()==null) {
-				parentGroups.add(pg);
-			}
-		}
-	
-		Map<String, List<String>> groups = new HashMap<String, List<String>>();
-		for(ProductGroup pg: parentGroups) {
-			List<String> childGroups= new ArrayList<String>();
-			for(ProductGroup pgr: pgLst) {
-				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
-					continue;
-				}
-				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
-					childGroups.add(pgr.getGroupName());
-				}
-			}
-			groups.put(pg.getGroupName(), childGroups);
-		}
+//		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
+//		for(ProductGroup pg: pgLst) {
+//			if(pg.getParentGroupId()==null) {
+//				parentGroups.add(pg);
+//			}
+//		}
+//	
+//		Map<String, List<String>> groups = new HashMap<String, List<String>>();
+//		for(ProductGroup pg: parentGroups) {
+//			List<String> childGroups= new ArrayList<String>();
+//			for(ProductGroup pgr: pgLst) {
+//				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
+//					continue;
+//				}
+//				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
+//					childGroups.add(pgr.getGroupName());
+//				}
+//			}
+//			groups.put(pg.getGroupName(), childGroups);
+//		}
 		
-		pgLst.clear();
-		parentGroups.clear();
-		session.setAttribute("groups", groups);
-		session.setAttribute("brands", brandDao.getAll());
+//		pgLst.clear();
+//		parentGroups.clear();
+
 		
 		
 		List<BlogGroup> blogGroups = blogGroupDao.getAll();
@@ -118,6 +117,8 @@ public class DashboardController {
 		
 		GeneralSettings g=  generalDao.get();
 		session.setAttribute("general", g);
+		session.setAttribute("groups", pgLst);
+		session.setAttribute("brands", brandDao.getAll());
 
 		return "dashboard";
 	}
