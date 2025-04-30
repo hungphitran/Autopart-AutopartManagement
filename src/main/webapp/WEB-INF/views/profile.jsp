@@ -125,9 +125,11 @@
 							<c:when test="${order.status == 'Processing'}">Đang xử lý</c:when>
 						</c:choose>
 					</p>
-					<a href="/autopart/order.htm?orderId=${order.orderId}"
-						class="button nav-btn">Xem chi tiết đơn hàng</a>
+					<div class="order-actions">
+						<a href="/autopart/order/detail.htm?orderId=${order.orderId}"
+							class="button nav-btn">Xem chi tiết đơn hàng</a>
 
+					</div>
 				</div>
 			</c:forEach>
 
