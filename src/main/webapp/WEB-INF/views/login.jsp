@@ -16,6 +16,12 @@
 	<link href="<c:url value="/resources/css/login.css" />" rel="stylesheet">
 </head>
 <body>
+<!-- Success message -->
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+	
 	<div class="wrapper">
 		<form id="form-login" action="/autopart/login.htm" method="post" data-oc-toggle="ajax">
 			<h2>Đăng nhập</h2>
@@ -37,7 +43,7 @@
 					<input type="checkbox" id="remember">
 					<p>Remember me</p>
 				</label>
-				<a href="/autopart/forgot.htm">Quên mật khẩu?</a>
+				<a href="/autopart/forgot-pasword.htm">Quên mật khẩu?</a>
 			</div>
 
 			<button type="submit">Đăng nhập</button>
@@ -48,4 +54,23 @@
 		</form>
 	</div>
 </body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+
+</script>
+
 </html>

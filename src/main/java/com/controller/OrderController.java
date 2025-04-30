@@ -67,22 +67,52 @@ public class OrderController {
 			//get all products that user choosed
 			Map<String,Integer> productsInCart =cart.getProducts();
 			Map<Product,Integer> products= new HashMap<Product, Integer>();
+			
+	        StringBuilder query =  new StringBuilder("redirect:/order.htm?");
+	        
 			for(String key : productsInCart.keySet()) {
 				//get id and quantity from req
 				String quantity = req.getParameter(key);
 				if(quantity != null) {
 					products.put(productDao.getById(key),productsInCart.get(key));
+					query.append(key + "=" + productsInCart.get(key) +"&");
 				}
 				
-			}			
+			}		
+	        query.deleteCharAt(query.length()-1);
+
+			
 			
 			Double totalCost= Double.valueOf(req.getParameter("totalCost"));
-			String code= req.getParameter("code");
 			String shipAddress= req.getParameter("shipAddress");
+			String shippingType = req.getParameter("shippingType");
+			String discountId = req.getParameter("discountId");
+			System.out.println(discountId);
+			Discount discount = discountDao.getById(discountId);
 			
+			System.out.println("Shipping Type: "+shippingType);
+			
+			if(shippingType =="") 
+			{
+		        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn loại vận chuyển");  
+		       System.out.println(query);
+		        
+		        return query.toString();
+		    }
+			
+			if(discount!=null && discount.getUsageLimit()==0) 
+			{
+		        redirectAttributes.addFlashAttribute("errorMessage", "Số lượng mã giảm giá đã hết");  
+		       System.out.println(query);
+		        
+		        return query.toString();
+		    }
+			
+			
+		
 			//create new order then add it to database
-			Order newOrder = new Order(orderDao.generateNextOrderId(),code,acc.getEmail() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-			
+			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			discountDao.discountUsed(acc.getEmail(), discountId);
 			//update cart
 			for(Product p : products.keySet()) {
 				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
@@ -99,6 +129,8 @@ public class OrderController {
 			}
 			session.setAttribute("productInCart",p);
 			
+			
+			
 			return "success";
 
 		}
@@ -109,7 +141,7 @@ public class OrderController {
 		
 	}
 	
-	@RequestMapping("/order")
+	@RequestMapping("/order/detail")
 	public String showDetail(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
@@ -127,7 +159,7 @@ public class OrderController {
 		return "orderdetail";
 	}
 	
-	@RequestMapping(value="/order",method=RequestMethod.POST)// redirect to payment page
+	@RequestMapping(value="/order",method=RequestMethod.GET)// redirect to payment page
 	public String showCart(HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		
 		//check if user logged in
@@ -143,6 +175,8 @@ public class OrderController {
 		Cart cart= cartDao.getById(cus.getCartId());
 		
 		Map<String,Integer> productsInCart =cart.getProducts();
+		System.out.println(productsInCart);
+
 		
 		String[] pids = new String[productsInCart.size()];
 		
@@ -162,16 +196,72 @@ public class OrderController {
 			products.put(productDao.getById(key),productsInCart.get(key));
 		}
 		
+		System.out.println(products);
+		
 		if(products.size() == 0) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng trống");
 			return "redirect:/index.htm";
 		}
 		req.setAttribute("products", products);
 		
-		List<Discount> discounts = discountDao.getAll();
+		List<Discount> discounts = discountDao.getByCustomer(acc.getEmail());
 		req.setAttribute("discounts", discounts);
+		
 
 		return "order";
+	}
+	
+	@RequestMapping(value ="order/cancel", method = RequestMethod.GET)
+	public String cancel(HttpServletRequest req)
+	{
+		String orderId = req.getParameter("orderId");
+		System.out.println(orderId);
+		
+		Order order = orderDao.getById(orderId);
+		for(OrderDetail detail: order.getOrderDetails())
+		{
+			System.out.println(detail);
+			Product product = productDao.getById(detail.getProductId());
+			System.out.println(product);
+			product.setStock(product.getStock()+detail.getAmount());
+			System.out.println(product);
+			productDao.update(product);
+		}
+		order.setDeleted(true);
+		orderDao.update(order);
+		
+		
+		return "redirect:/account.htm";
+	}
+	
+	@RequestMapping(value ="order/edit", method = RequestMethod.GET)
+	public String showEditForm(HttpServletRequest req)
+	{
+		HttpSession session = req.getSession();
+		Account acc =(Account) session.getAttribute("user");
+		if(acc==null){
+			return "redirect:/login.htm";
+		}
+		
+		String orderId=req.getParameter("orderId");
+		Order order= orderDao.getById(orderId);
+				
+		Map<Product,Integer> products= new HashMap<Product, Integer>();
+		
+		for(OrderDetail detail: order.getOrderDetails())
+		{
+			System.out.println(detail);
+			Product product = productDao.getById(detail.getProductId());
+			products.put(product, detail.getAmount());
+		}
+		
+		List<Discount> discounts = discountDao.getByCustomer(acc.getEmail());
+		req.setAttribute("discounts", discounts);
+		req.setAttribute("products", products);
+		req.setAttribute("order", order);
+
+		
+		return "orderEdit";
 	}
 
 }

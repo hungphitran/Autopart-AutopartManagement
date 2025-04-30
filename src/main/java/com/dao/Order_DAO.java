@@ -43,7 +43,7 @@ public class Order_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Order o WHERE o.userEmail = :email";
+            String hql = "FROM Order o WHERE o.userEmail = :email and deleted = false";
             Query query = session.createQuery(hql);
             query.setParameter("email", email);
             return query.list();

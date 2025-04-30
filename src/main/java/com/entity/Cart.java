@@ -3,6 +3,7 @@ package com.entity;
 import javax.persistence.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class Cart {
     private String cartId;
 
     @Column(name = "createDate")
-    private Timestamp  createDate;
+    private Timestamp  createDate = Timestamp.valueOf(LocalDateTime.now());
     
     
 

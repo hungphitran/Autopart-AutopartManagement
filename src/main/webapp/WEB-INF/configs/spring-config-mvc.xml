@@ -37,5 +37,25 @@
         <property name="maxUploadSize" value="10000000"/> <!-- Giới hạn 10MB -->
         <property name="maxInMemorySize" value="4096"/> <!-- Kích thước bộ nhớ đệm -->
     </bean>
-
+	
+	<bean id="mailSender" 
+      class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.gmail.com" />
+    <property name="port" value="587" />
+    <property name="username" value="n22dccn049@student.ptithcm.edu.vn" />
+    <property name="password" value="ovsp hkjd etsj htek" />
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="javaMailProperties">
+        <props>
+            <prop key="mail.smtp.auth">true</prop>
+            <prop key="mail.smtp.socketFactory.class">
+                javax.net.ssl.SSLSocketFactory
+            </prop>
+            <prop key="mail.smtp.socketFactory.port">587</prop>
+            <prop key="mail.smtp.starttls.enable">true</prop>
+            <prop key="mail.debug">true</prop>
+        </props>
+    </property>
+	</bean>
+	
 </beans>

@@ -69,7 +69,7 @@
 
 					<!-- No cart: header__cart-list--no-cart-->
 					<form class="header__cart-list" action="/autopart/order.htm"
-						method="post">
+						method="get">
 						<!-- <img src="./assets/img/no_cart.png" alt="" class="header__cart-np-cart-img"> -->
 
 
