@@ -91,6 +91,31 @@ body {
     background-color: orange;
     color: white;
 }
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
+}
 </style>
 </head>
 <body>
@@ -127,6 +152,15 @@ body {
    					<c:when test="${order.status == 'Processing'}">Đang xử lý</c:when>
 				</c:choose>
             </p>
+            <c:if test="${order.status == 'Pending'}">
+                <div class="order-actions">
+                    <a href="/autopart/order/edit.htm?orderId=${order.orderId}" 
+                       class="edit-btn">Sửa đơn hàng</a>
+                    <a href="/autopart/order/cancel.htm?orderId=${order.orderId}" 
+                       class="cancel-btn" 
+                       onclick="return confirm('Bạn có chắc muốn hủy đơn hàng ${order.orderId}?')">Hủy đơn hàng</a>
+                </div>
+            </c:if>
         </div>
 
         <ul class="product-list">

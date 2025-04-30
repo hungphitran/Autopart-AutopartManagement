@@ -41,7 +41,7 @@ public class RegisterController {
 		if(password.equals(repassword)) {
 			Cart newCart= new Cart(cartDao.generateNextCartId(),null);
 			if(cartDao.add(newCart)) {
-				Account acc =new Account(phone,password,"","RG002","Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false) ;
+				Account acc =new Account(email,password,"","RG002","Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false) ;
 				if(accountDao.add(acc)) {
 					Customer cus = new Customer(newCart.getCartId(),fullName, email,phone, address, "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 					if(customerDao.add(cus)) {
