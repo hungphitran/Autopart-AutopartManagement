@@ -22,6 +22,17 @@
 	rel="stylesheet">
 </head>
 <body>
+		<!-- Success message -->
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+
+	<!-- Error message -->
+	<c:if test="${not empty errorMessage}">
+		<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${errorMessage}</div>
+	</c:if>
 	<div id="wrapper">
 		<jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
 
@@ -111,6 +122,35 @@
 		</div>
 	</div>
 </body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 </html>
 <script src="<c:url value="/resources/js/adminjs/profile.js" />"></script>
 	<script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>

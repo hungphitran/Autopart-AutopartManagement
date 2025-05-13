@@ -231,7 +231,7 @@ public class OrderController {
 	}
 	
 	@RequestMapping(value ="order/cancel", method = RequestMethod.GET)
-	public String cancel(HttpServletRequest req)
+	public String cancel(HttpServletRequest req) throws Exception
 	{
 		String orderId = req.getParameter("orderId");
 		System.out.println(orderId);
@@ -394,7 +394,7 @@ public class OrderController {
 		    discountDao.update(discount);
 		    orderDiscount.setUsageLimit(orderDiscount.getUsageLimit() + 1);
 	        discountDao.update(orderDiscount);	
-			System.out.println(discount.getUsageLimit());
+	        System.out.println(discount.getUsageLimit());
 			System.out.println(orderDiscount.getUsageLimit());
 		}
 		
