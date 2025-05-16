@@ -1,9 +1,12 @@
 package com.controller;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,6 +45,18 @@ public class ForgotPasswordController
 	{
 		String email = req.getParameter("email");
 		System.out.println(email);
+
+		
+		if(accountDao.getByEmail(email)==null)
+		{
+			model.addAttribute("message", "Không tìm thấy tài khoản với email này");
+			return "forgot-password/form";
+		}
+		if(customerDao.getByEmail(email)==null)
+		{
+			model.addAttribute("message", "Email không đúng");
+			return "forgot-password/form";
+		}
 		
 		String from = "no-reply@autopart.com"; // Địa chỉ email gửi
 	    String to = email; // Địa chỉ email người nhận (lấy từ input)
@@ -54,12 +69,7 @@ public class ForgotPasswordController
 	                  "Trân trọng,\n" +
 	                  "Đội ngũ AutoPart";
 	    
-		if(customerDao.getByEmail(email)==null)
-		{
-			model.addAttribute("message", "Email không đúng");
-			return "forgot-password/form";
-		}
-		
+
 		try{
 	        MimeMessage mail = mailer.createMimeMessage();
 	        MimeMessageHelper helper = new MimeMessageHelper(mail, true);
@@ -98,11 +108,12 @@ public class ForgotPasswordController
 		String otp = req.getParameter("otp");
 		if(otp.equals(req.getSession().getAttribute("otp")))
 		{
+			model.addAttribute("message", "OTP đúng");
 			return "redirect:/enter-password.htm";
 		}
 		else
 		{
-			redirectAttributes.addFlashAttribute("message", "OTP không đúng");
+			model.addAttribute("message", "OTP không đúng");
 			return "redirect:/enter-otp.htm";
 		}
 		
@@ -114,7 +125,18 @@ public class ForgotPasswordController
 		System.out.println(req.getSession().getAttribute("recoveringMail"));
 		return "forgot-password/enter-password";
 	}
-	
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
 	@RequestMapping(value= "updatePassword", method = RequestMethod.POST)
 	private String updatePassword(HttpServletRequest req, ModelMap model, RedirectAttributes redirectAttributes)
 	{	
@@ -125,14 +147,14 @@ public class ForgotPasswordController
 
 		if(password.equals(confirmPassword))
 		{
-			account.setPassword(confirmPassword);
+			account.setPassword(getMD5Hash(confirmPassword));
 			accountDao.update(account);
 			redirectAttributes.addFlashAttribute("successMessage", "Thay đổi mật khẩu thành công");
 			return "redirect:/login.htm";
 		}
 		else
 		{
-			redirectAttributes.addFlashAttribute("message", "OTP không đúng");
+			model.addAttribute("message", "Mật khẩu không khớp");
 			return "redirect:/enter-otp.htm";
 		}
 		

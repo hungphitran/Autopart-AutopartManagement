@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -20,6 +21,7 @@
 <link href="<c:url value="/resources/css/detailProduct.css" />"
 	rel="stylesheet">
 <link href="<c:url value="/resources/css/base.css" />" rel="stylesheet">
+
 </head>
 <body>
 	<jsp:include page="/WEB-INF/mixins/header.jsp" />
@@ -49,7 +51,7 @@
 				<strong>Mã sản phẩm: ${product.productId}</strong>
 			</p>
 			<p>
-				<strong>Giá bán:</strong> ${product.salePrice}
+				<strong>Giá bán:</strong> <fmt:formatNumber value="${product.salePrice}" type="currency"/>	 
 			</p>
 			<p>
 				<strong>Mô tả:</strong> ${product.description}.
@@ -57,7 +59,7 @@
 			<ul>
 				<li>Hãng: ${brand.brandName}</li>
 				<li>Loại hàng: ${group.groupName}</li>
-				<li>Trọng lượng: ${product.weight}</li>
+				<li>Trọng lượng: ${product.weight} g</li>
 				<li>Số lượng: ${product.stock} ${product.unit}</li>
 			</ul>
 

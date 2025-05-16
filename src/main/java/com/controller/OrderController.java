@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.objenesis.instantiator.basic.NewInstanceInstantiator;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -29,6 +27,8 @@ import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -59,7 +59,6 @@ public class OrderController {
 	@RequestMapping(value="/order/create", method = RequestMethod.POST)
 	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		System.out.println("Creating order ------------------------------------------------------------------------------------------------------------------------------------------------");
-
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
 		if(acc != null ) {//get cart if user logged in
@@ -77,6 +76,7 @@ public class OrderController {
 				String quantity = req.getParameter(key);
 				if(quantity != null) {
 					products.put(productDao.getById(key),productsInCart.get(key));
+
 					query.append(key + "=" + productsInCart.get(key) +"&");
 				}
 				
@@ -84,7 +84,6 @@ public class OrderController {
 	        query.deleteCharAt(query.length()-1);
 	        System.out.println(query);
 
-			
 			
 			Double totalCost= Double.valueOf(req.getParameter("totalCost"));
 			String shipAddress= req.getParameter("shipAddress");
@@ -105,7 +104,6 @@ public class OrderController {
 			Discount discount = discountDao.getById(discountId);
 			
 			System.out.println("Shipping Type: "+shippingType);
-			
 			if(shippingType =="") 
 			{
 		        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn loại vận chuyển");  
@@ -120,10 +118,7 @@ public class OrderController {
 		       System.out.println(query);
 		        
 		        return query.toString();
-		    }
-			
-			
-		
+			}
 			//create new order then add it to database
 //			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress, shippingType ,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 //			orderDao.add(newOrder);
@@ -149,15 +144,12 @@ public class OrderController {
 //			session.setAttribute("productInCart",p);
 //			
 			
-			
 			return "success";
 
 		}
 		else {
 			return "redirect:/login.htm";
 		}
-
-		
 	}
 	
 	@RequestMapping("/order/detail")

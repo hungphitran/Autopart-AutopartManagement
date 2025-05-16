@@ -27,8 +27,8 @@
 			<h2>Đăng nhập</h2>
 
 			<div class="input-field">
-				<input type="text" name="phone" required>
-				<label>Nhập số email</label>
+				<input type="text" name="email" required>
+				<label>Nhập email</label>
 			</div>
 
 			<div class="input-field">
