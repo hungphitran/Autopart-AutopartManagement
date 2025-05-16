@@ -120,27 +120,6 @@ public class OrderController {
 		        return query.toString();
 			}
 			//create new order then add it to database
-<<<<<<< HEAD
-
-			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-			discountDao.discountUsed(acc.getEmail(), discountId);
-			//update cart
-			for(Product p : products.keySet()) {
-				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
-				orderDetailDao.add(newOrderDetail);
-			}
-			for(Product p: products.keySet()) {
-				productsInCart.remove(p.getProductId());
-			}
-			cart.setProducts(productsInCart);
-			cartDao.update(cart);
-			Map<Product,Integer> p= new HashMap<Product, Integer>();
-			for(String key : productsInCart.keySet()) {
-				p.put(productDao.getById(key),productsInCart.get(key));
-			}
-			session.setAttribute("productInCart",p);
-			
-=======
 //			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress, shippingType ,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 //			orderDao.add(newOrder);
 //			if(discount!=null) 
@@ -164,7 +143,6 @@ public class OrderController {
 //			}
 //			session.setAttribute("productInCart",p);
 //			
->>>>>>> a402b18977df631743bd94fe2d0af670b6d7b5d6
 			
 			return "success";
 
