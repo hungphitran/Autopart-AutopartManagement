@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,13 +18,16 @@ public class Order {
     private String orderId;
 
     @Column(name = "discountId")
-    private String discountId;
+    private String discountId = null;
 
     @Column(name = "userEmail")
     private String userEmail;
 
     @Column(name = "shipAddress")
     private String shipAddress;
+    
+    @Column(name = "shippingType")
+    private String shippingType;
 
     @Column(name = "totalCost")
     private BigDecimal totalCost;
@@ -50,21 +54,22 @@ public class Order {
     private boolean deleted;
     
     @OneToMany(mappedBy = "orderId", fetch = FetchType.EAGER)
-    private List<OrderDetail> orderDetails; // Thêm danh sách chi tiết
+    private List<OrderDetail> orderDetails = new ArrayList<OrderDetail>(); // Thêm danh sách chi tiết
 
 	public Order() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Order(String orderId, String discountId, String userEmail, String shipAddress, BigDecimal totalCost,
-			Date orderDate, String confirmedBy, String status, Timestamp deletedAt, Timestamp createdAt,
-			Timestamp updatedAt, boolean deleted) {
+	public Order(String orderId, String discountId, String userEmail, String shipAddress, String shippingType,
+			BigDecimal totalCost, Date orderDate, String confirmedBy, String status, Timestamp deletedAt,
+			Timestamp createdAt, Timestamp updatedAt, boolean deleted) {
 		super();
 		this.orderId = orderId;
 		this.discountId = discountId;
 		this.userEmail = userEmail;
 		this.shipAddress = shipAddress;
+		this.shippingType = shippingType;
 		this.totalCost = totalCost;
 		this.orderDate = orderDate;
 		this.confirmedBy = confirmedBy;
@@ -105,6 +110,14 @@ public class Order {
 
 	public void setShipAddress(String shipAddress) {
 		this.shipAddress = shipAddress;
+	}
+
+	public String getShippingType() {
+		return shippingType;
+	}
+
+	public void setShippingType(String shippingType) {
+		this.shippingType = shippingType;
 	}
 
 	public BigDecimal getTotalCost() {
@@ -182,11 +195,13 @@ public class Order {
 	@Override
 	public String toString() {
 		return "Order [orderId=" + orderId + ", discountId=" + discountId + ", userEmail=" + userEmail
-				+ ", shipAddress=" + shipAddress + ", totalCost=" + totalCost + ", orderDate=" + orderDate
-				+ ", confirmedBy=" + confirmedBy + ", status=" + status + ", deletedAt=" + deletedAt + ", createdAt="
-				+ createdAt + ", updatedAt=" + updatedAt + ", deleted=" + deleted + ", orderDetails=" + orderDetails
-				+ "]";
+				+ ", shipAddress=" + shipAddress + ", shippingType=" + shippingType + ", totalCost=" + totalCost
+				+ ", orderDate=" + orderDate + ", confirmedBy=" + confirmedBy + ", status=" + status + ", deletedAt="
+				+ deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted=" + deleted
+				+ ", orderDetails=" + orderDetails + "]";
 	}
 
+	
+	
 	
 }
