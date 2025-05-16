@@ -115,7 +115,7 @@
 						<strong>Ngày: </strong> ${order.orderDate}
 					</p>
 					<p>
-						<strong>Tổng tiền: </strong>${order.totalCost}</p>
+						<strong>Tổng tiền: </strong><fmt:formatNumber value="${order.totalCost}" type="currency"/>  </p>
 					<p>
 						<strong>Trạng thái: </strong>
 						<c:choose>

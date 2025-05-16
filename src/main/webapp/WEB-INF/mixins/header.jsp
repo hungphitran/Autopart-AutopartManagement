@@ -123,7 +123,7 @@
 
 	<div class="header_menu">
 		<ul class="header_menu-list">
-			<li><a href="/autopart/index.htm">Trang chủ</a></li>
+			<li><a href="/autopart">Trang chủ</a></li>
 			<li><a href="#categories" class="menu-item"> Danh mục <i
 					class="fa fa-angle-down" aria-hidden="true"></i>
 					<div class="group-items items">
@@ -208,5 +208,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+</script>
+
+<script type="text/javascript">
+//Handle clicks on cart items
+const cartItems = document.querySelectorAll('.header__cart-item');
+
+cartItems.forEach(item => {
+  // Make the entire item clickable, not just the checkbox
+  item.addEventListener('click', function(e) {
+    // Prevent click handling when clicking on specific elements
+    if (e.target.closest('.header__cart-item-remove') || 
+        e.target.closest('a[href]') || 
+        e.target.tagName === 'INPUT') {
+      return;
+    }
+    
+    // Toggle the checkbox when clicking on the item
+    const checkbox = this.querySelector('input[type="checkbox"]');
+    if (checkbox) {
+      checkbox.checked = !checkbox.checked;
+    }
+  });
+  
+  // Prevent checkbox clicks from triggering the item click handler
+  const checkbox = item.querySelector('input[type="checkbox"]');
+  if (checkbox) {
+    checkbox.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+});
 </script>
 

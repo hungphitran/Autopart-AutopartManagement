@@ -1,10 +1,13 @@
 package com.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +40,19 @@ public class AdminEmployeeController {
 	
 	@Autowired
 	Account_DAO accountDao;
+	
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	
 	
 	@RequestMapping("/employee")
 	public String showEmployee(HttpServletRequest req) {
@@ -95,7 +111,7 @@ public class AdminEmployeeController {
 				emp.setStatus("Inactive");
 	        }
 	        
-			Account acc = new Account(emp.getPhone(), "1111", null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			Account acc = new Account(emp.getPhone(), getMD5Hash("1111"), null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 			accountDao.add(acc);
 			
 			employeeDao.add(emp);

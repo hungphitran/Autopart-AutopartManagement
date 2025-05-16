@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -135,7 +136,7 @@ body {
                 <strong>Địa chỉ:</strong> ${order.shipAddress }
             </p>
             <p>
-                <strong>Tổng:</strong> ${order.totalCost }
+                <strong>Tổng:</strong><fmt:formatNumber value="${order.totalCost }" type="currency"/> 
             </p>
             <p>
                 <strong>Mã giảm giá:</strong> <c:if test="${!order.discountId}">Không có mã</c:if> ${order.discountId }
@@ -154,8 +155,8 @@ body {
             </p>
             <c:if test="${order.status == 'Pending'}">
                 <div class="order-actions">
-                    <a href="/autopart/order/edit.htm?orderId=${order.orderId}" 
-                       class="edit-btn">Sửa đơn hàng</a>
+               <!--     <a href="/autopart/order/edit.htm?orderId=${order.orderId}" 
+                       class="edit-btn">Sửa đơn hàng</a> --> 
                     <a href="/autopart/order/cancel.htm?orderId=${order.orderId}" 
                        class="cancel-btn" 
                        onclick="return confirm('Bạn có chắc muốn hủy đơn hàng ${order.orderId}?')">Hủy đơn hàng</a>
@@ -177,7 +178,7 @@ body {
                     <strong>Số lượng:</strong> ${p.amount}
                 </p>
                 <p>
-                    <strong>Đơn giá:</strong> ${p.unitPrice }
+                    <strong>Đơn giá:</strong> <fmt:formatNumber value="${p.unitPrice}" type="currency"/> 
                 </p>
                 <p>
                     <strong> <a href="/autopart/product/detailproduct.htm?productId=${p.productId}" class="btn nav-btn">Xem sản phẩm</a> </strong>

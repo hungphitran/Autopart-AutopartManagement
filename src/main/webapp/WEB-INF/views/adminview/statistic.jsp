@@ -65,10 +65,6 @@
 					          <div class="col mr-2">
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Doanh thu (Theo tháng)</div>
 					            <div class="h5 mb-0 font-weight-bold text-gray-800">${incomeThisMonth} &#8363;</div>
-					            <div class="mt-2 mb-0 text-muted text-xs">
-					              <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> ${incomeThisMonth/incomeLastMonth*100}%</span>
-					              <span>So với tháng trước</span>
-					            </div>
 					          </div>
 					          <div class="col-auto">
 					            <i class="fas fa-calendar fa-2x text-primary"></i>
@@ -85,10 +81,6 @@
 					          <div class="col mr-2">
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Sản phẩm đã bán</div>
 					            <div class="h5 mb-0 font-weight-bold text-gray-800">${totalProductThisYear}</div>
-					            <div class="mt-2 mb-0 text-muted text-xs">
-					              <span class="text-success mr-2"><i class="fas fa-arrow-up"></i> ${totalProductThisYear/totalProductLastYear}</span>
-					              <span>So với năm trước</span>
-					            </div>
 					          </div>
 					          <div class="col-auto">
 					            <i class="fas fa-shopping-cart fa-2x text-success"></i>
@@ -105,10 +97,6 @@
 					          <div class="col mr-2">
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Người dùng mới</div>
 					            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${accsThisMonth.size()}</div>
-					            <div class="mt-2 mb-0 text-muted text-xs">
-					              <span class="text-success mr-2"><i class="fas fa-arrow-up"></i>${accsThisMonth.size() / accsLastMonth.size() *100 -100}%</span>
-					              <span>So với tháng trước</span>
-					            </div>
 					          </div>
 					          <div class="col-auto">
 					            <i class="fas fa-users fa-2x text-info"></i>
@@ -177,22 +165,21 @@
 					          <div class="progress" style="height: 12px;">
 								<c:choose>
 					          		<c:when test="${p.value /(p.key.stock+p.value) *100 >=80}">
-					            		<div  class="progress-bar bg-danger" role="progressbar" style="width: ${p.value /(p.key.stock+p.value) *100}%" aria-valuenow="${p.value}"
+					            		<div  class="progress-bar bg-danger" role="progressbar" style="width: ${p.value}%" aria-valuenow="${p.value}"
 					              		aria-valuemin="0" aria-valuemax="100">
 					             		</div>
 					            	</c:when>	
 					          		<c:when test="${p.value /(p.key.stock+p.value) *100 >=50 && p.value /(p.key.stock+p.value) <80}">
-					            		<div  class="progress-bar bg-warning" role="progressbar" style="width: ${p.value /(p.key.stock+p.value) *100}%" aria-valuenow="${p.value}"
+					            		<div  class="progress-bar bg-warning" role="progressbar" style="width: ${p.value }%" aria-valuenow="${p.value}"
 					              		aria-valuemin="0" aria-valuemax="100">
 					             		</div>
 					            	</c:when>	
 					            	<c:when test="${p.value /(p.key.stock+p.value) *100 >0 && p.value /(p.key.stock+p.value) <50}">
-					            		<div  class="progress-bar bg-success" role="progressbar" style="width: ${p.value /(p.key.stock+p.value) *100}%" aria-valuenow="${p.value}"
+					            		<div  class="progress-bar bg-success" role="progressbar" style="width: ${p.value}%" aria-valuenow="${p.value}"
 					              		aria-valuemin="0" aria-valuemax="100">	
 					             		</div>
 					            	</c:when>					            
 								</c:choose>
-					             
 					          </div>
 					        </div>
 					       </c:forEach>
@@ -208,7 +195,7 @@
 					    <div class="card">
 					      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 					        <h6 class="m-0 font-weight-bold">Hóa đơn</h6>
-					        <a class="m-0 float-right btn btn-danger btn-sm" href="/autopart/admin/order.htm?status='Pending'">Xem thêm <i
+					        <a class="m-0 float-right btn btn-danger btn-sm" href="/autopart/admin/order.htm?status=pending">Xem thêm <i
 					            class="fas fa-chevron-right"></i></a>
 					      </div>
 					      <div class="table-responsive">
@@ -217,7 +204,7 @@
 					            <tr>
 					              <th>Mã đơn hàng</th>
 					              <th>Ngày đặt</th>
-					              <th>Số điện thoại</th>
+					              <th>Email</th>
 					              <th>Trạng thái</th>
 					              <th>Hoạt động</th>
 					            </tr>
@@ -227,38 +214,31 @@
 					        	<tr>
 					              <td><a href="#">${order.orderId }</a></td>
 					              <td>${order.orderDate }</td>
-					              <td>${order.userPhone }</td>
-					              <td><span class="badge badge-success">${order.status}</span></td>
-					              <td><a href="#" class="btn btn-sm btn-primary">Chi tiết</a></td>
+					              <td>${order.userEmail }</td>
+					              <c:choose>
+                                  	<c:when test="${order.status == 'Pending'}">
+                                  		<td><span class="badge badge-warning">Chờ xác nhận</span></td>
+                                  	</c:when>
+                                  	<c:when test="${order.status == 'Processing'}">
+                                  		<td><span class="badge badge-info">Đang xử lý</span></td>
+                                  	</c:when>
+                                  	<c:when test="${order.status == 'Completed'}">
+                                  		<td><span class="badge badge-success">Đã hoàn thành</span></td>
+                                  	</c:when>
+                                  	<c:when test="${order.status == 'Cancelled'}">
+                                  		<td><span class="badge badge-danger">Đã hủy</span></td>
+                                  	</c:when>
+                                  	<c:when test="${order.status == 'Shipping'}">
+                                  		<td><span class="badge badge-danger">Đang vận chuyển</span></td>
+                                  	</c:when>
+                                  	</c:choose>
+					              <td><a href="/autopart/admin/order/detail.htm?orderId=${order.orderId }" class="btn btn-sm btn-primary">Chi tiết</a></td>
 					            </tr>
 					          </c:forEach>
 					          </tbody>
 					        </table>
 					      </div>
 					      <div class="card-footer"></div>
-					    </div>
-					  </div>
-					 
-					
-					<!-- Modal Logout -->
-					  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-					    aria-hidden="true">
-					    <div class="modal-dialog" role="document">
-					      <div class="modal-content">
-					        <div class="modal-header">
-					          <h5 class="modal-title" id="exampleModalLabelLogout">Đăng xuất</h5>
-					          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					            <span aria-hidden="true">&times;</span>
-					          </button>
-					        </div>
-					        <div class="modal-body">
-					          <p>Bạn có muốn đăng xuất không?</p>
-					        </div>
-					        <div class="modal-footer">
-					          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Không</button>
-					          <a href="login.html" class="btn btn-primary">Đăng xuất</a>
-					        </div>
-					      </div>
 					    </div>
 					  </div>
 					</div>
