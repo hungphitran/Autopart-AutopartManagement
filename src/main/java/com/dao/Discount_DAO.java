@@ -65,7 +65,8 @@ public class Discount_DAO {
                     "ON d.discountId = ud.discountId AND ud.email = :email " +
                     "WHERE ud.discountId IS NULL " +
                     "AND d.status = 'Active' " +
-                    "AND d.deleted = 0";
+                    "AND d.deleted = 0"+
+                    "AND d.usageLimit > 0";
         Query query = session.createSQLQuery(sql).addEntity(Discount.class);
         query.setParameter("email", customerEmail);
         List<Discount> result = query.list();
@@ -100,7 +101,51 @@ public class Discount_DAO {
         }
     }
     
+    @Transactional
+    public boolean deleteDiscountUsed(String discountId, String email) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String sql = "DELETE FROM [dbo].[UsedDiscount] " +
+                        "WHERE discountId = :discountId AND email = :email";
+            Query query = session.createSQLQuery(sql);
+            query.setParameter("discountId", discountId);
+            query.setParameter("email", email);
+            int rowsAffected = query.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
     
+    
+    @Transactional
+    public boolean updateDiscountUsed(String oldDiscountId, String email, String newDiscountId) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String sql = "UPDATE [dbo].[UsedDiscount] SET discountId = :newDiscountId " +
+                        "WHERE discountId = :discountId AND email = :email";
+            Query query = session.createSQLQuery(sql);
+            query.setParameter("newDiscountId", newDiscountId);
+            query.setParameter("discountId", oldDiscountId);
+            query.setParameter("email", email);
+            int rowsAffected = query.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
     
     public boolean changeStatus(String discountId) {
         Session session = null;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.BlogGroup_DAO;
 import com.dao.Blog_DAO;
@@ -30,9 +31,22 @@ public class AdminBlogController {
 	// -- blog --
 	@RequestMapping("/blog")
 	public String showBlogs(HttpServletRequest req) {
-		List<Blog> blogs = blogDao.getAll();
-		req.setAttribute("blogs", blogs);
-		return "adminview/blog/index";
+		try
+		{
+			List<Blog> blogs = blogDao.getAll();
+			req.setAttribute("blogs", blogs);
+			return "adminview/blog/index";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Tải danh sách bài viết thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "adminview/blog/index";
+			
+		}
+		
 	}
 	
 	@RequestMapping(value = "/blog/add", method= RequestMethod.GET)
@@ -47,7 +61,7 @@ public class AdminBlogController {
 	}
 	
 	@RequestMapping(value = "/blog/add", method = RequestMethod.POST)
-    public String addBlogPost(@ModelAttribute("blog") Blog blog, HttpServletRequest req) {
+    public String addBlogPost(@ModelAttribute("blog") Blog blog, HttpServletRequest req, RedirectAttributes redirectAttributes) {
         if (blog.getStatus() == null) {
             blog.setStatus("Inactive");
         }
@@ -59,9 +73,10 @@ public class AdminBlogController {
             blog.setBlogGroupId(blogGroupId);
             //blog.setBlogGroup(blogGroup);
         }
-        blog.setCreatedBy("0901234001");
+        blog.setCreatedBy("tranthibinh_0901234002@example.com");
 
         blogDao.add(blog);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm bài viết thành công!");  
         return "redirect:/admin/blog.htm";
     }
 	
@@ -76,7 +91,8 @@ public class AdminBlogController {
 	}
 	
 	@RequestMapping(value = "/blog/edit", method = RequestMethod.POST)
-    public String editBlogPatch(@ModelAttribute("blog") Blog blog, @RequestParam("blogGroupId") String blogGroupId) {
+    public String editBlogPatch(@ModelAttribute("blog") Blog blog, @RequestParam("blogGroupId") String blogGroupId, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+		
         if (blog.getStatus() == null) {
             blog.setStatus("Inactive");
         }
@@ -86,9 +102,10 @@ public class AdminBlogController {
         blog.setBlogGroupId(blogGroupId);
         //blog.setBlogGroup(blogGroup);
         
-        blog.setCreatedBy("0901234001");
+        blog.setCreatedBy("tranthibinh_0901234002@example.com");
         
         blogDao.update(blog);
+        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa bài viết thành công!");  
         return "redirect:/admin/blog.htm";
     }
 	
@@ -100,8 +117,9 @@ public class AdminBlogController {
 	}
 	
 	@RequestMapping("/blog/delete")
-	public String deleteBlog(@RequestParam("blogId") String blogId, HttpServletRequest req) {
+	public String deleteBlog(@RequestParam("blogId") String blogId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		blogDao.delete(blogId);
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa bài viết thành công!");  
 		return "redirect:/admin/blog.htm";
 	}
 	

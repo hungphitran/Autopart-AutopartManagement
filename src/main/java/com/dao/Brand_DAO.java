@@ -156,6 +156,22 @@ public class Brand_DAO {
         }
     }
     
+    public boolean checkExistByName(String brandName) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Brand b WHERE b.brandName = :brandName";
+            Query query = session.createQuery(hql);
+            query.setParameter("brandName", brandName);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
     public String generateNextBrandId() {
         Session session = null;
         try {

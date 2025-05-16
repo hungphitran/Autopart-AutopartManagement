@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Account_DAO;
 import com.dao.BlogGroup_DAO;
@@ -229,33 +230,62 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value="/profile/edit", method=RequestMethod.POST)
-	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e) {
-		HttpSession session = req.getSession();
-		Account acc = (Account) session.getAttribute("account");
-		Employee emp = employeeDao.getByEmail(acc.getEmail());
-		emp.setAddress(e.getAddress());
-		emp.setBirthDate(e.getBirthDate());
-		emp.setFullName(e.getFullName());
-		emp.setEmail(e.getEmail());
-		emp.setEducationLevel(e.getEducationLevel());
-		emp.setGender(e.getGender());
-		employeeDao.update(emp);
-		session.setAttribute("name", emp.getFullName());
-		return "redirect:/admin/profile.htm";
+	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e, RedirectAttributes redirectAttributes) {
+		try
+		{
+			HttpSession session = req.getSession();
+			Account acc = (Account) session.getAttribute("account");
+			Employee emp = employeeDao.getByEmail(acc.getEmail());
+			emp.setAddress(e.getAddress());
+			emp.setBirthDate(e.getBirthDate());
+			emp.setFullName(e.getFullName());
+			emp.setEmail(e.getEmail());
+			emp.setEducationLevel(e.getEducationLevel());
+			emp.setGender(e.getGender());
+			employeeDao.update(emp);
+			session.setAttribute("name", emp.getFullName());
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa tài khoản thành công!"); 
+
+			return "redirect:/admin/profile.htm";
+		}
+		catch (Exception ex)
+		{
+			System.out.println("Test1");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Chỉnh sửa tài khoản thất bại!"); 
+			ex.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/admin/profile.htm";
+			
+		}
+		
 	}
 	@RequestMapping(value="/profile/changepass", method= RequestMethod.POST)
-	public String changePass(HttpServletRequest req) {
-		String pass= req.getParameter("pass");
-		String newPass = req.getParameter("newpass");
-		String confirmPass = req.getParameter("confirmpass");
-		HttpSession session = req.getSession();
-		Account acc = (Account) session.getAttribute("account");
-		if(pass.equals(acc.getPassword()) && newPass.equals(confirmPass)) {
-			acc.setPassword(newPass);
-			accountDao.update(acc);
-		}
+	public String changePass(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			String pass= req.getParameter("pass");
+			String newPass = req.getParameter("newpass");
+			String confirmPass = req.getParameter("confirmpass");
+			HttpSession session = req.getSession();
+			Account acc = (Account) session.getAttribute("account");
+			if(pass.equals(acc.getPassword()) && newPass.equals(confirmPass)) {
+				acc.setPassword(newPass);
+				accountDao.update(acc);
+			}
+	        redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!"); 
 
-		return "redirect:/admin/profile.htm";
+			return "redirect:/admin/profile.htm";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Đổi mật khẩu thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/admin/profile.htm";
+			
+		}
+		
 	}
 
 	@RequestMapping("/logout")

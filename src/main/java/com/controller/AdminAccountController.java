@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Account_DAO;
 import com.dao.RoleGroup_DAO;
@@ -29,14 +30,27 @@ public class AdminAccountController {
 
     @RequestMapping("/account")
     public String showAccounts(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            return "redirect:/admin/login.htm";
-        }
+    	try
+    	{
+    		HttpSession session = req.getSession(false);
+            if (session == null || session.getAttribute("account") == null) {
+                return "redirect:/admin/login.htm";
+            }
 
-        List<Account> accounts = accountDao.getAll();
-        req.setAttribute("accounts", accounts);
-        return "adminview/account/index";
+            List<Account> accounts = accountDao.getAll();
+            req.setAttribute("accounts", accounts);
+            return "adminview/account/index";
+
+    	}
+    	catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Tải tài khoản thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+            return "adminview/account/index";
+			
+		}
     }
 
     @RequestMapping(value = "/account/changeStatus", method = RequestMethod.POST)
@@ -60,8 +74,20 @@ public class AdminAccountController {
     }
 
     @RequestMapping(value = "/account/edit", method = RequestMethod.POST)
-    public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("phone") String phone) {
-        accountDao.update(acc);
-        return "redirect:/admin/account.htm";
+    public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("phone") String phone, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+    	try
+    	{
+    		accountDao.update(acc);
+            return "redirect:/admin/account.htm";
+    	}
+    	catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Chỉnh sửa tài khoản thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+            return "redirect:/admin/account.htm";
+			
+		}
     }
 }

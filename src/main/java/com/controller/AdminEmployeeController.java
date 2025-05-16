@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Account_DAO;
 import com.dao.Employee_DAO;
@@ -39,10 +40,23 @@ public class AdminEmployeeController {
 	
 	@RequestMapping("/employee")
 	public String showEmployee(HttpServletRequest req) {
-		List<Employee> employees = employeeDao.getAll();
-		req.setAttribute("employees", employees);
-		
-		return "adminview/employee/index";
+		try
+		{
+			List<Employee> employees = employeeDao.getAll();
+			req.setAttribute("employees", employees);
+			
+			return "adminview/employee/index";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Tải danh sách nhân viên thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "adminview/employee/index";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value = "/employee/changeStatus", method= RequestMethod.POST)
@@ -60,26 +74,42 @@ public class AdminEmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.GET)
-	public String add(Model model, HttpServletRequest req) {
+	public String add(Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+
 		model.addAttribute("emp", new Employee());
 		
 		List<RoleGroup> roleGroup = roleGroupDao.getAll();
 		model.addAttribute("roleGroup", roleGroup);
 		
 		return "adminview/employee/add";
+		
+
 	}
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.POST)
-	public String addPost(@ModelAttribute("emp") Employee emp, @RequestParam("permission") String permission, HttpServletRequest req) {
-		if (emp.getStatus() == null) {
-			emp.setStatus("Inactive");
-        }
-        
-		Account acc = new Account(emp.getPhone(), "1111", null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-		accountDao.add(acc);
+	public String addPost(@ModelAttribute("emp") Employee emp, @RequestParam("permission") String permission, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		
-		employeeDao.add(emp);
-        return "redirect:/admin/employee.htm";
+		try
+		{
+			if (emp.getStatus() == null) {
+				emp.setStatus("Inactive");
+	        }
+	        
+			Account acc = new Account(emp.getPhone(), "1111", null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			accountDao.add(acc);
+			
+			employeeDao.add(emp);
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm nhân viên thành công!"); 
+	        return "redirect:/admin/employee.htm";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên!"); 
+			e.printStackTrace();
+			return "redirect:/admin/employee/add.htm";
+			
+		}
+		
 	}
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.GET)
@@ -94,12 +124,27 @@ public class AdminEmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.POST)
-	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req) {
-		if (emp.getStatus() == null) {
-			emp.setStatus("Inactive");
-        }
+	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			if (emp.getStatus() == null) {
+				emp.setStatus("Inactive");
+	        }
+			
+			employeeDao.update(emp);
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa nhân viên thành công!"); 
+
+	        return "redirect:/admin/employee.htm";
+		}
+		catch (Exception e)
+		{
+			String referer = req.getHeader("Referer");
+			System.out.println(referer); 
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa nhân viên!"); 
+			e.printStackTrace();
+	        return "redirect"+ referer ;
+			
+		}
 		
-		employeeDao.update(emp);
-        return "redirect:/admin/employee.htm";
 	}
 }

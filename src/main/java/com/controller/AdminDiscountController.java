@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Discount_DAO;
 import com.entity.Discount;
@@ -24,11 +25,24 @@ public class AdminDiscountController {
 	
 	// -- Discount --
 	@RequestMapping("/discount")
-	public String showDiscounts(HttpServletRequest req) {
-		List<Discount> discounts = discountDao.getAll();
-		req.setAttribute("discounts", discounts);
-		return "adminview/discount/index";
-	}
+	public String showDiscounts(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			List<Discount> discounts = discountDao.getAll();
+			req.setAttribute("discounts", discounts);
+			return "adminview/discount/index";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Tải danh sách bài viết thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "adminview/discount/index";
+			
+		}
+		
+	}	
 	
 	@RequestMapping(value = "/discount/add", method= RequestMethod.GET)
 	public String addDiscount(Model model, HttpServletRequest req) {
@@ -39,14 +53,26 @@ public class AdminDiscountController {
 	}
 	
 	@RequestMapping(value = "/discount/add", method= RequestMethod.POST)
-	public String addDiscountPost(@ModelAttribute("discount") Discount discount, HttpServletRequest req) {
-		if (discount.getStatus() == null) {
-			discount.setStatus("Inactive");
+	public String addDiscountPost(@ModelAttribute("discount") Discount discount, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			if (discount.getStatus() == null) {
+				discount.setStatus("Inactive");
+			}
+			
+			discountDao.add(discount);
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm khuyến mãi thành công!"); 
+
+			
+			return "redirect:/admin/discount.htm";
 		}
-		
-		discountDao.add(discount);
-		
-		return "redirect:/admin/discount.htm";
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm khuyến mãi!"); 
+			e.printStackTrace();
+			return "redirect:/admin/discount/add.htm";
+			
+		}
 	}
 
 	@RequestMapping(value = "/discount/edit", method= RequestMethod.GET)
@@ -57,19 +83,45 @@ public class AdminDiscountController {
 	}
 	
 	@RequestMapping(value = "/discount/edit", method= RequestMethod.POST)
-	public String editDiscountPatch(@ModelAttribute("discount") Discount discount) {
-		if (discount.getStatus() == null) {
-			discount.setStatus("Inactive");
+	public String editDiscountPatch(@ModelAttribute("discount") Discount discount, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			if (discount.getStatus() == null) {
+				discount.setStatus("Inactive");
+			}
+			discountDao.update(discount);
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa khuyến mãi thành công!"); 
+
+			return "redirect:/admin/discount.htm";
 		}
-		discountDao.update(discount);
-		
-		return "redirect:/admin/discount.htm";
+		catch (Exception e)
+		{
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa khuyến mãi!"); 
+			e.printStackTrace();
+			return "redirect" + referer;
+			
+		}
 	}  
 	
 	@RequestMapping("/discount/delete")
-	public String deleteDiscount(@RequestParam("discountId") String discountId, HttpServletRequest req) {
-		discountDao.delete(discountId);
-		return "redirect:/admin/discount.htm";
+	public String deleteDiscount(@RequestParam("discountId") String discountId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			discountDao.delete(discountId);
+	        redirectAttributes.addFlashAttribute("successMessage", "Xóa khuyến mãi thành công!"); 
+
+			return "redirect:/admin/discount.htm";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa khuyến mãi!"); 
+			e.printStackTrace();
+			return "redirect:/admin/discount.htm";
+			
+		}
+
 	}
 	
 	@RequestMapping(value = "/discount/detail", method= RequestMethod.GET)

@@ -96,7 +96,7 @@
 				<div class="row">
 					<div class="col" style="padding-left: 0;">Số lượng: ${products.size()}</div>
 					<c:forEach items="${products}" var="product">
-						<input type="hidden" id="${product.key.productId}" name="${product.key.productId}" value ="${product.value}">
+						<input type="hidden" class="form-quantity" data-product-id="${product.key.productId}" id="${product.key.productId}" name="${product.key.productId}" value ="${product.value} " >
 					</c:forEach>
 						
 					
@@ -246,14 +246,22 @@ document.addEventListener('DOMContentLoaded', function() {
         function updateQuantity(input, delta) {
             let value = parseInt(input.value) + delta;
             if (value < 1) {
-                showDialog(input);
-            } else if (value > input.max) {
-                return;
+              showDialog(input);
+            } else if (value > parseInt(input.max)) {
+              return;
             } else {
-                input.value = value;
-                updateCost();
+              input.value = value;
+              // Update the corresponding hidden input
+              const productId = input.dataset.productId;
+              console.log(productId)
+              const hiddenInput = document.querySelector(`.form-quantity[data-product-id="${productId}"]`);
+              console.log(hiddenInput)
+              if (hiddenInput) {
+                hiddenInput.value = value;
+              }
+              updateCost();
             }
-        }
+          }
 
         function showDialog(input) {
             const dialogOverlay = document.getElementById('dialog-overlay');

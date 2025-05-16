@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.GeneralSettings_DAO;
 import com.entity.GeneralSettings;
@@ -39,42 +40,54 @@ public class AdminGeneralSettingController {
     }
 
     @RequestMapping(value = "/generalSettings/update", method = RequestMethod.POST)
-    public String updateGeneralSettings(@ModelAttribute("generalSettings") GeneralSettings formSettings, @RequestParam("logoFile") MultipartFile logoFile, HttpServletRequest req) {
-    	GeneralSettings exisitingSetting = gSettingsDao.get();
-    	String webName = exisitingSetting.getWebsiteName();
-    	String logoUrl = exisitingSetting.getLogo();
-    	gSettingsDao.delete(webName);
-    	
-    	// Đường dẫn thư mục lưu ảnh
-	    String uploadDir = req.getServletContext().getRealPath("/resources/img/");
-	    File dir = new File(uploadDir);
-	    if (!dir.exists()) {
-	        dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
-	    }
-    	
-	    String imageUrl = "";
-        if (!logoFile.isEmpty()) {
-            String logoPath = System.currentTimeMillis() + "_" + logoFile.getOriginalFilename();
-            if (logoPath != null) {
-            	
-            	try {
-                    File destination = new File(uploadDir + logoPath);
-                    logoFile.transferTo(destination); // Lưu file vào thư mục
-                    imageUrl = logoPath;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    imageUrl = "";
+    public String updateGeneralSettings(@ModelAttribute("generalSettings") GeneralSettings formSettings, @RequestParam("logoFile") MultipartFile logoFile, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+    	try
+    	{
+    		GeneralSettings exisitingSetting = gSettingsDao.get();
+        	String webName = exisitingSetting.getWebsiteName();
+        	String logoUrl = exisitingSetting.getLogo();
+        	gSettingsDao.delete(webName);
+        	
+        	// Đường dẫn thư mục lưu ảnh
+    	    String uploadDir = req.getServletContext().getRealPath("/resources/img/");
+    	    File dir = new File(uploadDir);
+    	    if (!dir.exists()) {
+    	        dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+    	    }
+        	
+    	    String imageUrl = "";
+            if (!logoFile.isEmpty()) {
+                String logoPath = System.currentTimeMillis() + "_" + logoFile.getOriginalFilename();
+                if (logoPath != null) {
+                	
+                	try {
+                        File destination = new File(uploadDir + logoPath);
+                        logoFile.transferTo(destination); // Lưu file vào thư mục
+                        imageUrl = logoPath;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        imageUrl = "";
+                    }
                 }
             }
-        }
-        
-        formSettings.setLogo(imageUrl);
-        if (formSettings.getLogo() == "") {
-        	formSettings.setLogo(logoUrl);
-        }
-        
-        boolean success = gSettingsDao.add(formSettings);
-        
-        return "redirect:/admin/generalSettings.htm";
+            
+            formSettings.setLogo(imageUrl);
+            if (formSettings.getLogo() == "") {
+            	formSettings.setLogo(logoUrl);
+            }
+            
+            boolean success = gSettingsDao.add(formSettings);
+	        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật các thông số chung thành công!"); 
+
+            return "redirect:/admin/generalSettings.htm";
+    	}
+    	catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Cập nhật các thông số chung thất bại!"); 
+			e.printStackTrace();
+            return "redirect:/admin/generalSettings.htm";
+			
+		}
+    	
     }
 }

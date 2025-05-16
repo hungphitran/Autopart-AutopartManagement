@@ -63,13 +63,13 @@
                                         onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                                     <input class="input-updateQTY quantity" type="number"
                                         data-product-id="${product.key.productId}" value="${product.value}"
-                                        min="0" max="${product.key.stock}">
+                                        min="1" max="${product.key.stock}">
                                     <button class="btn-updateQTY"
                                         onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
                                 </div>
                                 <div class="col">
                                     <a href="/autopart/product/detailproduct.htm?productId=${product.key.productId}">Xem chi tiết -></a>
-                                    <form action="/autopart/order/remove-product.htm" method="post" style="display: inline;">
+                                    <form action="/autopart/order/edit/remove-product.htm" method="get" style="display: inline;">
                                         <input type="hidden" name="orderId" value="${order.orderId}">
                                         <input type="hidden" name="productId" value="${product.key.productId}">
                                         <button type="submit" class="btn btn-danger btn-sm"
@@ -88,7 +88,7 @@
                     </a>
                 </div>
             </div>
-            <form action="/autopart/order/update.htm" method="post" class="col-md-4 summary">
+            <form action="/autopart/order/edit.htm" method="post" class="col-md-4 summary">
                 <div>
                     <h5><b>CHI TIẾT ĐƠN HÀNG</b></h5>
                 </div>
@@ -104,11 +104,13 @@
                     <input type="text" name="shipAddress" placeholder="Địa chỉ" value="${order.shipAddress}" required="required">
                 </div>
                 <div>
-                    <p>Loại vận chuyển</p>
-                    <select name="shippingType" id="shippingType">
-                        <option value="" readonly>-- Chọn loại vận chuyển --</option>
-
-                    </select>
+                  <p>Loại vận chuyển</p>
+					<select name="shippingType" id="shippingType">
+					    <option value="" disabled>-- Chọn loại vận chuyển --</option>
+					    <option value="20000" <c:if test="${order.shippingType == 'Normal'}">selected</c:if>>Vận chuyển thường - 20.000 ₫</option>
+					    <option value="50000" <c:if test="${order.shippingType == 'Express'}">selected</c:if>>Vận chuyển nhanh - 50.000 ₫</option>
+					    <option value="15000" <c:if test="${order.shippingType == 'Economy'}">selected</c:if>>Vận chuyển tiết kiệm - 15.000 ₫</option>
+					</select>
                     <p>Mã khuyến mãi</p>
                     <select name="discountId" id="discountId">
                         <option value="">-- Chọn mã khuyến mãi --</option>
@@ -236,10 +238,10 @@
 
         function updateQuantity(input, delta) {
             let value = parseInt(input.value) + delta;
-            if (value < 0) {
-                return; // Prevent negative quantities
+            if (value < 1) {
+                showDialog(input);
             } else if (value > input.max) {
-                return; // Respect stock limit
+                return;
             } else {
                 input.value = value;
                 updateCost();

@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.Query;
 
 import com.entity.Order;
@@ -71,7 +72,8 @@ public class Order_DAO {
         }
     }
 
-    public boolean add(Order order) {
+    @Transactional
+    public boolean add(Order order) throws Exception{
         Session session = null;
         Transaction transaction = null;
         try {
@@ -80,16 +82,18 @@ public class Order_DAO {
             session.save(order);
             transaction.commit();
             return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
+        } 
+//            catch (Exception e) {
+//            if (transaction != null) transaction.rollback();
+//            
+//            return false;
+//        } 
+            finally {
             if (session != null) session.close();
         }
     }
 
-    public boolean update(Order order) {
+    public boolean update(Order order)throws Exception {
         Session session = null;
         Transaction transaction = null;
         try {
@@ -98,11 +102,13 @@ public class Order_DAO {
             session.update(order);
             transaction.commit();
             return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
+        } 
+//        catch (Exception e) {
+//            if (transaction != null) transaction.rollback();
+//            e.printStackTrace();
+//            return false;
+//        } 
+        finally {
             if (session != null) session.close();
         }
     }
