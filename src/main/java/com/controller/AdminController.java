@@ -52,6 +52,7 @@ import com.entity.Employee;
 import com.entity.Order;
 import com.entity.OrderDetail;
 
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -163,22 +164,54 @@ public class AdminController {
 	
     @SuppressWarnings("deprecation")
     @RequestMapping("/statistic")
-    public String showStatistic(HttpServletRequest req) {
+    public String showStatistic(HttpServletRequest req, @RequestParam(required = false) String fromDate, 
+                                @RequestParam(required = false) String toDate) {
         HttpSession session = req.getSession();
         Account acc = (Account) session.getAttribute("account");
         
-        // Use java.time instead of deprecated Date
-        java.time.LocalDate today = java.time.LocalDate.now();
-        int currentYear = today.getYear();
-        int currentMonth = today.getMonthValue() - 1; // 0-based for array indexing
+        // Setup date range
+        java.util.Date today = new java.util.Date();
+        int currentYear = today.getYear() + 1900;
+        int currentMonth = today.getMonth();
         
-        List<Order> orders = orderDao.getOrderByStatus("Completed");
+        java.sql.Date startDate = null;
+        java.sql.Date endDate = null;
+        
+        // Set default date range to current year if not specified
+        if (fromDate == null || fromDate.isEmpty()) {
+            startDate = new java.sql.Date(currentYear - 1900, 0, 1); // Start of current year
+        } else {
+            try {
+                startDate = java.sql.Date.valueOf(fromDate);
+            } catch (Exception e) {
+                startDate = new java.sql.Date(currentYear - 1900, 0, 1);
+            }
+        }
+        
+        if (toDate == null || toDate.isEmpty()) {
+            endDate = new java.sql.Date(today.getTime()); // Today
+        } else {
+            try {
+                endDate = java.sql.Date.valueOf(toDate);
+            } catch (Exception e) {
+                endDate = new java.sql.Date(today.getTime());
+            }
+        }
+        
+        // Format dates for the view
+        req.setAttribute("fromDate", startDate.toString());
+        req.setAttribute("toDate", endDate.toString());
+        
+        // Get orders within date range
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(startDate, endDate, "Completed");
+        
+        // Initialize income tracking
         BigDecimal[] income = new BigDecimal[12];
-        // Initialize all array elements to prevent NullPointerException
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < income.length; i++) {
             income[i] = BigDecimal.ZERO;
         }
         
+        // Initialize collections for statistics
         List<Order> ordersThisYear = new ArrayList<>();
         List<Order> ordersThisMonth = new ArrayList<>();
         List<Order> ordersLastMonth = new ArrayList<>();
@@ -186,25 +219,63 @@ public class AdminController {
         int totalProductThisYear = 0;
         int totalProductLastYear = 0;
         
-        Map<String, Integer> productSales = new HashMap<>();
-        Map<Product, Integer> products = new HashMap<>();
+        // For tracking daily income (for chart)
+        List<BigDecimal> dailyIncome = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
         
+        // Create date labels for each day in the range
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(startDate);
+        java.util.Calendar endCal = java.util.Calendar.getInstance();
+        endCal.setTime(endDate);
+        endCal.add(java.util.Calendar.DATE, 1); // Include end date
+        
+        // Initialize daily income map
+        Map<String, BigDecimal> dailyIncomeMap = new HashMap<>();
+        
+        while (cal.before(endCal)) {
+            String dateStr = new java.sql.Date(cal.getTimeInMillis()).toString();
+            labels.add(dateStr);
+            dailyIncomeMap.put(dateStr, BigDecimal.ZERO);
+            cal.add(java.util.Calendar.DATE, 1);
+        }
+        
+        // Product sales tracking
+        Map<Product, Integer> products = new TreeMap<>(new Comparator<Product>() {
+            @Override
+            public int compare(Product p1, Product p2) {
+                return p2.getProductId().compareTo(p1.getProductId());
+            }
+        });
+        
+        // Process orders for statistics
+        BigDecimal totalIncome = BigDecimal.ZERO;
         for (Order o : orders) {
             Date orderDate = o.getOrderDate();
-            // Convert SQL Date year to actual year (1900 + getYear())
             int orderYear = orderDate.getYear() + 1900;
-            // Month is already 0-based (0-11)
             int orderMonth = orderDate.getMonth();
             
-            // Process income for all completed orders
+            // Add to monthly income
             income[orderMonth] = income[orderMonth].add(o.getTotalCost());
             
-            // Separate orders by year
+            // Add to total income
+            totalIncome = totalIncome.add(o.getTotalCost());
+            
+            // Add to daily income for chart
+            String orderDateStr = orderDate.toString();
+            BigDecimal dayIncome = dailyIncomeMap.get(orderDateStr);
+            if (dayIncome != null) {
+                dailyIncomeMap.put(orderDateStr, dayIncome.add(o.getTotalCost()));
+            }
+            
+            // Categorize orders by year and month
             if (orderYear == currentYear) {
                 ordersThisYear.add(o);
-                totalProductThisYear += o.getOrderDetails().size();
                 
-                // Separate orders by month
+                // Count products sold this year
+                List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(o.getOrderId());
+                totalProductThisYear += orderDetails.stream().mapToInt(OrderDetail::getAmount).sum();
+                
                 if (orderMonth == currentMonth) {
                     ordersThisMonth.add(o);
                 } else if (orderMonth == (currentMonth > 0 ? currentMonth - 1 : 11)) {
@@ -212,47 +283,47 @@ public class AdminController {
                 }
             } else if (orderYear == currentYear - 1) {
                 ordersLastYear.add(o);
-                totalProductLastYear += o.getOrderDetails().size();
+                
+                // Count products sold last year
+                List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(o.getOrderId());
+                totalProductLastYear += orderDetails.stream().mapToInt(OrderDetail::getAmount).sum();
             }
             
-            // Track product sales
+            // Process product sales
             List<OrderDetail> details = orderDetailDao.getAllByOrderId(o.getOrderId());
             for (OrderDetail detail : details) {
-                String productId = detail.getProductId();
-                int amount = detail.getAmount();
-                
-                // Update product sales count
-                productSales.put(productId, productSales.getOrDefault(productId, 0) + amount);
-                
-                // Store product object with total sales (only if not already in map)
-                if (!products.containsKey(productDao.getById(productId))) {
-                    products.put(productDao.getById(productId), amount);
+                Product product = productDao.getById(detail.getProductId());
+                if (product != null) {
+                    products.put(product, products.getOrDefault(product, 0) + detail.getAmount());
                 }
             }
         }
         
-        // Pre-calculate growth rates and percentages to avoid division by zero in JSP
+        // Convert daily income map to list in the correct order
+        for (String dateStr : labels) {
+            dailyIncome.add(dailyIncomeMap.getOrDefault(dateStr, BigDecimal.ZERO));
+        }
+        
+        // Calculate statistics for this month
         BigDecimal incomeThisMonth = income[currentMonth];
         BigDecimal incomeLastMonth = income[currentMonth > 0 ? currentMonth - 1 : 11];
         BigDecimal incomeGrowth = BigDecimal.ZERO;
         
         if (incomeLastMonth.compareTo(BigDecimal.ZERO) > 0) {
-            // Calculate growth only if last month's income is greater than zero
             incomeGrowth = incomeThisMonth.subtract(incomeLastMonth)
                          .multiply(new BigDecimal(100))
                          .divide(incomeLastMonth, 2, BigDecimal.ROUND_HALF_UP);
-        }
-        else {
-        	incomeLastMonth = BigDecimal.ONE;
+        } else {
+            incomeLastMonth = BigDecimal.ONE;
         }
         
-        // Calculate product growth - handle division by zero
+        // Calculate product growth
         int productGrowth = 0;
         if (totalProductLastYear > 0) {
             productGrowth = ((totalProductThisYear - totalProductLastYear) * 100) / totalProductLastYear;
         }
         
-        // Calculate order growth rates
+        // Calculate order growth
         int orderThisMonthCount = ordersThisMonth.size();
         int orderLastMonthCount = ordersLastMonth.size();
         int orderGrowth = 0;
@@ -264,13 +335,15 @@ public class AdminController {
         List<Account> accs = accountDao.getAll();
         List<Account> accsThisMonth = new ArrayList<>();
         List<Account> accsLastMonth = new ArrayList<>();
-
+        
         for (Account a : accs) {
-            int accountMonth = a.getCreatedAt().getMonth();
-            if (accountMonth == currentMonth) {
-                accsThisMonth.add(a);
-            } else if (accountMonth == (currentMonth > 0 ? currentMonth - 1 : 11)) {
-                accsLastMonth.add(a);
+            if (a.getCreatedAt() != null) {
+                int accountMonth = a.getCreatedAt().getMonth();
+                if (accountMonth == currentMonth) {
+                    accsThisMonth.add(a);
+                } else if (accountMonth == (currentMonth > 0 ? currentMonth - 1 : 11)) {
+                    accsLastMonth.add(a);
+                }
             }
         }
         
@@ -281,28 +354,30 @@ public class AdminController {
             accountGrowth = ((accountThisMonthCount - accountLastMonthCount) * 100) / accountLastMonthCount;
         }
         
-        // Set attributes for the view
+        // Get pending orders
+        List<Order> newOrders = orderDao.getOrderByStatus("Pending");
+        
+        // Set request attributes for view
         req.setAttribute("income", income);
         req.setAttribute("totalProductThisYear", totalProductThisYear);
         req.setAttribute("totalProductLastYear", totalProductLastYear);
-        req.setAttribute("productGrowth", productGrowth); // Safe pre-calculated value
+        req.setAttribute("productGrowth", productGrowth);
         req.setAttribute("ordersThisYear", ordersThisYear);
         req.setAttribute("ordersLastYear", ordersLastYear);
         req.setAttribute("ordersLastMonth", ordersLastMonth);
         req.setAttribute("ordersThisMonth", ordersThisMonth);
-        req.setAttribute("orderGrowth", orderGrowth); // Safe pre-calculated value
-        
-        // Orders needing confirmation
-        List<Order> newOrders = orderDao.getOrderByStatus("Pending");
+        req.setAttribute("orderGrowth", orderGrowth);
         req.setAttribute("newOrders", newOrders);
-        
         req.setAttribute("accsLastMonth", accsLastMonth);
         req.setAttribute("accsThisMonth", accsThisMonth);
-        req.setAttribute("accountGrowth", accountGrowth); // Safe pre-calculated value
+        req.setAttribute("accountGrowth", accountGrowth);
         req.setAttribute("incomeLastMonth", incomeLastMonth);
         req.setAttribute("incomeThisMonth", incomeThisMonth);
-        req.setAttribute("incomeGrowth", incomeGrowth); // Safe pre-calculated value
+        req.setAttribute("incomeGrowth", incomeGrowth);
         req.setAttribute("products", products);
+        req.setAttribute("dailyIncome", dailyIncome);
+        req.setAttribute("labels", labels);
+        req.setAttribute("totalIncome", totalIncome);
         
         return "adminview/statistic";
     }

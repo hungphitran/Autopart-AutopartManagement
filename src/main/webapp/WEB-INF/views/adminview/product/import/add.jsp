@@ -95,15 +95,14 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="employeePhone">Nhân Viên Nhập <span class="text-danger">*</span></label>
-                                            <form:select path="employeeEmail" name="employeeEmail" class="form-control" required="true">
-                                                <form:option value="" label="-- Chọn nhân viên --" disabled="true"/>
-                                                <form:options items="${employeeList}" itemValue="email" itemLabel="fullName"/>
-                                            </form:select>
+                                            <input type="text" class="form-control" id="employeeEmail" value="${empName}" readonly required />
                                         </div>
                                         <div class="form-group">
-                                            <label for="importDate">Ngày Nhập <span class="text-danger">*</span></label>
-                                            <form:input path="importDate" name="importDate" type="date" class="form-control" id="importDate" required="true"/>
-                                        </div>
+										    <label for="importDate">Ngày Nhập <span class="text-danger">*</span></label>
+										    <input type="text" class="form-control" id="importDate" name="importDate" 
+										           value="<fmt:formatDate value='${importForm.importDate}' pattern='dd/MM/yyyy'/>" 
+										           readonly required />
+										</div>
                                         <div class="form-group">
                                             <label>Tổng Chi Phí: <span id="totalCostlbl">0₫</span></label>
                                             <input class="form-control" type="hidden" id="importCost" name="importCost" value="0"/>
