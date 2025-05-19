@@ -33,13 +33,13 @@ public class Customer_DAO {
         }
     }
 
-    public Customer getByPhone(String phone) {
+    public Customer getByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Customer c WHERE c.phone = :phone";
+            String hql = "FROM Customer c WHERE c.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return (Customer) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,15 +85,15 @@ public class Customer_DAO {
         }
     }
 
-    public boolean delete(String phone) {
+    public boolean delete(String email) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Customer c SET c.status = 'Deleted', c.deletedAt = GETDATE() WHERE c.phone = :phone";
+            String hql = "UPDATE Customer c SET c.status = 'Deleted', c.deletedAt = GETDATE() WHERE c.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             int rowsAffected = query.executeUpdate();
             transaction.commit();
             return rowsAffected > 0;
@@ -106,13 +106,13 @@ public class Customer_DAO {
         }
     }
 
-    public boolean checkExistByPhone(String phone) {
+    public boolean checkExistByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT 1 FROM Customer c WHERE c.phone = :phone";
+            String hql = "SELECT 1 FROM Customer c WHERE c.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();

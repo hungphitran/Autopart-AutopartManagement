@@ -21,15 +21,14 @@ public class BlogController {
 	@RequestMapping("/blog")
 	public String showAll(HttpServletRequest req) {
 		req.setAttribute("blogs", blogDao.getAll());
-		
 		return "blog";
-	}
+	}   
 	
 	@RequestMapping("/blog/detail")
 	public String showOne(HttpServletRequest req) {
 		String id = req.getParameter("id");
 		Blog blog = blogDao.getById(id);
-		String employee = edao.getByPhone(blog.getCreatedBy()).getFullName();
+		String employee = edao.getByEmail(blog.getCreatedBy()).getFullName();
 		req.setAttribute("blog",blog);
 		req.setAttribute("author",employee);
 		return "blogdetail";

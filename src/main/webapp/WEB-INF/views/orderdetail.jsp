@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -91,6 +92,31 @@ body {
     background-color: orange;
     color: white;
 }
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
+}
 </style>
 </head>
 <body>
@@ -104,23 +130,38 @@ body {
                 <strong>Tên khách hàng:</strong> ${userName}
             </p>
             <p>
-                <strong>Số điện thoại:</strong> ${user.phone }
+                <strong>Email:</strong> ${user.email }
             </p>
             <p>
                 <strong>Địa chỉ:</strong> ${order.shipAddress }
             </p>
             <p>
-                <strong>Tổng:</strong> ${order.totalCost }
+                <strong>Tổng:</strong><fmt:formatNumber value="${order.totalCost }" type="currency"/> 
             </p>
             <p>
-                <strong>Mã giảm giá:</strong> ${order.discountId }
+                <strong>Mã giảm giá:</strong> <c:if test="${!order.discountId}">Không có mã</c:if> ${order.discountId }
             </p>
             <p>
                 <strong>Ngày đặt hàng:</strong> ${order.orderDate }
             </p>
             <p>
-                <strong>Trạng thái:</strong> ${order.status}
+                <strong>Trạng thái:</strong>
+                <c:choose>
+   					<c:when test="${order.status == 'Pending'}">Chờ xác nhận</c:when>
+   					<c:when test="${order.status == 'Shipping'}">Đang giao hàng</c:when>
+   					<c:when test="${order.status == 'Completed'}">Đã hoàn thành</c:when>
+   					<c:when test="${order.status == 'Processing'}">Đang xử lý</c:when>
+				</c:choose>
             </p>
+            <c:if test="${order.status == 'Pending'}">
+                <div class="order-actions">
+               <!--     <a href="/autopart/order/edit.htm?orderId=${order.orderId}" 
+                       class="edit-btn">Sửa đơn hàng</a> --> 
+                    <a href="/autopart/order/cancel.htm?orderId=${order.orderId}" 
+                       class="cancel-btn" 
+                       onclick="return confirm('Bạn có chắc muốn hủy đơn hàng ${order.orderId}?')">Hủy đơn hàng</a>
+                </div>
+            </c:if>
         </div>
 
         <ul class="product-list">
@@ -137,7 +178,7 @@ body {
                     <strong>Số lượng:</strong> ${p.amount}
                 </p>
                 <p>
-                    <strong>Đơn giá:</strong> ${p.unitPrice }
+                    <strong>Đơn giá:</strong> <fmt:formatNumber value="${p.unitPrice}" type="currency"/> 
                 </p>
                 <p>
                     <strong> <a href="/autopart/product/detailproduct.htm?productId=${p.productId}" class="btn nav-btn">Xem sản phẩm</a> </strong>

@@ -18,12 +18,14 @@ import com.dao.BlogGroup_DAO;
 import com.dao.Brand_DAO;
 import com.dao.Cart_DAO;
 import com.dao.Customer_DAO;
+import com.dao.GeneralSettings_DAO;
 import com.dao.ProductGroup_DAO;
 import com.dao.Product_DAO;
 import com.entity.Account;
 import com.entity.BlogGroup;
 import com.entity.Cart;
 import com.entity.Customer;
+import com.entity.GeneralSettings;
 import com.entity.Product;
 import com.entity.ProductGroup;
 
@@ -48,6 +50,9 @@ public class DashboardController {
 	@Autowired 
 	BlogGroup_DAO blogGroupDao;
 	
+	@Autowired
+	GeneralSettings_DAO generalDao;
+	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
 		List<Product> proLst = productDao.getAll();	
@@ -67,39 +72,38 @@ public class DashboardController {
 		
 		//separate parentgroup and childgroup
 		List<ProductGroup> pgLst = pgDao.getAll();
-		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
-		for(ProductGroup pg: pgLst) {
-			if(pg.getParentGroupId()==null) {
-				parentGroups.add(pg);
-			}
-		}
-	
-		Map<String, List<String>> groups = new HashMap<String, List<String>>();
-		for(ProductGroup pg: parentGroups) {
-			List<String> childGroups= new ArrayList<String>();
-			for(ProductGroup pgr: pgLst) {
-				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
-					continue;
-				}
-				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
-					childGroups.add(pgr.getGroupName());
-				}
-			}
-			groups.put(pg.getGroupName(), childGroups);
-		}
+//		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
+//		for(ProductGroup pg: pgLst) {
+//			if(pg.getParentGroupId()==null) {
+//				parentGroups.add(pg);
+//			}
+//		}
+//	
+//		Map<String, List<String>> groups = new HashMap<String, List<String>>();
+//		for(ProductGroup pg: parentGroups) {
+//			List<String> childGroups= new ArrayList<String>();
+//			for(ProductGroup pgr: pgLst) {
+//				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
+//					continue;
+//				}
+//				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
+//					childGroups.add(pgr.getGroupName());
+//				}
+//			}
+//			groups.put(pg.getGroupName(), childGroups);
+//		}
 		
-		pgLst.clear();
-		parentGroups.clear();
-		session.setAttribute("groups", groups);
-		session.setAttribute("brands", brandDao.getAll());
+//		pgLst.clear();
+//		parentGroups.clear();
 
+		
 		
 		List<BlogGroup> blogGroups = blogGroupDao.getAll();
 		session.setAttribute("blogGroups", blogGroups);
 		
 		
 		if(acc != null ) {//get cart if user logged in
-			Customer cus = customerDao.getByPhone(acc.getPhone());
+			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cartDao.getById(cus.getCartId());
 			req.setAttribute("cart", cart);
 			Map<String,Integer> productsInCart =cart.getProducts();
@@ -110,6 +114,11 @@ public class DashboardController {
 			}
 			req.setAttribute("productInCart", products);
 		}
+		
+		GeneralSettings g=  generalDao.get();
+		session.setAttribute("general", g);
+		session.setAttribute("groups", pgLst);
+		session.setAttribute("brands", brandDao.getAll());
 
 		return "dashboard";
 	}

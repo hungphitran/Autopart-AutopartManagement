@@ -57,4 +57,6 @@
         <h2>Content</h2>
         <p>${blog.content}</p>
     </div>
+    		<jsp:include page="/WEB-INF/mixins/footer.jsp" />
+    
 </body>

@@ -18,6 +18,9 @@ public class Customer
     private String fullName;
 
     @Id
+    @Column(name = "email")
+    private String email;
+    
     @Column(name = "phone")
     private String phone;
 
@@ -43,17 +46,32 @@ public class Customer
 
 
 
-	public Customer(String cartId, String fullName, String phone, String address, String status, Timestamp createdAt,
-			Timestamp updatedAt) {
+
+	public Customer(String cartId, String fullName, String email, String phone, String address, String status,
+			Timestamp createdAt, Timestamp updatedAt) {
 		super();
 		this.cartId = cartId;
 		this.fullName = fullName;
+		this.email = email;
 		this.phone = phone;
 		this.address = address;
 		this.status = status;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
+	
+	public Customer(String cartId, String fullName, String email, String address, String status,
+			Timestamp createdAt, Timestamp updatedAt) {
+		super();
+		this.cartId = cartId;
+		this.fullName = fullName;
+		this.email = email;
+		this.address = address;
+		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
 
 
 
@@ -63,9 +81,11 @@ public class Customer
 
 
 
+
 	public void setCartId(String cartId) {
 		this.cartId = cartId;
 	}
+
 
 
 
@@ -75,9 +95,25 @@ public class Customer
 
 
 
+
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
+
+
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 
 
 
@@ -87,9 +123,11 @@ public class Customer
 
 
 
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
 
 
 
@@ -99,9 +137,11 @@ public class Customer
 
 
 
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
 
 
 
@@ -111,9 +151,11 @@ public class Customer
 
 
 
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 
 
 
@@ -123,15 +165,18 @@ public class Customer
 
 
 
+
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
 
 
 
+
 	public Timestamp getUpdatedAt() {
 		return updatedAt;
 	}
+
 
 
 
@@ -144,11 +189,14 @@ public class Customer
 
 	@Override
 	public String toString() {
-		return "Customer [cartId=" + cartId + ", fullName=" + fullName + ", phone=" + phone + ", address=" + address
-				+ ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt 
-				 + "]";
+		return "Customer [cartId=" + cartId + ", fullName=" + fullName + ", email=" + email + ", phone=" + phone
+				+ ", address=" + address + ", status=" + status + ", createdAt=" + createdAt + ", updatedAt="
+				+ updatedAt + "]";
 	}
 
+
+
+	
 		
     
 }

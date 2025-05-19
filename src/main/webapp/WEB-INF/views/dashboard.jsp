@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Autopart</title>
+	<title>${general.websiteName }</title>
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 		integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -41,42 +42,42 @@
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/1.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[1].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/2.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[2].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/3.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[3].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/4.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[4].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/5.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[5].groupName }</span>
 					</div>
 
 					<div class="categories_list-item">
 						<a href="#" class="item-img">
 							<img src="https://html.themability.com/autoelite/assets/images/categories/6.png" alt="">
 						</a>
-						<span class="item-title">Động cơ</span>
+						<span class="item-title">${groups[6].groupName }</span>
 					</div>
 				</div>
 			</div>
@@ -95,13 +96,13 @@
 							<div class="card-body">
 								<h5 class="card-title">${product.productName}</h5>
 								<p class="card-text">${product.description}</p>
-								<p>Giá bán: ${product.salePrice }đ</p>
+								<p>Giá bán: <fmt:formatNumber value=" ${product.salePrice }" type="currency"/></p>
 							</div>
 						</div>
 					</c:forEach>
 				</div>
 				<div>
-								<a href ="/autopart/product/search.htm?keyword=">Xem tất cả</a>
+					<a href ="/autopart/product/search.htm?keyword=">Xem tất cả</a>
 				</div>
 			</div>
 		</div>

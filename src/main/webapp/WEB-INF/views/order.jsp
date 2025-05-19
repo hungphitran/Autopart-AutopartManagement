@@ -21,61 +21,19 @@
 <link href="<c:url value="/resources/css/base.css" />" rel="stylesheet">
 
 </head>
-<body>
-	<!-- <div class="cart-container">
-        <div class="cart-header">
-            <h1>Giỏ hàng</h1>
-        </div>
-        <div class="cart-item">
-            <img src="product1.jpg" alt="Product 1">
-            <div class="cart-item-details">
-                <h2>Sản phẩm 1</h2>
-                <p>Product description goes here.</p>
-                <div class="cart-item-quantity">
-                    Quantity: 
-                    <div class="quantity-controls">
-                        <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
-                        <input type="number" value="1" min="1" readonly>
-                        <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
-                    </div>
-                </div>
-                <div class="cart-item-size">Size: M</div>
-                <div class="cart-item-color">Color: Red</div>
-            </div>
-            <div class="cart-item-price">$10.00</div>
-        </div>
-        <div class="cart-item">
-            <img src="product2.jpg" alt="Product 2">
-            <div class="cart-item-details">
-                <h2>Sản phẩm 2</h2>
-                <p>Product description goes here.</p>
-                <div class="cart-item-quantity">
-                    Quantity: 
-                    <div class="quantity-controls">
-                        <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
-                        <input type="number" value="2" min="1" readonly>
-                        <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
-                    </div>
-                </div>
-                <div class="cart-item-size">Size: L</div>
-                <div class="cart-item-color">Color: Blue</div>
-            </div>
-            <div class="cart-item-price">$20.00</div>
-        </div>
-       
-    </div>
-    <div class="sidebar">
-        <div class="total-cost">Total: $50.00</div>
-        <button>Proceed to Checkout</button>
-    </div>
-    <div id="dialog-overlay" class="dialog-overlay">
-        <div class="dialog">
-            <p>Are you sure you want to remove this item from the cart?</p>
-            <button id="confirm-button">Yes</button>
-            <button id="cancel-button">No</button>
-        </div>
-    </div> -->
 
+<body>
+			<!-- Success message -->
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+
+	<!-- Error message -->
+	<c:if test="${not empty errorMessage}">
+		<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${errorMessage}</div>
+	</c:if>
 	<div class="card">
 		<div class="row">
 			<div class="col-md-8 cart">
@@ -104,6 +62,8 @@
 								<div class="col">
 									<div class="row text-muted">${product.key.productId }</div>
 									<div class="row">${product.key.productName}</div>
+																		<input type="hidden" class="price" value="${product.key.salePrice}">
+									${product.key.salePrice } &#8363;
 								</div>
 								<div class="col updateQTY">
 									<button class="btn-updateQTY"
@@ -112,10 +72,8 @@
 									<button class="btn-updateQTY"
 										onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
 								</div>
-								<div class="col" class="price">
+								<div class="col" >
 									<a href="/autopart/product/detailproduct.htm?productId=${product.key.productId }">Xem chi tiết -></a>
-								<!-- 	<input type="hidden" class="price" value="${product.key.salePrice}">
-									${product.key.salePrice } &#8363;<span class="close"> &#10005;</span> -->
 								</div>
 							</div>
 						</div>
@@ -138,29 +96,29 @@
 				<div class="row">
 					<div class="col" style="padding-left: 0;">Số lượng: ${products.size()}</div>
 					<c:forEach items="${products}" var="product">
-						<input type="hidden" id="${product.key.productId}" name="${product.key.productId}" value ="${product.value}">
+						<input type="hidden" class="form-quantity" data-product-id="${product.key.productId}" id="${product.key.productId}" name="${product.key.productId}" value ="${product.value} " >
 					</c:forEach>
+						
+					
 				</div>
 				<div class="row">
 					<input type="text" name="shipAddress" placeholder="Địa chỉ" required="required">
 				</div>
 				<div>
 					<p>Loại vận chuyển</p>
-					<select>
-						<option class="text-muted">Vận chuyển thường- 20.000
-							&#8363;</option>
-						<option class="text-muted">Vận chuyển nhanh- 50.000
-							&#8363;</option>
-						<option class="text-muted">Vận chuyển tiết kiệm- 15.000
-							&#8363;</option>
-					</select>
+					<select name="shippingType" id="shippingType">
+						<option value="" readonly>-- Chọn loại vận chuyển -- </option>
+                        <option value="20000">Vận chuyển thường - 20.000 ₫</option>
+                        <option value="50000">Vận chuyển nhanh - 50.000 ₫</option>
+                        <option value="15000">Vận chuyển tiết kiệm - 15.000 ₫</option>
+                    </select>
 					<p>Mã khuyến mãi</p>
-					<input id="code" placeholder="Nhập mã khuyến mãi">
+					<select name="discountId" id="discountId"></select>
 				</div>
 				<div class="row"
 					style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 					<div class="col">TỔNG TIỀN</div>
-					<input class="col text-right" id="total" name="totalCost" value=""> &#8363;
+					<input class="col text-right" id="total" name="totalCost" value="" readonly> &#8363;
 				</div>
 				<button  class="btn">ĐẶT HÀNG</button>
 			</form>
@@ -168,51 +126,155 @@
 
 	</div>
 </body>
-<script>
-	
-let totalInput= document.getElementById("total");
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
 
-let priceInputs = document.querySelectorAll(".price");
-let quantityInputs = document.querySelectorAll(".quantity");
-
-function updateCost(){
-	let total = 0;
-	for(let i = 0; i < priceInputs.length; i++) {
-	    let price = parseFloat(priceInputs[i].value);
-	    let quantity = parseInt(quantityInputs[i].value);
-	    total += price * quantity;
-	}
-
-	totalInput.value = total
-}
-
-updateCost();
-	function updateQuantity(input, delta) {
-		let value = parseInt(input.value) + delta;
-		if (value < 1) {
-			showDialog(input);
-		}
-		else if(value>input.max){
-			return;
-		}
-		else {
-			input.value = value;
-			updateCost();
-		}
-	}
-
-	function showDialog(input) {
-		const dialogOverlay = document.getElementById('dialog-overlay');
-		dialogOverlay.style.visibility = 'visible';
-		const confirmButton = document.getElementById('confirm-button');
-		confirmButton.onclick = function() {
-			input.closest('.cart-item').remove();
-			dialogOverlay.style.visibility = 'hidden';
-		};
-		const cancelButton = document.getElementById('cancel-button');
-		cancelButton.onclick = function() {
-			dialogOverlay.style.visibility = 'hidden';
-		};
-	}
 </script>
+<script>
+        let totalInput = document.getElementById("total");
+        let priceInputs = document.querySelectorAll(".price");
+        let quantityInputs = document.querySelectorAll(".quantity");
+        let discountSelect = document.getElementById("discountId");
+        let shippingSelect = document.getElementById("shippingType");
+
+        // Danh sách mã khuyến mãi từ server
+        const discounts = [
+            <c:forEach var="discount" items="${discounts}" varStatus="loop">
+                { id: "${discount.discountId}", code: "${discount.discountDesc.replace('\"', '\\\"')}", amount: ${discount.discountAmount}, minOrderValue: ${discount.minimumAmount} }<c:if test="${!loop.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        console.log("Discounts: ", discounts);
+
+        function updateDiscountOptions(totalCost) {
+            const select = document.getElementById('discountId');
+            select.innerHTML = '<option value="">-- Chọn mã khuyến mãi --</option>';
+            discounts.forEach(discount => {
+                const option = document.createElement('option');
+                option.value = discount.id;
+                option.text = discount.code + " - Giảm " + discount.amount + "% (Tối thiểu: " + discount.minOrderValue.toLocaleString('vi-VN') + " VNĐ)";
+                if (discount.minOrderValue > totalCost) {
+                    option.disabled = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        function calculateTotalWithDiscount(baseTotal, discountId, shippingCost) {
+            let total = baseTotal;
+            if (discountId) {
+                const selectedDiscount = discounts.find(discount => discount.id === discountId);
+                if (selectedDiscount && selectedDiscount.minOrderValue <= baseTotal) {
+                    total = total * (1 - selectedDiscount.amount / 100);
+                }
+            }
+            total += parseFloat(shippingCost || 0);
+            return total;
+        }
+
+        function updateCost() {
+            let baseTotal = 0;
+            for (let i = 0; i < priceInputs.length; i++) {
+                let price = parseFloat(priceInputs[i].value);
+                let quantity = parseInt(quantityInputs[i].value);
+                baseTotal += price * quantity;
+            }
+            const selectedDiscountId = discountSelect.value;
+            const selectedShippingCost = shippingSelect.value;
+            const finalTotal = calculateTotalWithDiscount(baseTotal, selectedDiscountId, selectedShippingCost);
+            totalInput.value = finalTotal.toLocaleString('vi-VN');
+            updateDiscountOptions(baseTotal);
+        }
+
+        // Lắng nghe sự kiện thay đổi mã giảm giá
+        discountSelect.addEventListener('change', function() {
+            let baseTotal = 0;
+            for (let i = 0; i < priceInputs.length; i++) {
+                let price = parseFloat(priceInputs[i].value);
+                let quantity = parseInt(quantityInputs[i].value);
+                baseTotal += price * quantity;
+            }
+            const selectedDiscountId = this.value;
+            const selectedShippingCost = shippingSelect.value;
+            const finalTotal = calculateTotalWithDiscount(baseTotal, selectedDiscountId, selectedShippingCost);
+            totalInput.value = finalTotal.toLocaleString('vi-VN');
+        });
+
+        // Lắng nghe sự kiện thay đổi loại vận chuyển
+        shippingSelect.addEventListener('change', function() {
+            let baseTotal = 0;
+            for (let i = 0; i < priceInputs.length; i++) {
+                let price = parseFloat(priceInputs[i].value);
+                let quantity = parseInt(quantityInputs[i].value);
+                baseTotal += price * quantity;
+            }
+            const selectedDiscountId = discountSelect.value;
+            const selectedShippingCost = this.value;
+            const finalTotal = calculateTotalWithDiscount(baseTotal, selectedDiscountId, selectedShippingCost);
+            totalInput.value = finalTotal.toLocaleString('vi-VN');
+        });
+
+        // Gọi hàm lần đầu khi trang tải
+        updateCost();
+
+        function updateQuantity(input, delta) {
+            let value = parseInt(input.value) + delta;
+            if (value < 1) {
+              showDialog(input);
+            } else if (value > parseInt(input.max)) {
+              return;
+            } else {
+              input.value = value;
+              // Update the corresponding hidden input
+              const productId = input.dataset.productId;
+              console.log(productId)
+              const hiddenInput = document.querySelector(`.form-quantity[data-product-id="${productId}"]`);
+              console.log(hiddenInput)
+              if (hiddenInput) {
+                hiddenInput.value = value;
+              }
+              updateCost();
+            }
+          }
+
+        function showDialog(input) {
+            const dialogOverlay = document.getElementById('dialog-overlay');
+            dialogOverlay.style.visibility = 'visible';
+            const confirmButton = document.getElementById('confirm-button');
+            confirmButton.onclick = function() {
+                input.closest('.cart-item').remove();
+                dialogOverlay.style.visibility = 'hidden';
+            };
+            const cancelButton = document.getElementById('cancel-button');
+            cancelButton.onclick = function() {
+                dialogOverlay.style.visibility = 'hidden';
+            };
+        }
+    </script>
 </html>

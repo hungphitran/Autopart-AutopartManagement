@@ -86,8 +86,8 @@
                                         <span class="form-control-plaintext">${userName}</span>
                                     </div>
                                     <div class="form-group">
-                                        <label>Số Điện Thoại Khách Hàng:</label>
-                                        <span class="form-control-plaintext">${order.userPhone}</span>
+                                        <label>Email Khách Hàng:</label>
+                                        <span class="form-control-plaintext">${order.userEmail}</span>
                                     </div>
                                     <div class="form-group">
                                         <label>Ngày Đặt Hàng:</label>

@@ -33,13 +33,13 @@ public class Employee_DAO {
         }
     }
 
-    public Employee getByPhone(String phone) {
+    public Employee getByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e  WHERE e.phone = :phone";
+            String hql = "FROM Employee e  WHERE e.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return (Employee) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,24 +49,24 @@ public class Employee_DAO {
         }
     }
     
-    public boolean changeStatus(String empPhone) {
+    public boolean changeStatus(String empEmail) {
         Session session = null;
         Transaction transaction = null;
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
             
-            String getStatusHql = "SELECT e.status FROM Employee e WHERE e.phone = :empPhone";
+            String getStatusHql = "SELECT e.status FROM Employee e WHERE e.email = :empEmail";
             Query statusQuery = session.createQuery(getStatusHql);
-            statusQuery.setParameter("empPhone", empPhone);
+            statusQuery.setParameter("empEmail", empEmail);
             String currentStatus = (String) statusQuery.uniqueResult();
             
             String newStatus = "Active".equals(currentStatus) ? "Inactive" : "Active";
             
-            String updateHql = "UPDATE Employee e SET e.status = :newStatus WHERE e.phone= :empPhone";
+            String updateHql = "UPDATE Employee e SET e.status = :newStatus WHERE e.email= :empEmail";
             Query updateQuery = session.createQuery(updateHql);
             updateQuery.setParameter("newStatus", newStatus);
-            updateQuery.setParameter("empPhone", empPhone);
+            updateQuery.setParameter("empEmail", empEmail);
             
             int rowsAffected = updateQuery.executeUpdate();
             transaction.commit();
@@ -126,7 +126,7 @@ public class Employee_DAO {
         try {
             session = factory.openSession();
             transaction = session.beginTransaction();
-            String hql = "UPDATE Employee e SET e.status = 'Deleted', e.deletedAt = GETDATE() WHERE  e.phone= :phone";
+            String hql = "UPDATE Employee e SET e.status = 'Deleted', e.deletedAt = GETDATE() WHERE  e.email= :email";
             Query query = session.createQuery(hql);
             query.setParameter("phone", phone);
             int rowsAffected = query.executeUpdate();
@@ -141,13 +141,13 @@ public class Employee_DAO {
         }
     }
 
-    public boolean checkExistByPhone(String phone) {
+    public boolean checkExistByEmail(String email) {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "FROM Employee e WHERE e.phone = :phone";
+            String hql = "FROM Employee e WHERE e.email = :email";
             Query query = session.createQuery(hql);
-            query.setParameter("phone", phone);
+            query.setParameter("email", email);
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();

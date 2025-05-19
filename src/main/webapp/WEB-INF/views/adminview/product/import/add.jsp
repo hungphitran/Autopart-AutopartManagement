@@ -54,6 +54,18 @@
     </style>
 </head>
 <body id="page-top">
+<!-- Success message -->
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+
+	<!-- Error message -->
+	<c:if test="${not empty errorMessage}">
+		<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${errorMessage}</div>
+	</c:if>
+
     <div id="wrapper">
         <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
         
@@ -83,15 +95,14 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="employeePhone">Nhân Viên Nhập <span class="text-danger">*</span></label>
-                                            <form:select path="employeePhone" name="employeePhone" class="form-control" required="true">
-                                                <form:option value="" label="-- Chọn nhân viên --" disabled="true"/>
-                                                <form:options items="${employeeList}" itemValue="phone" itemLabel="fullName"/>
-                                            </form:select>
+                                            <input type="text" class="form-control" id="employeeEmail" value="${empName}" readonly required />
                                         </div>
                                         <div class="form-group">
-                                            <label for="importDate">Ngày Nhập <span class="text-danger">*</span></label>
-                                            <form:input path="importDate" name="importDate" type="date" class="form-control" id="importDate" required="true"/>
-                                        </div>
+										    <label for="importDate">Ngày Nhập <span class="text-danger">*</span></label>
+										    <input type="text" class="form-control" id="importDate" name="importDate" 
+										           value="<fmt:formatDate value='${importForm.importDate}' pattern='dd/MM/yyyy'/>" 
+										           readonly required />
+										</div>
                                         <div class="form-group">
                                             <label>Tổng Chi Phí: <span id="totalCostlbl">0₫</span></label>
                                             <input class="form-control" type="hidden" id="importCost" name="importCost" value="0"/>
@@ -230,4 +241,33 @@
         }
     </script>
 </body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 </html>

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Brand_DAO;
 import com.dao.Employee_DAO;
@@ -27,6 +30,7 @@ import com.dao.Product_DAO;
 import com.entity.Brand;
 import com.entity.Employee;
 import com.entity.Import;
+import com.entity.ImportDetail;
 import com.entity.ImportDetailId;
 import com.entity.Product;
 import com.entity.ProductGroup;
@@ -52,24 +56,37 @@ public class AdminProductController {
 	
 	@RequestMapping("/product")
 	public String showProducts(HttpServletRequest req) {
-	    List<Product> products = productDao.getAll();
-	    String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
+		try
+		{
+			List<Product> products = productDao.getAll();
+		    String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
+		    
+		    for (int i = 0; i < products.size(); i++) {
+		        String img = products.get(i).getImageUrls();
+		        if (img != null) {
+		        	String[] imgArray = img.split(",");
+		        	if (imgArray[0].startsWith("https")) {
+		        		products.get(i).setImageUrls(imgArray[0]);
+		        	}
+		        	else {
+		        		products.get(i).setImageUrls(baseUrl + imgArray[0]); 	        	
+		        	}	        	
+		        }
+		    }
+		    req.setAttribute("products", products);
+		    req.setAttribute("title", "Sản phẩm");
+		    return "adminview/product/index";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Tải danh sách sản phẩm thất bại!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+		    return "adminview/product/index";
+			
+		}
 	    
-	    for (int i = 0; i < products.size(); i++) {
-	        String img = products.get(i).getImageUrls();
-	        if (img != null) {
-	        	String[] imgArray = img.split(",");
-	        	if (imgArray[0].startsWith("https")) {
-	        		products.get(i).setImageUrls(imgArray[0]);
-	        	}
-	        	else {
-	        		products.get(i).setImageUrls(baseUrl + imgArray[0]); 	        	
-	        	}	        	
-	        }
-	    }
-	    req.setAttribute("products", products);
-	    req.setAttribute("title", "Sản phẩm");
-	    return "adminview/product/index";
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.GET)
@@ -87,44 +104,55 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.POST)
-	public String addProductPost(@ModelAttribute("product") Product product, @RequestParam("imageFiles") MultipartFile[] imageFiles, HttpServletRequest req) throws IOException {
-		if (product.getStatus() == null) {
-			product.setStatus("Inactive");
-	    }
-		
-		// Đường dẫn thư mục lưu ảnh
-	    String uploadDir = req.getServletContext().getRealPath("/resources/img/");
-	    File dir = new File(uploadDir);
-	    if (!dir.exists()) {
-	        dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
-	    }
+	public String addProductPost(@ModelAttribute("product") Product product, @RequestParam("imageFiles") MultipartFile[] imageFiles, HttpServletRequest req, RedirectAttributes redirectAttributes) throws IOException {
+		try
+		{
+			if (product.getStatus() == null) {
+				product.setStatus("Inactive");
+		    }
+			
+			// Đường dẫn thư mục lưu ảnh
+		    String uploadDir = req.getServletContext().getRealPath("/resources/img/");
+		    File dir = new File(uploadDir);
+		    if (!dir.exists()) {
+		        dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+		    }
 
-	    // Xử lý và lưu từng file ảnh
-	    String imageUrls = "";
-	    if (imageFiles != null && imageFiles.length > 0) {
-	        imageUrls = Arrays.stream(imageFiles)
-	                .filter(file -> !file.isEmpty())
-	                .map(file -> {
-	                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename(); // Thêm timestamp để tránh trùng tên
-	                    try {
-	                        File destination = new File(uploadDir + fileName);
-	                        file.transferTo(destination); // Lưu file vào thư mục
-	                        return fileName;
-	                    } catch (IOException e) {
-	                        e.printStackTrace();
-	                        return "";
-	                    }
-	                })
-	                .filter(fileName -> !fileName.isEmpty())
-	                .collect(Collectors.joining(","));
-	    }
+		    // Xử lý và lưu từng file ảnh
+		    String imageUrls = "";
+		    if (imageFiles != null && imageFiles.length > 0) {
+		        imageUrls = Arrays.stream(imageFiles)
+		                .filter(file -> !file.isEmpty())
+		                .map(file -> {
+		                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename(); // Thêm timestamp để tránh trùng tên
+		                    try {
+		                        File destination = new File(uploadDir + fileName);
+		                        file.transferTo(destination); // Lưu file vào thư mục
+		                        return fileName;
+		                    } catch (IOException e) {
+		                        e.printStackTrace();
+		                        return "";
+		                    }
+		                })
+		                .filter(fileName -> !fileName.isEmpty())
+		                .collect(Collectors.joining(","));
+		    }
 
-	    // Gán danh sách tên file vào product
-	    product.setImageUrls(imageUrls);
-	    
-		productDao.add(product);
-		
-		return "redirect:/admin/product.htm";
+		    // Gán danh sách tên file vào product
+		    product.setImageUrls(imageUrls);
+		    
+			productDao.add(product);
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!"); 
+
+			return "redirect:/admin/product.htm";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm sản phẩm thất bại!"); 
+			e.printStackTrace();
+            return "redirect:/admin/product/add.htm";
+			
+		}
 	}
 
 	@RequestMapping(value = "/product/edit", method= RequestMethod.GET)
@@ -142,53 +170,79 @@ public class AdminProductController {
 	public String editProductPatch(@ModelAttribute("product") Product product,
             @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
             @RequestParam(value = "confirmDeleteImg", required = false) String confirmDeleteImg,
-            HttpServletRequest req) throws IOException {
-		if (product.getStatus() == null) {
-			product.setStatus("Inactive");
-	    }
-		
-		String uploadDir = req.getServletContext().getRealPath("/resources/img/");
-		File dir = new File(uploadDir);
-		if (!dir.exists()) {
-			dir.mkdirs();
+            HttpServletRequest req, RedirectAttributes redirectAttributes) throws IOException {
+		try
+		{
+			if (product.getStatus() == null) {
+				product.setStatus("Inactive");
+		    }
+			
+			String uploadDir = req.getServletContext().getRealPath("/resources/img/");
+			File dir = new File(uploadDir);
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			
+			String newImageUrls = "";
+			if (imageFiles != null && imageFiles.length > 0) {
+				newImageUrls = Arrays.stream(imageFiles)
+						.filter(file -> !file.isEmpty())
+						.map(file -> {
+							String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+							
+							try {
+								file.transferTo(new File(uploadDir + fileName));
+								return fileName;
+							} catch (IOException e) {
+								e.printStackTrace();
+								return "";
+							}
+						})
+						.filter(fileName -> !fileName.isEmpty())
+						.collect(Collectors.joining(","));
+			}
+			
+			if ("confirm".equals(confirmDeleteImg)) {
+				product.setImageUrls(newImageUrls.isEmpty() ? null : newImageUrls);
+			}
+			else {
+				product.setImageUrls((product.getImageUrls() == null ? "" : product.getImageUrls() + ",") + (newImageUrls.isEmpty() ? "" : newImageUrls));
+			}
+			
+			System.out.println(product);
+			productDao.update(product);
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa sản phẩm thành công!"); 
+
+			return "redirect:/admin/product.htm";
+		}
+		catch (Exception e)
+		{
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+	        redirectAttributes.addFlashAttribute("errorMessage", "Chỉnh sửa sản phẩm thất bại!"); 
+			e.printStackTrace();
+            return "redirect" + referer;
+			
 		}
 		
-		String newImageUrls = "";
-		if (imageFiles != null && imageFiles.length > 0) {
-			newImageUrls = Arrays.stream(imageFiles)
-					.filter(file -> !file.isEmpty())
-					.map(file -> {
-						String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-						
-						try {
-							file.transferTo(new File(uploadDir + fileName));
-							return fileName;
-						} catch (IOException e) {
-							e.printStackTrace();
-							return "";
-						}
-					})
-					.filter(fileName -> !fileName.isEmpty())
-					.collect(Collectors.joining(","));
-		}
-		
-		if ("confirm".equals(confirmDeleteImg)) {
-			product.setImageUrls(newImageUrls.isEmpty() ? null : newImageUrls);
-		}
-		else {
-			product.setImageUrls((product.getImageUrls() == null ? "" : product.getImageUrls() + ",") + (newImageUrls.isEmpty() ? "" : newImageUrls));
-		}
-		
-		System.out.println(product);
-		productDao.update(product);
-		
-		return "redirect:/admin/product.htm";
 	}  
 	
 	@RequestMapping("/product/delete")
-	public String deleteProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
-		productDao.delete(productId);
-		return "redirect:/admin/product.htm";
+	public String deleteProduct(@RequestParam("productId") String productId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			productDao.delete(productId);
+	        redirectAttributes.addFlashAttribute("successMessage", "Xóa sản phẩm thành công!"); 
+			return "redirect:/admin/product.htm";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Xóa sản phẩm thất bại!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product.htm";
+			
+		}
+		
 	}
 	
 	@RequestMapping(value = "/product/detail", method= RequestMethod.GET)
@@ -220,17 +274,16 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.GET)
-    public String addImportProduct(Model model, HttpServletRequest req) {
+    public String addImportProduct(Model model, HttpServletRequest req, HttpSession session) {
         Import importEntity = new Import();
         importEntity.setImportId(importDao.generateNextImportId());
         importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
         model.addAttribute("importForm", importEntity);
 
-        List<Employee> employeeList = employeeDao.getAll();
         List<Product> productList = productDao.getAll();
 
-        model.addAttribute("employeeList", employeeList);
         model.addAttribute("productList", productList);
+        model.addAttribute("empName", session.getAttribute("name"));
 
         return "adminview/product/import/add";
     }
@@ -238,33 +291,50 @@ public class AdminProductController {
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.POST)
 	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
 	                                   BindingResult result, 
-	                                   Model model) {
-	    if (result.hasErrors()) {
-	        model.addAttribute("employeeList", employeeDao.getAll());
-	        model.addAttribute("productList", productDao.getAll());
-	        model.addAttribute("error", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
-	        return "adminview/product/import/add";
-	    }
-	    System.out.println(importForm);
-	    if (importForm.getImportDetails() != null) {
-	        importForm.getImportDetails().forEach(detail -> {
-	        	// Gán importId cho các ImportDetail
-	            ImportDetailId id = new ImportDetailId();
-	            id.setImportId(importForm.getImportId());
-	            id.setProductId(detail.getId().getProductId());
-	            detail.setId(id);
-	            detail.setImportEntity(importForm);
-	            
-	            // Cập nhật số lượng sản phẩm vào kho
-	            String productId = detail.getId().getProductId();
-	            Product product = productDao.getById(productId);
-	            product.setStock(product.getStock() + detail.getAmount());
-	            productDao.update(product);
-	        });
-	    }
+	                                   Model model, RedirectAttributes redirectAttributes, HttpSession session) {
+		try
+		{
+			 if (result.hasErrors()) {
+				 	model.addAttribute("empName", session.getAttribute("name"));
+			        model.addAttribute("productList", productDao.getAll());
+			        model.addAttribute("error", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
+			        return "adminview/product/import/add";
+			    }
+			    System.out.println(importForm);
+			    if (importForm.getImportDetails() != null) {
+			        importForm.getImportDetails().forEach(detail -> {
+			        	// Gán importId cho các ImportDetail
+			            ImportDetailId id = new ImportDetailId();
+			            id.setImportId(importForm.getImportId());
+			            id.setProductId(detail.getId().getProductId());
+			            detail.setId(id);
+			            detail.setImportEntity(importForm);
+			            
+			            // Cập nhật số lượng sản phẩm vào kho
+			            String productId = detail.getId().getProductId();
+			            Product product = productDao.getById(productId);
+			            
+			            product.setStock(product.getStock() + detail.getAmount());
+//			            product.setCostPrice((product.getCostPrice() * product.getStock() + detail.getAmount() * detail.getPrice()) / (product.getStock() + detail.getAmount()));
+			            
+			            
+			            productDao.update(product);
+			        });
+			    }
 
-	    importDao.add(importForm);
-	    return "redirect:/admin/product/import.htm";
+			    importDao.add(importForm);
+		        redirectAttributes.addFlashAttribute("successMessage", "Thêm phiếu nhập thành công!"); 
+
+			    return "redirect:/admin/product/import.htm";	
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm phiếu nhập thất bại!"); 
+			e.printStackTrace();
+            return "redirect:/admin/product/import/add.htm";
+			
+		}
+	   
 	}
 	
 	@RequestMapping(value = "/product/import/detail", method = RequestMethod.GET)
@@ -277,8 +347,8 @@ public class AdminProductController {
         }
 
         // Lấy thông tin nhân viên để hiển thị tên đầy đủ
-        String employeeFullName = employeeDao.getByPhone(importEntity.getEmployeePhone()) != null
-                ? employeeDao.getByPhone(importEntity.getEmployeePhone()).getFullName()
+        String employeeFullName = employeeDao.getByEmail(importEntity.getEmployeeEmail()) != null
+                ? employeeDao.getByEmail(importEntity.getEmployeeEmail()).getFullName()
                 : "Không xác định";
 
         // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
@@ -289,6 +359,6 @@ public class AdminProductController {
 
         return "adminview/product/import/detail";
     }
-	// -- End product --
+	// -- End product -
 
 }

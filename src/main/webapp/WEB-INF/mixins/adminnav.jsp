@@ -50,6 +50,11 @@
       <span>Quản lý khuyến mãi</span></a>
   </li>
   <li class="nav-item">
+    <a class="nav-link" href="/autopart/admin/generalSettings.htm">
+      <i class="fa-solid fa-hammer"></i>
+      <span>Thông số chung</span></a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderPage" aria-expanded="true" aria-controls="orderPage">
       <i class="fa-solid fa-truck"></i>
       <span>Quản lý đơn hàng</span>

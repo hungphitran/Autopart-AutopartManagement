@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Nhân Viên Nhập:</label>
-                                        <p><strong>${employeeFullName} (SĐT: ${importEntity.employeePhone})</strong></p>
+                                        <p><strong>${employeeFullName} (SĐT: ${importEntity.employeeEmail})</strong></p>
                                     </div>
                                     <div class="form-group">
                                         <label>Ngày Nhập:</label>

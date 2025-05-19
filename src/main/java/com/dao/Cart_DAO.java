@@ -1,5 +1,7 @@
 package com.dao;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -109,23 +111,30 @@ public class Cart_DAO {
     }
 
     public String generateNextCartId() {
-        Session session = null;
         try {
-            session = factory.openSession();
-            String hql = "SELECT MAX(c.cartId) FROM Cart c WHERE c.cartId LIKE 'CART%'";
-            Query query = session.createQuery(hql);
-            String maxId = (String) query.uniqueResult();
-            if (maxId == null) {
-                return "CART001";
-            }
-            int currentNum = Integer.parseInt(maxId.substring(4));
-            return String.format("CART%03d", currentNum + 1);
+            // Lấy timestamp hiện tại
+            long timestamp = System.currentTimeMillis();
+            
+            // Tạo chuỗi ngẫu nhiên sử dụng SecureRandom
+            SecureRandom random = new SecureRandom();
+            byte[] randomBytes = new byte[8]; // 8 bytes cho chuỗi ngẫu nhiên
+            random.nextBytes(randomBytes);
+            
+            // Mã hóa chuỗi ngẫu nhiên thành Base64 và loại bỏ ký tự không mong muốn
+            String randomString = Base64.getUrlEncoder()
+                    .withoutPadding()
+                    .encodeToString(randomBytes)
+                    .replaceAll("[^a-zA-Z0-9]", "")
+                    .substring(0, 8); // Lấy 8 ký tự đầu
+            
+            // Tạo cartId với định dạng CART + timestamp + chuỗi ngẫu nhiên
+            return "CART" + timestamp + randomString;
         } catch (Exception e) {
             e.printStackTrace();
-            return "CART001";
-        } finally {
-            if (session != null) session.close();
+            // Trả về giá trị mặc định nếu có lỗi
+            return "CART" + System.currentTimeMillis() + "ERROR";
         }
     }
+
     
 }

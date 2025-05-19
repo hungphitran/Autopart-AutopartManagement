@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Product")  // Đánh dấu lớp này là thực thể JPA, ánh xạ với bảng "Product"
-public class Product {
+public class Product implements Comparable<Product>{
 
     @Id
     @Column(name = "productId")  // Khóa chính
@@ -220,6 +220,10 @@ public class Product {
 				+ ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deleted="
 				+ deleted + ", description=" + description + "]";
 	}
+    @Override
+    public int compareTo(Product o) {
+        return this.productId.compareTo(o.productId); // Hoặc sắp xếp theo productName, salePrice...
+    }
 
   
 }

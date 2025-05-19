@@ -17,6 +17,17 @@
 	<link href="<c:url value="/resources/vendor/datatables/dataTables.bootstrap4.css" />" rel="stylesheet">
 </head>
 <body id="page-top">
+<!-- Success message -->
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+
+	<!-- Error message -->
+	<c:if test="${not empty errorMessage}">
+		<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${errorMessage}</div>
+	</c:if>
 	<div id="wrapper">
 	    <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
 	    
@@ -35,7 +46,7 @@
 								<thead class="thead-light">
 									<tr>
 										<th>Mã Đơn Hàng</th>
-										<th>Số Điện Thoại KH</th>
+										<th>Email KH</th>
 										<th>Địa Chỉ Giao Hàng</th>
 										<th>Ngày Đặt Hàng</th>
 										<th>Tổng Tiền</th>
@@ -46,7 +57,7 @@
 									<c:forEach items="${orders}" var="order">
 										<tr class="product-item">
 											<td class="align-middle">${order.orderId}</td>
-											<td class="align-middle">${order.userPhone}</td>
+											<td class="align-middle">${order.userEmail}</td>
 											<td class="align-middle">${order.shipAddress}</td>
 											<td class="align-middle"><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
 											<td class="align-middle"><fmt:formatNumber value="${order.totalCost}" type="number" maxFractionDigits="0" groupingUsed="true" /></td>
@@ -121,4 +132,33 @@
 		});
   	</script>
 </body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 </html>

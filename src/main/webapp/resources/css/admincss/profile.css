@@ -141,12 +141,12 @@ body {
 }
 
 .btn-save {
-    background-color: #00ff40;
+    background-color: #1fa140;
     color: white;
 }
 
 .btn-save:hover {
-    background-color: #80ff80;
+    background-color: rgb(167, 226, 156);
 }
 
 .btn-change-password {
