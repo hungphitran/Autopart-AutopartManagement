@@ -17,6 +17,17 @@
 	<link href="<c:url value="/resources/vendor/datatables/dataTables.bootstrap4.css" />" rel="stylesheet">
 </head>
 <body id="page-top">
+	<c:if test="${not empty successMessage}">
+		<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${successMessage}</div>
+	</c:if>
+
+	<!-- Error message -->
+	<c:if test="${not empty errorMessage}">
+		<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
+			${errorMessage}</div>
+	</c:if>
+
 	<div id="wrapper">
 	    <jsp:include page="/WEB-INF/mixins/adminnav.jsp" />
 	    
@@ -48,19 +59,19 @@
 											<td class="align-middle">
 												<c:choose>
 												    <c:when test="${acc.status == 'Active'}">
-												    	<a href="javascript:void(0);" data-acc-phone="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
+												    	<a href="javascript:void(0);" data-acc-email="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
 													        <span class="badge badge-success">Hoạt động</span>											    	
 												    	</a>
 												    </c:when>
 												    <c:otherwise>
-												        <a href="javascript:void(0);" data-acc-phone="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
+												        <a href="javascript:void(0);" data-acc-email="${acc.email}" data-acc-status="${acc.status}" class="change-status-link">
 													        <span class="badge badge-danger">Ngừng hoạt động</span>											    	
 												    	</a>
 												    </c:otherwise>
 												</c:choose>
 											</td>
 											<td class="align-middle">
-												<a href="javascript:void(0);" data-acc-phone="${acc.email}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-danger edit-btn">Sửa</a>
+												<a href="javascript:void(0);" data-acc-email="${acc.email}" data-toggle="modal" data-target="#EditModal" class="btn btn-sm btn-danger edit-btn">Sửa</a>
 											</td>
 										</tr>
 									</c:forEach>
@@ -134,13 +145,13 @@
 			$('#dataTable').on('click', '.change-status-link',function(event) {
 			      event.preventDefault(); 
 
-			      var accPhone = $(this).data('acc-phone');
+			      var accEmail = $(this).data('acc-email');
 			      var accStatus = $(this).data('acc-status');
 
 			      $.ajax({
 			        url: '${pageContext.request.contextPath}/admin/account/changeStatus.htm',
 			        type: 'POST',
-			        data: { accPhone: accPhone },
+			        data: { accEmail: accEmail },
 			        success: function(response) {
 			          var badge = $(event.target).closest('.change-status-link').find('.badge');
 			          var link = $(event.target).closest('.change-status-link');
@@ -162,13 +173,43 @@
 		    });
 			
 		    $('#dataTable').on('click', '.edit-btn', function() {
-		    	var accPhone = $(this).data('acc-phone');
+		    	var accEmail = $(this).data('acc-email');
 
 		        // Load the edit modal content
-		        $('#EditModal .modal-content').load('${pageContext.request.contextPath}/admin/account/edit.htm?accPhone=' + accPhone, function() {
+		        $('#EditModal .modal-content').load('${pageContext.request.contextPath}/admin/account/edit.htm?accEmail=' + accEmail, function() {
 		            $('#EditModal').modal('show');
 		        });
 		    });
 		});
   	</script>
 </body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Get success and error message elements
+    const successMessage = document.querySelector('.alert-success');
+    const errorMessage = document.querySelector('.alert-danger');
+    
+    // If success message exists, hide it after 3 seconds
+    if (successMessage) {
+        setTimeout(function() {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+    
+    // If error message exists, hide it after 3 seconds
+    if (errorMessage) {
+        setTimeout(function() {
+            errorMessage.style.transition = 'opacity 0.5s';
+            errorMessage.style.opacity = '0';
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
+</html>

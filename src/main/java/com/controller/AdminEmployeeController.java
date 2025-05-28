@@ -111,7 +111,7 @@ public class AdminEmployeeController {
 				emp.setStatus("Inactive");
 	        }
 	        
-			Account acc = new Account(emp.getPhone(), getMD5Hash("1111"), null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			Account acc = new Account(emp.getEmail(), getMD5Hash("1111"), null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 			accountDao.add(acc);
 			
 			employeeDao.add(emp);

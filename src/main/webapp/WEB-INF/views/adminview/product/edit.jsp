@@ -120,7 +120,7 @@
                                         <div class="form-group">
                                             <label for="costPrice">Giá gốc <span class="required-text">*</span></label>
                                             <div class="input-group mb-3">
-                                                <form:input required="true" type="number" class="form-control" id="costPrice" path="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm" />
+                                                <form:input required="true" type="number" class="form-control" id="costPrice" path="costPrice" name="costPrice" readonly="true" />
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">VNĐ</span>
                                                 </div>
@@ -139,7 +139,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label for="stock">Số lượng <span class="required-text">*</span></label>
-                                            <form:input required="true" type="text" class="form-control" id="stock" path="stock" name="stock" placeholder="Nhập số lượng sản phẩm" />
+                                            <form:input required="true" type="text" class="form-control" id="stock" path="stock" name="stock" readonly="true" />
                                         </div>
                                         <div class="form-group">
                                             <label for="unit">Đơn vị <span class="required-text">*</span></label>

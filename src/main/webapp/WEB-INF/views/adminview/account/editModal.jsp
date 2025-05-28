@@ -16,7 +16,7 @@
         </div>
         <div class="form-group">
             <label for="password"><strong>Mật Khẩu:</strong></label>
-            <form:input type="text" class="form-control" path="password" required="true"/>
+            <form:input type="password" class="form-control" path="password" required="true"/>
         </div>
         <div class="form-group">
             <label for="permission"><strong>Nhóm Quyền:</strong></label>
