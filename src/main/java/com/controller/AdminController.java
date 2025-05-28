@@ -139,6 +139,7 @@ public class AdminController {
         	session.setAttribute("account", account);
         	session.setAttribute("permissions", rgdao.getById(account.getPermission()).getPermissions());
     		session.setAttribute("name", employeeDao.getByEmail(account.getEmail()).getFullName());
+    		session.setAttribute("email", account.getEmail());
     		redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công!");
     		return "redirect:/admin/profile.htm";
         }

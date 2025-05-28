@@ -95,18 +95,10 @@
                                             </form:select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="costPrice">Giá gốc <span class="required-text">*</span></label>
-                                            <input required type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Nhập giá tiền gốc của sản phẩm">
+                                            <input required type="number" class="form-control" id="costPrice" name="costPrice" value="0" hidden="true">
                                         </div>
                                         <div class="form-group">
-                                            <label for="salePrice">Giá bán <span class="required-text">*</span></label>
-                                            <input required type="number" class="form-control" id="salePrice" name="salePrice" placeholder="Nhập giá tiền bán của sản phẩm">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="form-group">
-                                            <label for="stock">Số lượng <span class="required-text">*</span></label>
-                                            <input required type="text" class="form-control" id="stock" name="stock" placeholder="Nhập số lượng sản phẩm">
+                                            <input required type="number" class="form-control" id="salePrice" name="salePrice" value="0" hidden="true">
                                         </div>
                                         <div class="form-group">
                                             <label for="unit">Đơn vị <span class="required-text">*</span></label>
@@ -116,6 +108,11 @@
                                                 <option>Cái</option>
                                                 <option>Bộ</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input required type="text" class="form-control" id="stock" name="stock" value="0" hidden="true">
                                         </div>
                                         <div class="form-group">
 										    <label for="imageUrls">Ảnh sản phẩm <span class="required-text">*</span></label>

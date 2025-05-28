@@ -95,11 +95,12 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="employeePhone">Nhân Viên Nhập <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="employeeEmail" value="${empName}" readonly required />
+                                            <input type="text" class="form-control" id="employeeName" value="${empName}" readonly required />
+                                            <input type="text" class="form-control" id="employeeEmail" name="employeeEmail" value="${empEmail}" readonly hidden="true" required />
                                         </div>
                                         <div class="form-group">
 										    <label for="importDate">Ngày Nhập <span class="text-danger">*</span></label>
-										    <input type="text" class="form-control" id="importDate" name="importDate" 
+										    <input type="text" class="form-control" id="importDate" 
 										           value="<fmt:formatDate value='${importForm.importDate}' pattern='dd/MM/yyyy'/>" 
 										           readonly required />
 										</div>

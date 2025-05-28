@@ -284,7 +284,8 @@ public class AdminProductController {
 
         model.addAttribute("productList", productList);
         model.addAttribute("empName", session.getAttribute("name"));
-
+        model.addAttribute("empEmail", session.getAttribute("email"));
+        
         return "adminview/product/import/add";
     }
 	
@@ -321,7 +322,8 @@ public class AdminProductController {
 			            productDao.update(product);
 			        });
 			    }
-
+			    
+			    importForm.setImportDate(java.sql.Date.valueOf(java.time.LocalDate.now()));
 			    importDao.add(importForm);
 		        redirectAttributes.addFlashAttribute("successMessage", "Thêm phiếu nhập thành công!"); 
 
