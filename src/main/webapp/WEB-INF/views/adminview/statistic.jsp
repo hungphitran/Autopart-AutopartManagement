@@ -37,7 +37,7 @@
     #products{
         list-style: none;
         max-height: 400px;
-        overflow-y: hidden;
+        overflow-y: auto;
     }
     
     .product-item {
@@ -78,14 +78,14 @@
                             <h6 class="m-0 font-weight-bold">Chọn khoảng thời gian</h6>
                         </div>
                         <div class="card-body">
-                            <form class="form-inline" action="/autopart/admin/statistic.htm" method="get">
+                        	<form class="form-inline" action="/autopart/admin/statistic.htm" method="get">
                                 <div class="form-group mx-sm-3 mb-2">
                                     <label class="mr-2" for="fromDate">Từ ngày:</label>
-                                    <input class="form-control" type="date" id="fromDate" name="fromDate" value="${param.fromDate}">
+                                    <input class="form-control" type="date" id="fromDate" name="fromDate" value="${fromDate}">
                                 </div>
                                 <div class="form-group mx-sm-3 mb-2">
                                     <label class="mr-2" for="toDate">Đến ngày:</label>
-                                    <input class="form-control" type="date" id="toDate" name="toDate" value="${param.toDate}">
+                                    <input class="form-control" type="date" id="toDate" name="toDate" value="${toDate}">
                                 </div>
                                 <button class="btn btn-primary mb-2" type="submit">Lọc dữ liệu</button>
                             </form>
@@ -284,58 +284,6 @@
                                 <i class="fas fa-chevron-down ml-1"></i>
                             </button>
                           </div>
-					    </div>
-					  </div>
-					  <!-- Invoice Example -->
-					  <div class="col-xl-12 col-lg-12 mb-4">
-					    <div class="card">
-					      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-					        <h6 class="m-0 font-weight-bold">Đơn hàng chờ xác nhận</h6>
-					        <a class="m-0 float-right btn btn-danger btn-sm" href="/autopart/admin/order.htm?status=pending">
-                                Xem thêm <i class="fas fa-chevron-right"></i>
-                            </a>
-					      </div>
-					      <div class="table-responsive">
-					        <table class="table align-items-center table-flush">
-					          <thead class="thead-light">
-					            <tr>
-					              <th>Mã đơn hàng</th>
-					              <th>Ngày đặt</th>
-					              <th>Email</th>
-					              <th>Trạng thái</th>
-					              <th>Hoạt động</th>
-					            </tr>
-					          </thead>
-					          <tbody>
-					          <c:forEach items="${newOrders}" var="order">
-					        	<tr>
-					              <td><a href="#"><c:out value="${order.orderId}"/></a></td>
-					              <td><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy"/></td>
-					              <td><c:out value="${order.userEmail}"/></td>
-					              <c:choose>
-                                  	<c:when test="${order.status == 'Pending'}">
-                                  		<td><span class="badge badge-warning">Chờ xác nhận</span></td>
-                                  	</c:when>
-                                  	<c:when test="${order.status == 'Processing'}">
-                                  		<td><span class="badge badge-info">Đang xử lý</span></td>
-                                  	</c:when>
-                                  	<c:when test="${order.status == 'Completed'}">
-                                  		<td><span class="badge badge-success">Đã hoàn thành</span></td>
-                                  	</c:when>
-                                  	<c:when test="${order.status == 'Cancelled'}">
-                                  		<td><span class="badge badge-danger">Đã hủy</span></td>
-                                  	</c:when>
-                                  	<c:when test="${order.status == 'Shipping'}">
-                                  		<td><span class="badge badge-primary">Đang vận chuyển</span></td>
-                                  	</c:when>
-                                  	</c:choose>
-					              <td><a href="/autopart/admin/order/detail.htm?orderId=${order.orderId}" class="btn btn-sm btn-primary">Chi tiết</a></td>
-					            </tr>
-					          </c:forEach>
-					          </tbody>
-					        </table>
-					      </div>
-					      <div class="card-footer"></div>
 					    </div>
 					  </div>
 					</div>
@@ -538,7 +486,7 @@
 		            showMoreBtn.addEventListener('click', function() {
 		                if (expanded) {
 		                    productsContainer.style.maxHeight = '400px';
-		                    productsContainer.style.overflowY = 'hidden';
+		                    productsContainer.style.overflowY = 'auto';
 		                    showMoreBtn.innerHTML = '<span class="text-primary">Xem thêm</span> <i class="fas fa-chevron-down ml-1"></i>';
 		                } else {
 		                    productsContainer.style.maxHeight = 'none';
@@ -607,13 +555,12 @@
 		    
 		    // Khởi tạo dữ liệu từ server
 		    try {
-		        window.dailyIncomeData = JSON.parse('${dailyIncomeJson}');
-		        window.labelsData = JSON.parse('${labelsJson}');
-		    } catch (e) {
-		        console.error("Lỗi khi parse JSON:", e);
-		        window.dailyIncomeData = [];
-		        window.labelsData = [];
-		    }
+	    		window.dailyIncomeData = ${empty dailyIncome ? '[]' : dailyIncome};
+	    		window.labelsData = ${empty labels ? '[]' : labels};
+			} catch (e) {
+	    		window.dailyIncomeData = [];
+	    		window.labelsData = [];
+			}
 		    
 		    // Gọi các hàm khởi tạo
 		    initializeChart();

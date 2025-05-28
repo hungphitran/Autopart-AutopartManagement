@@ -177,7 +177,7 @@ public class AdminController {
         java.sql.Date startDate = null;
         java.sql.Date endDate = null;
         
-        // Set default date range to current year if not specified
+        // Auto-filter from beginning of current year to today if not specified
         if (fromDate == null || fromDate.isEmpty()) {
             startDate = new java.sql.Date(currentYear - 1900, 0, 1); // Start of current year
         } else {
