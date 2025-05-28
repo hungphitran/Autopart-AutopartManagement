@@ -29,7 +29,43 @@ public class Product_DAO {
             if (session != null) session.close();
         }
     }
+    
+    public List<Product> getTopByStock(int limit) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Product p WHERE p.status = 'Active' ORDER BY p.stock DESC";
+            Query query = session.createQuery(hql);
+            query.setMaxResults(limit);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 
+ // Lấy sản phẩm được đặt hàng nhiều nhất
+    public List<Product> getTopProductsByOrders(int limit) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String sql = "SELECT p.* " +
+                         "FROM Product p " +
+                         "WHERE p.status = 'Active' AND p.deleted = 0 " +
+                         "ORDER BY (SELECT SUM(od.amount) FROM OrderDetail od WHERE od.productId = p.productId) DESC";
+            Query query = session.createSQLQuery(sql).addEntity(Product.class);
+            query.setMaxResults(limit);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
     public boolean changeStatus(String productId) {
         Session session = null;
         Transaction transaction = null;

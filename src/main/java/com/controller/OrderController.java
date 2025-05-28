@@ -59,10 +59,16 @@ public class OrderController {
 	@RequestMapping(value="/order/create", method = RequestMethod.POST)
 	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		System.out.println("Creating order ------------------------------------------------------------------------------------------------------------------------------------------------");
-
-		HttpSession session = req.getSession();
-		Account acc =(Account) session.getAttribute("user");
-		if(acc != null ) {//get cart if user logged in
+		
+		try
+		{
+			HttpSession session = req.getSession();
+			Account acc =(Account) session.getAttribute("user");
+			if(acc ==null)
+			{
+				return "redirect:/login.htm";
+			}
+			
 			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cartDao.getById(cus.getCartId());
 			
@@ -75,9 +81,16 @@ public class OrderController {
 			for(String key : productsInCart.keySet()) {
 				//get id and quantity from req
 				String quantity = req.getParameter(key);
+				System.out.println(req.getParameter(key));
 				if(quantity != null) {
-					products.put(productDao.getById(key),productsInCart.get(key));
-					query.append(key + "=" + productsInCart.get(key) +"&");
+					if(Integer.parseInt(quantity.trim()) > productDao.getById(key).getStock())
+					{
+						String referer =req.getHeader("Referer");
+						redirectAttributes.addFlashAttribute("errorMessage", "Số lượng sản phẩm đã hết");  
+						return "redirect:" + referer;
+					}
+					products.put(productDao.getById(key),Integer.parseInt(quantity.trim()));
+					query.append(key + "=" + Integer.parseInt(quantity.trim()) +"&");
 				}
 				
 			}		
@@ -124,38 +137,46 @@ public class OrderController {
 			
 			
 		
-			//create new order then add it to database
-//			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress, shippingType ,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-//			orderDao.add(newOrder);
-//			if(discount!=null) 
-//			{
-//				discountDao.discountUsed(acc.getEmail(), discountId);
-//		    }
-//			
-//			//update cart
-//			for(Product p : products.keySet()) {
-//				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
-//				orderDetailDao.add(newOrderDetail);
-//			}
-//			for(Product p: products.keySet()) {
-//				productsInCart.remove(p.getProductId());
-//			}
-//			cart.setProducts(productsInCart);
-//			cartDao.update(cart);
-//			Map<Product,Integer> p= new HashMap<Product, Integer>();
-//			for(String key : productsInCart.keySet()) {
-//				p.put(productDao.getById(key),productsInCart.get(key));
-//			}
-//			session.setAttribute("productInCart",p);
-//			
+////				create new order then add it to database
+			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress, shippingType ,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
+			orderDao.add(newOrder);
+			if(discount!=null) 
+			{
+				discountDao.discountUsed(acc.getEmail(), discountId);
+				discount.setUsageLimit(discount.getUsageLimit()-1);
+		    }
 			
+			//update cart
+			for(Product p : products.keySet()) {
+				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
+				orderDetailDao.add(newOrderDetail);
+				p.setStock(p.getStock()-products.get(p));
+				productDao.update(p);
+			}
+			for(Product p: products.keySet()) {
+				productsInCart.remove(p.getProductId());
+			}
+			cart.setProducts(productsInCart);
+			cartDao.update(cart);
+			Map<Product,Integer> p= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				p.put(productDao.getById(key),productsInCart.get(key));
+			}
+			session.setAttribute("productInCart",p);			
 			
 			return "success";
-
+		
+			
 		}
-		else {
-			return "redirect:/login.htm";
+		catch(Exception e)
+		{			
+			String referer =req.getHeader("Referer");
+			System.out.println(referer);
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi đặt đơn hàng");
+			e.printStackTrace();
+			return "redirect:" + referer;
 		}
+		
 
 		
 	}
@@ -225,7 +246,7 @@ public class OrderController {
 		
 		List<Discount> discounts = discountDao.getByCustomer(acc.getEmail());
 		req.setAttribute("discounts", discounts);
-		
+		req.setAttribute("user", cus);
 
 		return "order";
 	}

@@ -1,212 +1,210 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <div class="header">
-	<div class="header_container header-inner">
-		<div class="header_logo">
-			<a href="/autopart"> <img
-				src="https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m2ko7nkbfksm02_tn.webp"
-				alt="home" class="header_logo-img">
-			</a>
-		</div>
-						<!-- Success message -->
-					<c:if test="${not empty successMessage}">
-						<div class="alert alert-success mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
-							${successMessage}</div>
-					</c:if>
+    <!-- Alerts -->
+    <c:if test="${not empty successMessage}">
+        <div class="message info">
+            <div class="alert alert-success" data-time="3000" show-alert role="alert">
+                ${successMessage} <span close-alert>X</span>
+            </div>
+        </div>
+    </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="message info">
+            <div class="alert alert-danger" data-time="3000" show-alert role="alert">
+                ${errorMessage} <span close-alert>X</span>
+            </div>
+        </div>
+    </c:if>
 
-					<!-- Error message -->
-					<c:if test="${not empty errorMessage}">
-						<div class="alert alert-danger mt-3" role="alert" style="position: absolute; top: 0; left: 50%; right: 0; z-index: 9999;">
-							${errorMessage}</div>
-					</c:if>
-		<div class="header_search">
-			<form action="/autopart/product/search.htm" method="get">
-				<c:if test="${keyword == null}">
-					<input type="text" name="keyword"
-						placeholder="Nhập từ khóa tìm kiếm..." />
-				</c:if>
-				<c:if test="${keyword!=null}">
-					<input type="text" name="keyword" autocomplete="false"
-						value="${keyword }" />
-				</c:if>
-				<span>
-					<button type="submit" class="search-btn">
-						<i class="fa fa-search"></i>
-					</button>
-				</span>
-			</form>
-		</div>
-
-		<div class="header-right">
-			<div class="header_account">
-				<a class="nav-link active" aria-current="page"
-					href="/autopart/login.htm">
-					<button type="button" class="header-right_account">
-						<div class="header-account_button">
-							<i class="fa-solid fa-circle-user logo-account"></i> <span
-								class="title-account"> <c:if test="${user==null}">Tài khoản</c:if>
-								<c:if test="${user!=null }">${userName}</c:if>
-							</span>
-						</div>
-					</button>
-				</a>
-			</div>
-
-			<div class="header__cart">
-				<div class="header__cart-wrap">
-					<div class="header__cart-info">
-						<i class="header__cart-icon fa-solid fa-cart-shopping"></i> <span
-							class="header__cart-text">Giỏ hàng</span>
-						<c:if test="${user==null}">
-							<span class="header__cart-notice">0</span>
-						</c:if>
-
-						<c:if test="${user!=null }">
-							<span class="header__cart-notice">${productInCart.size()}</span>
-						</c:if>
-					</div>
-
-					<!-- No cart: header__cart-list--no-cart-->
-					<form class="header__cart-list" action="/autopart/order.htm"
-						method="get">
-						<!-- <img src="./assets/img/no_cart.png" alt="" class="header__cart-np-cart-img"> -->
-
-
-						<h4 class="header__cart-heading">Sản phẩm đã thêm</h4>
-						<c:if test="${user==null}">
-							<p>Đăng nhập để xem giỏ hàng</p>
-						</c:if>
-						<c:if test="${user!=null }">
-							<c:if test="${productInCart.size()==0}">
-								<p>Bạn chưa thêm sản phẩm nào</p>
-							</c:if>
-							<c:if test="${productInCart.size()>0}">
-								<ul class="header__cart-list-item">
-									<!-- Cart item -->
-									<c:forEach items="${productInCart}" var="p">
-										<li class="header__cart-item"><input type="checkbox"
-											name="${p.key.productId}" value="${p.value}"> <img
-											src="https://img.freepik.com/free-photo/fashion-portrait-young-elegant-woman_1328-2743.jpg?w=1480&t=st=1701357403~exp=1701358003~hmac=435f00eded774f42e172f48f4be677658485206407baa84eaef2058b11f1431f"
-											alt="" class="header__cart-img">
-											<div class="header__cart-item-info">
-												<div class="header__cart-item-head">
-													<h5 class="header__cart-item-name">${p.key.productName }</h5>
-													<div class="header__cart-item-wrap">
-														<span class="header__cart-item-price"></span> <span
-															class="header__cart-item-multiply">x</span> <span
-															class="header__cart-item-qnt">${p.value }</span>
-													</div>
-												</div>
-
-												<div class="header__cart-item-body">
-													<span class="header__cart-item-description"> <a
-														href="/autopart/product/detailproduct.htm?productId=${p.key.productId}">${p.key.productId }</a>
-													</span> <span class="header__cart-item-remove"><a
-														href="/autopart/product/delete.htm?productId=${p.key.productId}">Xóa</a></span>
-												</div>
-											</div></li>
-									</c:forEach>
-								</ul>
-
-								<button type="submit"
-									class="btn btn--primary header__cart-view-cart">Thanh
-									toán</button>
-							</c:if>
-						</c:if>
-					</form>
-
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="header_menu">
-		<ul class="header_menu-list">
-			<li><a href="/autopart/index.htm">Trang chủ</a></li>
-			<li><a href="#categories" class="menu-item"> Danh mục <i
-					class="fa fa-angle-down" aria-hidden="true"></i>
-					<div class="group-items items">
-						<c:forEach items="${groups}" var="group">
-							<h4 class="item" data-name="${group.groupName}">${group.groupName}</h4>
-						</c:forEach>
-					</div>
-			</a></li>
-			<li><a href="#products"> Sản phẩm </a></li>
-			<li><a href="#contact"> Liên hệ </a></li>
-			<li><a href="#brand" class="menu-item"> Nhãn hàng <i class="fa fa-angle-down" aria-hidden="true"></i>
-    			<div class="brand-items items" >
-        			<c:forEach items="${brands}" var="brand">
-            			<h4 class="item" data-name="${brand.brandName}"> ${brand.brandName} </h4>
-       				</c:forEach>
-    			</div>
-			</a></li>
-
-
-			<li><a href="/autopart/blog.htm" target="_blank">Bài viết</a></li>
-		</ul>
-	</div>
-
+    <div class="header_container header-inner">
+        <div class="header_logo">
+            <a href="/autopart">
+                <img src="https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m2ko7nkbfksm02_tn.webp" alt="home" class="header_logo-img">
+            </a>
+        </div>
+        <div class="header_search">
+            <form action="/autopart/product/search.htm" method="get">
+                <input type="text" name="keyword" placeholder="Nhập từ khóa tìm kiếm..." value="${keyword != null ? keyword : ''}" autocomplete="false">
+                <span>
+                    <button type="submit" class="search-btn">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </form>
+        </div>
+        <div class="header-right">
+            <div class="header_account">
+                <a class="nav-link active" href="/autopart/login.htm" aria-current="page">
+                    <button type="button" class="header-right_account">
+                        <div class="header-account_button">
+                            <i class="fa-solid fa-circle-user logo-account"></i>
+                            <span class="title-account">
+                                <c:choose>
+                                    <c:when test="${user == null}">Tài khoản</c:when>
+                                    <c:otherwise>${userName}</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </div>
+                    </button>
+                </a>
+            </div>
+            <div class="header__cart">
+                <div class="header__cart-wrap">
+                    <div class="header__cart-info">
+                        <i class="header__cart-icon fa-solid fa-cart-shopping"></i>
+                        <span class="header__cart-text">Giỏ hàng</span>
+                        <span class="header__cart-notice">${productInCart != null ? productInCart.size() : 0}</span>
+                    </div>
+                    <form class="header__cart-list" action="/autopart/order.htm" method="get">
+                        <h4 class="header__cart-heading">Sản phẩm đã thêm</h4>
+                        <c:choose>
+                            <c:when test="${user == null || productInCart == null || productInCart.size() == 0}">
+                                <p class="empty-cart-message">Chưa có sản phẩm nào</p>
+                                <img src="/resources/img/no_cart.png" alt="Empty Cart" class="empty-cart-img">
+                            </c:when>
+                            <c:otherwise>
+                                <ul class="header__cart-list-item">
+                                    <c:forEach items="${productInCart}" var="p">
+                                        <li class="header__cart-item">
+                                            <input type="checkbox" name="${p.key.productId}" value="${p.value}" id="cart-item-${p.key.productId}">
+                                            <img src="${p.key.imageUrls.split(',')[0]}" alt="${p.key.productName}" class="header__cart-img">
+                                            <div class="header__cart-item-info">
+                                                <div class="header__cart-item-head">
+                                                    <h5 class="header__cart-item-name">${p.key.productName}</h5>
+                                                    <div class="header__cart-item-wrap">
+                                                        <span class="header__cart-item-price">
+                                                            <fmt:formatNumber value="${p.key.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                                                        </span>
+                                                        <span class="header__cart-item-multiply">x</span>
+                                                        <span class="header__cart-item-qnt">${p.value}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="header__cart-item-body">
+                                                    <span class="header__cart-item-description">
+                                                        <a href="/autopart/product/detailproduct.htm?productId=${p.key.productId}">Xem chi tiết</a>
+                                                    </span>
+                                                    <span class="header__cart-item-remove">
+                                                        <a href="/autopart/product/delete.htm?productId=${p.key.productId}">
+                                                            <i class="fa-solid fa-trash-can"></i> Xóa
+                                                        </a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                                <button type="submit" class="btn btn--primary header__cart-view-cart">
+                                    <i class="fa-solid fa-credit-card"></i> Thanh toán
+                                </button>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header_menu">
+        <ul class="header_menu-list">
+            <li><a class="menu-item" href="/autopart/product/search.htm">Sản phẩm</a></li>
+            <li>
+                <a class="menu-item" href="#categories">
+                    Danh mục
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <div class="group-items items">
+                        <c:forEach items="${groups}" var="group">
+                            <h4 class="item" data-name="${group.groupName}">${group.groupName}</h4>
+                        </c:forEach>
+                    </div>
+                </a>
+            </li>
+            <li><a href="/autopart/chat.htm">Liên hệ</a></li>
+            <li>
+                <a class="menu-item" href="#brand" id="brand">
+                    Nhãn hàng
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <div class="brand-items items">
+                        <c:forEach items="${brands}" var="brand">
+                            <h4 class="item" data-name="${brand.brandName}">${brand.brandName}</h4>
+                        </c:forEach>
+                    </div>
+                </a>
+            </li>
+            <li><a href="/autopart/blog.htm" target="_blank">Bài viết</a></li>
+        </ul>
+    </div>
 </div>
 
+<script src="/resources/js/dropdown-navigation.js"></script>
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Get success and error message elements
-    const successMessage = document.querySelector('.alert-success');
-    const errorMessage = document.querySelector('.alert-danger');
-    
-    // If success message exists, hide it after 3 seconds
-    if (successMessage) {
-        setTimeout(function() {
-            successMessage.style.transition = 'opacity 0.5s';
-            successMessage.style.opacity = '0';
-            setTimeout(function() {
-                successMessage.style.display = 'none';
-            }, 500);
-        }, 3000);
-    }
-    
-    // If error message exists, hide it after 3 seconds
-    if (errorMessage) {
-        setTimeout(function() {
-            errorMessage.style.transition = 'opacity 0.5s';
-            errorMessage.style.opacity = '0';
-            setTimeout(function() {
-                errorMessage.style.display = 'none';
-            }, 500);
-        }, 3000);
-    }
-});
-</script>
+    // Handle cart item clicks
+    const cartItems = document.querySelectorAll('.header__cart-item');
+    cartItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.target.closest('.header__cart-item-remove') || 
+                e.target.closest('a[href]') || 
+                e.target.tagName === 'INPUT') {
+                return;
+            }
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        });
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+    });
 
+    // Alert handling
+    const alerts = document.querySelectorAll('[show-alert]');
+    alerts.forEach(alert => {
+        const time = parseInt(alert.getAttribute('data-time'));
+        const closeBtn = alert.querySelector('[close-alert]');
+        setTimeout(() => {
+            alert.classList.add('alert-hidden');
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 300);
+        }, time);
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                alert.classList.add('alert-hidden');
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 300);
+            });
+        }
+    });
 
-	<script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
-		console.log('DOM fully loaded and parsed');
-    // Get all menu items
+    // Dropdown navigation for categories
     const groupItems = document.querySelectorAll('.group-items .item');
-    const brandItems = document.querySelectorAll('.brand-items .item');
-    // Add click event listener to each menu item
-    	groupItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Get the data-id attribute value
+    groupItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
             const groupName = this.getAttribute('data-name');
-    		console.log(groupName);
-
-            // Redirect to the desired URL with the group name as a parameter
-            window.location.href = '/autopart/product/search.htm?groupName=' + groupName;
+            window.location.href = '/autopart/product/search.htm?groupName=' + encodeURIComponent(groupName);
         });
     });
+
+    // Dropdown navigation for brands
+    const brandItems = document.querySelectorAll('.brand-items .item');
     brandItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Get the data-id attribute value
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
             const brandName = this.getAttribute('data-name');
-                    		console.log(brandName);
-            // Redirect to the desired URL with the group name as a parameter
-            window.location.href = '/autopart/product/search.htm?brandName=' + brandName;
+            window.location.href = '/autopart/product/search.htm?brandName=' + encodeURIComponent(brandName);
         });
     });
 });
-
 </script>
-

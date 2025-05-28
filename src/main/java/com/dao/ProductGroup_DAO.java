@@ -33,6 +33,27 @@ public class ProductGroup_DAO {
             if (session != null) session.close();
         }
     }
+    
+    
+    public List<ProductGroup> getTopByProductCount(int limit) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String sql = "SELECT pg.* " +
+                         "FROM ProductGroup pg " +
+                         "WHERE pg.status = 'Active' AND pg.deleted = 0 " +
+                         "ORDER BY (SELECT COUNT(*) FROM Product p WHERE p.productGroupId = pg.productGroupId AND p.status = 'Active' AND p.deleted = 0) DESC";
+            Query query = session.createSQLQuery(sql).addEntity(ProductGroup.class);
+            query.setMaxResults(limit);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+            } finally {
+            if (session != null) session.close();
+        }
+    }
+    
 
     public ProductGroup getById(String productGroupId) {
         Session session = null;

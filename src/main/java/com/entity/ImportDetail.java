@@ -19,7 +19,7 @@ public class ImportDetail implements Serializable {
     private Import importEntity;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private double price;
 
     @Column(name = "amount")
     private int amount;
@@ -28,7 +28,7 @@ public class ImportDetail implements Serializable {
         super();
     }
 
-    public ImportDetail(ImportDetailId id, Import importEntity, BigDecimal price, int amount) {
+    public ImportDetail(ImportDetailId id, Import importEntity, double price, int amount) {
         this.id = id;
         this.importEntity = importEntity;
         this.price = price;
@@ -52,11 +52,11 @@ public class ImportDetail implements Serializable {
 		this.importEntity = importEntity; 
 	}
 
-    public BigDecimal getPrice() { 
+    public double getPrice() { 
 		return price; 
 	}
 
-    public void setPrice(BigDecimal price) { 
+    public void setPrice(double price) { 
 		this.price = price; 
 	}
 
