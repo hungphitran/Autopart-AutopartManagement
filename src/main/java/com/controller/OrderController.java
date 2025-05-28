@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.objenesis.instantiator.basic.NewInstanceInstantiator;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -28,7 +26,11 @@ import com.entity.Discount;
 import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
+import com.entity.XMailer;
+
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -56,6 +58,9 @@ public class OrderController {
 	@Autowired
 	Discount_DAO discountDao;
 	
+	@Autowired
+	XMailer xmailer;
+	
 	@RequestMapping(value="/order/create", method = RequestMethod.POST)
 	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {
 		System.out.println("Creating order ------------------------------------------------------------------------------------------------------------------------------------------------");
@@ -69,6 +74,7 @@ public class OrderController {
 				return "redirect:/login.htm";
 			}
 			
+
 			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cartDao.getById(cus.getCartId());
 			
@@ -91,13 +97,13 @@ public class OrderController {
 					}
 					products.put(productDao.getById(key),Integer.parseInt(quantity.trim()));
 					query.append(key + "=" + Integer.parseInt(quantity.trim()) +"&");
+
 				}
 				
 			}		
 	        query.deleteCharAt(query.length()-1);
 	        System.out.println(query);
 
-			
 			
 			Double totalCost= Double.valueOf(req.getParameter("totalCost"));
 			String shipAddress= req.getParameter("shipAddress");
@@ -118,7 +124,6 @@ public class OrderController {
 			Discount discount = discountDao.getById(discountId);
 			
 			System.out.println("Shipping Type: "+shippingType);
-			
 			if(shippingType =="") 
 			{
 		        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn loại vận chuyển");  
@@ -164,6 +169,34 @@ public class OrderController {
 			}
 			session.setAttribute("productInCart",p);			
 			
+			String from = "no-reply@autopart.com"; // Địa chỉ email gửi
+	        String to = acc.getEmail(); // Địa chỉ email người nhận
+	        String subject = "Đặt đơn hàng thành công"; // Tiêu đề email
+	     // Nội dung email
+	        String body = String.format(
+	            "Chào bạn,\n\n" +
+	            "Cảm ơn bạn đã đặt hàng tại AutoPart! Đơn hàng của bạn đã được đặt thành công với các thông tin sau:\n\n" +
+	            "<strong>Tên khách hàng:</strong> %s\n" +
+	            "<strong>Số điện thoại:</strong> %s\n" +
+	            "<strong>Mã đơn hàng:</strong> %s\n" +
+	            "<strong>Tổng tiền:</strong> %,d ₫\n" +
+	            "<strong>Địa chỉ giao hàng:</strong> %s\n" +
+	            "<strong>Loại vận chuyển:</strong> %s\n\n" +
+	            "Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất và thông báo khi hàng được giao. " +
+	            "Bạn có thể theo dõi trạng thái đơn hàng trong phần \"Tài khoản\" trên website của chúng tôi.\n\n" +
+	            "Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.\n\n" +
+	            "Trân trọng,\n" +
+	            "Đội ngũ AutoPart",
+	            cus.getFullName(),
+	            cus.getPhone(),
+	            newOrder.getOrderId(),
+	            newOrder.getTotalCost(),
+	            newOrder.getShipAddress(),
+	            newOrder.getShippingType()
+	        );
+	        
+	       xmailer.send(from, to, subject, body);
+
 			return "success";
 		
 			
@@ -176,7 +209,6 @@ public class OrderController {
 			e.printStackTrace();
 			return "redirect:" + referer;
 		}
-		
 
 		
 	}

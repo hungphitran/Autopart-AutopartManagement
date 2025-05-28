@@ -393,6 +393,7 @@ footer {
         <jsp:include page="/WEB-INF/mixins/header.jsp" />
     </header>
 
+
     <div class="container">
         <c:choose>
             <c:when test="${not empty imgUrls}">

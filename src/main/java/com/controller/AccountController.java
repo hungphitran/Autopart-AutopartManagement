@@ -1,9 +1,12 @@
 package com.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,8 @@ import com.entity.Account;
 import com.entity.Customer;
 import com.entity.Order;
 
+import com.utils.ValidationUtils;
+
 @Controller
 public class AccountController {
 	@Autowired
@@ -29,6 +34,17 @@ public class AccountController {
 	
 	@Autowired
 	Order_DAO orderDao;
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
 	
 	@RequestMapping("/account")
 	public String showProfile(HttpServletRequest req,Model model) {
@@ -45,20 +61,23 @@ public class AccountController {
 	}
 	@RequestMapping(value="/account/edit", method = RequestMethod.POST)
 	public String edit(@ModelAttribute("customer") Customer cus, HttpServletRequest req,RedirectAttributes redirectAttributes) {
-	    if (cus.getFullName() == null || cus.getFullName().trim().isEmpty()) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Tên không được để trống");
+	    if (!ValidationUtils.isValidName(cus.getFullName())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ");
 	        return "redirect:/account.htm";
 	    }
 	    
-	    if (cus.getEmail() == null || cus.getEmail().trim().isEmpty()) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Email không được để trống");
-	        return "redirect:/account.htm";
-	    }
-	    
-	    // Email format validation using simple regex
-	    String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-	    if (!cus.getEmail().matches(emailRegex)) {
+	    if (!ValidationUtils.isValidEmail(cus.getEmail())) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ");
+	        return "redirect:/account.htm";
+	    }
+	    
+	    if (!ValidationUtils.isValidPhone(cus.getPhone())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ");
+	        return "redirect:/account.htm";
+	    }
+	    
+	    if (!ValidationUtils.isValidAddress(cus.getAddress())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ");
 	        return "redirect:/account.htm";
 	    }
 	    
@@ -71,52 +90,51 @@ public class AccountController {
 	    else {
 	        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công");
 	    }
-		HttpSession session = req.getSession();
-		Account acc = (Account) session.getAttribute("user");
-		Customer c = customerDao.getByEmail(acc.getEmail());
-		session.setAttribute("userName", c.getFullName());	
-		return "redirect:/account.htm";
+	    HttpSession session = req.getSession();
+	    Account acc = (Account) session.getAttribute("user");
+	    Customer c = customerDao.getByEmail(acc.getEmail());
+	    session.setAttribute("userName", c.getFullName());    
+	    return "redirect:/account.htm";
 	}
 	@RequestMapping(value="/account/changepass",method=RequestMethod.POST)
-	public String changePass(HttpServletRequest req,RedirectAttributes redirectAttributes) {
-		System.out.println("changepassword");
+	public String changePass(HttpServletRequest req, RedirectAttributes redirectAttributes) {
 	    HttpSession session = req.getSession();
-	    String pass =(String) req.getParameter("pass");
-	    String newpass = (String) req.getParameter("newpass");
-	    String confirmpass = (String) req.getParameter("confirmpass");
+	    String pass = req.getParameter("pass");
+	    String newpass = req.getParameter("newpass");
+	    String confirmpass = req.getParameter("confirmpass");
 	    Account acc = (Account) session.getAttribute("user");
-	    // Validate inputs
-	    if (pass == null || pass.trim().isEmpty()) {
+
+	    // Validate current password
+	    if (!ValidationUtils.isValidPassword(pass)) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không được để trống");
 	        return "redirect:/account.htm";
 	    }
-	    
-	    if (newpass == null || newpass.trim().isEmpty()) {
+
+	    // Validate new password
+	    if (!ValidationUtils.isValidPassword(newpass)) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được để trống");
 	        return "redirect:/account.htm";
 	    }
-	    
-	    if (confirmpass == null || !confirmpass.equals(newpass)) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mât khẩu xác nhận không khớp");
+
+	    // Confirm new password
+	    if (!newpass.equals(confirmpass)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu xác nhận không khớp");
 	        return "redirect:/account.htm";
 	    }
-	    
-	    // Password complexity check
-	    if (newpass.length() < 4) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mât khẩu mới phải có ít nhất 4 ký tự");
-	        return "redirect:/account.htm";
-	    }
-	    
-	    // Validate current password is correct
-	    if (!acc.getPassword().equals(pass)) {
+
+
+	    // Check if old password is correct
+	    if (!acc.getPassword().equals(getMD5Hash(pass))) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không đúng");
 	        return "redirect:/account.htm";
 	    }
-	    if(acc.getPassword().equals(pass)) {
-	    	acc.setPassword(newpass);
-	    	accountDao.update(acc);
-	    	redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công");
-	    }
-		return "redirect:/account.htm";
+
+	    // Update password
+	    acc.setPassword(getMD5Hash(newpass));
+	    accountDao.update(acc);
+	    redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công");
+
+	    return "redirect:/account.htm";
 	}
+
 }

@@ -1,44 +1,30 @@
 package com.controller;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.dao.*;
 import com.entity.Account;
-import com.entity.Blog;
-import com.entity.BlogGroup;
-import com.entity.Brand;
+
 import com.entity.Cart;
 import com.entity.Customer;
-import com.entity.Discount;
-import com.entity.Employee;
-import com.entity.GeneralSettings;
-import com.entity.Order;
 import com.entity.Product;
-import com.entity.ProductGroup;
-import com.entity.RoleGroup;
-import com.entity.OrderDetail;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import javax.xml.bind.DatatypeConverter;
+
+
 
 
 @Controller
@@ -87,36 +73,55 @@ public class LoginController {
 	
 	@Autowired
 	Import_DAO importDao;
+	
+	
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
 
 	
 	@RequestMapping(value="/login",method=RequestMethod.POST)
 	public String login(Model model, HttpServletRequest req,HttpServletResponse res) throws ClassNotFoundException {
 		
 		//get input from request
-		String phone= req.getParameter("phone");
+		String email= req.getParameter("email");
 		String pass = req.getParameter("password");
 		
-		test();
-		
-		Account acc = accountDao.getByEmail(phone);
+//		test();
+
 		
 
-		if(pass==null||phone==null||pass.length()<4|| phone.length()<10) {//check valid password
+		if(pass==null||email==null||pass.length()<4|| email.length()<10) {//check valid password
 			req.setAttribute("message", "dữ liệu không hợp lệ");
 			return "login";			
 		}
-		else if(acc==null) {
+		
+
+		Account acc = accountDao.getByEmail(email);
+		
+		Customer c = customerDao.getByEmail(email);
+		
+		if(acc==null) {
 			req.setAttribute("message", "không tìm thấy tài khoản");
 			return "login";	
 		}
-		else if(pass.equals(acc.getPassword())) {
+		
+		if(c==null) {
+			req.setAttribute("message", "không tìm thấy tài khoản");
+			return "login";	
+		}
+
+		else if(getMD5Hash(pass).equals(acc.getPassword())) {
 			// add user info to session
 			req.getSession().setAttribute("user", acc);
-			Customer c = customerDao.getByEmail(phone);
-			if(c==null) {
-				req.getSession().removeAttribute("user");
-				return "redirect:/login.htm";
-			}
 			req.getSession().setAttribute("userName", c.getFullName());	
 			Customer cus = customerDao.getByEmail(acc.getEmail());
 			Cart cart =cdao.getById(cus.getCartId());

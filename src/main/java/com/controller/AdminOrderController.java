@@ -28,6 +28,7 @@ import com.entity.Discount;
 import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
+import com.entity.XMailer;
 
 @Controller
 @RequestMapping("/admin")
@@ -50,6 +51,9 @@ public class AdminOrderController {
 	
 	@Autowired
 	OrderDetail_DAO orderDetailDao;
+	
+	@Autowired
+	XMailer xmailer;
 	
 	// -- Order --
 	@RequestMapping("/order")
@@ -131,8 +135,40 @@ public class AdminOrderController {
 		            orderDetailDao.add(detail); // Lưu từng chi tiết
 		        }
 		    }
+		    
+		    
+		    
+		    String from = "no-reply@autopart.com"; // Địa chỉ email gửi
+	        String to = acc.getEmail(); // Địa chỉ email người nhận
+	        String subject = "Đặt đơn hàng thành công"; // Tiêu đề email
+	     // Nội dung email
+	        String body = String.format(
+	            "Chào bạn,\n\n" +
+	            "Cảm ơn bạn đã đặt hàng tại AutoPart! Đơn hàng của bạn đã được đặt thành công với các thông tin sau:\n\n" +
+	            "<strong>Tên khách hàng:</strong> %s\n" +
+	            "<strong>Số điện thoại:</strong> %s\n" +
+	            "<strong>Mã đơn hàng:</strong> %s\n" +
+	            "<strong>Tổng tiền:</strong> %s ₫\n" +
+	            "<strong>Địa chỉ giao hàng:</strong> %s\n" +
+	            "<strong>Loại vận chuyển:</strong> %s\n\n" +
+	            "Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất và thông báo khi hàng được giao. " +
+	            "Bạn có thể theo dõi trạng thái đơn hàng trong phần \"Tài khoản\" trên website của chúng tôi.\n\n" +
+	            "Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.\n\n" +
+	            "Trân trọng,\n" +
+	            "Đội ngũ AutoPart",
+	            cus.getFullName() != null ? cus.getFullName() : "Không có",
+	            cus.getPhone(),
+	            order.getOrderId(),
+	            order.getTotalCost(),
+	            order.getShipAddress() != null ? order.getShipAddress() : "Không có",
+	            order.getShippingType()
+	        );
+	        
+	       xmailer.send(from, to, subject, body);
+	       
+	       
+	       
 	        redirectAttributes.addFlashAttribute("successMessage", "Thêm đơn hàng thành công!"); 
-
 		    return "redirect:/admin/order.htm?status=processing";
 		}
 		catch (Exception e)
@@ -270,29 +306,120 @@ public class AdminOrderController {
 	@RequestMapping(value = "/order/changeStatus", method= RequestMethod.POST)
 	public String changeStatusOrder(@RequestParam("orderId") String orderId, @RequestParam("status") String status, Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) throws Exception {
 		Order order = orderDao.getById(orderId);
+		
+		String from = "no-reply@autopart.com";
+        String to = order.getUserEmail();
+        String subject;
+        String body;
 
 		if (order != null) {
 			if ("Pending".equals(status)) {
 				order.setStatus("Processing");
 				orderDao.update(order);	
+				
+				subject = "Đơn hàng đã được xác nhận";
+                body = String.format(
+                    "Chào bạn,<br><br>" +
+                    "Đơn hàng của bạn tại AutoPart đã được xác nhận thành công! Dưới đây là thông tin chi tiết về đơn hàng:<br><br>" +
+                    "<strong>Mã đơn hàng:</strong> %s<br>" +
+                    "<strong>Tổng tiền:</strong> %s ₫<br>" +
+                    "<strong>Địa chỉ giao hàng:</strong> %s<br>" +
+                    "<strong>Loại vận chuyển:</strong> %s<br><br>" +
+                    "Đơn hàng của bạn hiện đang được chuẩn bị và sẽ sớm được giao đến bạn. " +
+                    "Bạn có thể theo dõi trạng thái đơn hàng trong phần \"Tài khoản\" trên website của chúng tôi.<br><br>" +
+                    "Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.<br><br>" +
+                    "Trân trọng,<br>" +
+                    "Đội ngũ AutoPart",
+                    order.getOrderId(),
+                    order.getTotalCost(),
+                    order.getShipAddress(),
+                    order.getShippingType()
+                );
+
+                xmailer.send(from, to, subject, body);
+				
 		        redirectAttributes.addFlashAttribute("successMessage", "Đơn hàng đã được xác nhận!"); 
 				return "redirect:/admin/order.htm?status=pending";
 			}
 			else if ("Cancelled".equals(status)) {
 				order.setStatus("Cancelled");
 				orderDao.update(order);	
+				
+				subject = "Đơn hàng đã bị hủy";
+                body = String.format(
+                    "Chào bạn,<br><br>" +
+                    "Đơn hàng của bạn tại AutoPart đã bị hủy! Dưới đây là thông tin chi tiết về đơn hàng:<br><br>" +
+                    "<strong>Mã đơn hàng:</strong> %s<br>" +
+                    "<strong>Tổng tiền:</strong> %s ₫<br>" +
+                    "<strong>Địa chỉ giao hàng:</strong> %s<br>" +
+                    "<strong>Loại vận chuyển:</strong> %s<br><br>" +
+                    "Đơn hàng của bạn đã bị hủy vì lý do không xác định. " +
+                    "Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.<br><br>" +
+                    "Trân trọng,<br>" +
+                    "Đội ngũ AutoPart",
+                    order.getOrderId(),
+                    order.getTotalCost(),
+                    order.getShipAddress(),
+                    order.getShippingType()
+                );
+
+                xmailer.send(from, to, subject, body);
+				
 		        redirectAttributes.addFlashAttribute("successMessage", "Đơn hàng đã được hủy!"); 
 				return "redirect:/admin/order.htm?status=history";
 			}
 			else if ("Processing".equals(status)) {
 				order.setStatus("Shipping");
 				orderDao.update(order);	
+				
+				subject = "Đơn hàng đang được giao";
+                body = String.format(
+                    "Chào bạn,<br><br>" +
+                    "Đơn hàng của bạn tại AutoPart đang được giao đến bạn! Dưới đây là thông tin chi tiết về đơn hàng:<br><br>" +
+                    "<strong>Mã đơn hàng:</strong> %s<br>" +
+                    "<strong>Tổng tiền:</strong> %s ₫<br>" +
+                    "<strong>Địa chỉ giao hàng:</strong> %s<br>" +
+                    "<strong>Loại vận chuyển:</strong> %s<br><br>" +
+                    "Đơn hàng của bạn đã được chuyển đến đơn vị vận chuyển và sẽ sớm đến tay bạn. " +
+                    "Bạn có thể theo dõi trạng thái giao hàng trong phần \"Tài khoản\" trên website của chúng tôi hoặc liên hệ đơn vị vận chuyển để biết thêm chi tiết.<br><br>" +
+                    "Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.<br><br>" +
+                    "Trân trọng,<br>" +
+                    "Đội ngũ AutoPart",
+                    order.getOrderId(),
+                    order.getTotalCost(),
+                    order.getShipAddress(),
+                    order.getShippingType()
+                );
+
+                xmailer.send(from, to, subject, body);
+				
 		        redirectAttributes.addFlashAttribute("successMessage", "Chuyển trạng thái giao hàng thành công"); 
 				return "redirect:/admin/order.htm?status=delivery";
 			}
 			else if ("Shipping".equals(status)) {
 				order.setStatus("Completed");
 				orderDao.update(order);	
+				
+				subject = "Đơn hàng đã hoàn tất";
+                body = String.format(
+                    "Chào bạn,<br><br>" +
+                    "Đơn hàng của bạn tại AutoPart đã hoàn tất! Dưới đây là thông tin chi tiết về đơn hàng:<br><br>" +
+                    "<strong>Mã đơn hàng:</strong> %s<br>" +
+                    "<strong>Tổng tiền:</strong> %s ₫<br>" +
+                    "<strong>Địa chỉ giao hàng:</strong> %s<br>" +
+                    "<strong>Loại vận chuyển:</strong> %s<br><br>" +
+                    "Đơn hàng của bạn đã được giao thành công. Cảm ơn bạn đã mua sắm tại AutoPart!<br><br>" +
+                    "Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.<br><br>" +
+                    "Trân trọng,<br>" +
+                    "Đội ngũ AutoPart",
+                    order.getOrderId(),
+                    order.getTotalCost(),
+                    order.getShipAddress(),
+                    order.getShippingType()
+                );
+
+                xmailer.send(from, to, subject, body);
+				
 		        redirectAttributes.addFlashAttribute("successMessage", "Đơn hàng hoàn thành"); 
 				return "redirect:/admin/order.htm?status=history";
 			}				

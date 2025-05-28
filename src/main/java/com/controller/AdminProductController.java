@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -273,29 +274,29 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.GET)
-    public String addImportProduct(Model model, HttpServletRequest req) {
+    public String addImportProduct(Model model, HttpServletRequest req, HttpSession session) {
         Import importEntity = new Import();
         importEntity.setImportId(importDao.generateNextImportId());
         importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
         model.addAttribute("importForm", importEntity);
 
-        List<Employee> employeeList = employeeDao.getAll();
         List<Product> productList = productDao.getAll();
 
-        model.addAttribute("employeeList", employeeList);
         model.addAttribute("productList", productList);
-
+        model.addAttribute("empName", session.getAttribute("name"));
+        model.addAttribute("empEmail", session.getAttribute("email"));
+        
         return "adminview/product/import/add";
     }
 	
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.POST)
 	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
 	                                   BindingResult result, 
-	                                   Model model, RedirectAttributes redirectAttributes) {
+	                                   Model model, RedirectAttributes redirectAttributes, HttpSession session) {
 		try
 		{
 			 if (result.hasErrors()) {
-			        model.addAttribute("employeeList", employeeDao.getAll());
+				 	model.addAttribute("empName", session.getAttribute("name"));
 			        model.addAttribute("productList", productDao.getAll());
 			        model.addAttribute("error", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
 			        return "adminview/product/import/add";
@@ -313,11 +314,16 @@ public class AdminProductController {
 			            // Cập nhật số lượng sản phẩm vào kho
 			            String productId = detail.getId().getProductId();
 			            Product product = productDao.getById(productId);
+			            
 			            product.setStock(product.getStock() + detail.getAmount());
+//			            product.setCostPrice((product.getCostPrice() * product.getStock() + detail.getAmount() * detail.getPrice()) / (product.getStock() + detail.getAmount()));
+			            
+			            
 			            productDao.update(product);
 			        });
 			    }
-
+			    
+			    importForm.setImportDate(java.sql.Date.valueOf(java.time.LocalDate.now()));
 			    importDao.add(importForm);
 		        redirectAttributes.addFlashAttribute("successMessage", "Thêm phiếu nhập thành công!"); 
 

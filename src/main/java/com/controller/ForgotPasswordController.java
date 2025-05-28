@@ -1,11 +1,14 @@
 package com.controller;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,7 +45,7 @@ public class ForgotPasswordController
 	}
 	
 	@RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
-    private String forgotPassword(HttpServletRequest req, HttpServletResponse res, ModelMap model) {
+    public String forgotPassword(HttpServletRequest req, HttpServletResponse res, ModelMap model) {
         String email = req.getParameter("email");
         System.out.println(email);
 
@@ -140,6 +143,7 @@ public class ForgotPasswordController
             return "redirect:/forgot-password.htm";
         }
     }
+
 	
 	@RequestMapping("enter-otp")
 	private String showOtpForm()
@@ -155,11 +159,12 @@ public class ForgotPasswordController
 		String otp = req.getParameter("otp");
 		if(otp.equals(req.getSession().getAttribute("otp")))
 		{
+			model.addAttribute("message", "OTP đúng");
 			return "redirect:/enter-password.htm";
 		}
 		else
 		{
-			redirectAttributes.addFlashAttribute("message", "OTP không đúng");
+			model.addAttribute("message", "OTP không đúng");
 			return "redirect:/enter-otp.htm";
 		}
 		
@@ -171,7 +176,18 @@ public class ForgotPasswordController
 		System.out.println(req.getSession().getAttribute("recoveringMail"));
 		return "forgot-password/enter-password";
 	}
-	
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
 	@RequestMapping(value= "updatePassword", method = RequestMethod.POST)
 	private String updatePassword(HttpServletRequest req, ModelMap model, RedirectAttributes redirectAttributes)
 	{	
@@ -182,14 +198,14 @@ public class ForgotPasswordController
 
 		if(password.equals(confirmPassword))
 		{
-			account.setPassword(confirmPassword);
+			account.setPassword(getMD5Hash(confirmPassword));
 			accountDao.update(account);
 			redirectAttributes.addFlashAttribute("successMessage", "Thay đổi mật khẩu thành công");
 			return "redirect:/login.htm";
 		}
 		else
 		{
-			redirectAttributes.addFlashAttribute("message", "OTP không đúng");
+			model.addAttribute("message", "Mật khẩu không khớp");
 			return "redirect:/enter-otp.htm";
 		}
 		
