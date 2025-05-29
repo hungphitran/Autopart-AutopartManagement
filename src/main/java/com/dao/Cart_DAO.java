@@ -35,7 +35,7 @@ public class Cart_DAO {
             return (Cart) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -68,7 +68,7 @@ public class Cart_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -86,7 +86,7 @@ public class Cart_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

@@ -48,7 +48,7 @@ public class ProductGroup_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
             } finally {
             if (session != null) session.close();
         }

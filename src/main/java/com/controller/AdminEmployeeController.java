@@ -209,7 +209,7 @@ public class AdminEmployeeController {
 			System.out.println(referer); 
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa nhân viên!"); 
 			e.printStackTrace();
-	        return "redirect"+ referer ;
+	        return "redirect:"+ referer ;
 			
 		}
 		

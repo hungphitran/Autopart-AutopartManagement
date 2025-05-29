@@ -166,7 +166,7 @@ public class AdminProductController {
 
 	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm sản phẩm thất bại!"); 
 			e.printStackTrace();
-			return "redirect" + referer;
+			return "redirect:" + referer;
 			
 		}
 	}
@@ -249,7 +249,7 @@ public class AdminProductController {
 			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Chỉnh sửa sản phẩm thất bại!"); 
 			e.printStackTrace();
-            return "redirect" + referer;
+            return "redirect:" + referer;
 			
 		}
 		

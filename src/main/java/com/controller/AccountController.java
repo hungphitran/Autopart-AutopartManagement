@@ -47,94 +47,137 @@ public class AccountController {
 	}
 	
 	@RequestMapping("/account")
-	public String showProfile(HttpServletRequest req,Model model) {
-		HttpSession session = req.getSession();
-		Account acc = (Account) session.getAttribute("user");
-		if(acc==null) {
-			return "redirect:/login.htm";
+	public String showProfile(HttpServletRequest req,Model model, RedirectAttributes redirectAttributes) {
+		try
+		{
+			HttpSession session = req.getSession();
+			Account acc = (Account) session.getAttribute("user");
+			if(acc==null) {
+				return "redirect:/login.htm";
+			}
+			List<Order> orderLst= orderDao.getOrderByEmail(acc.getEmail());
+			model.addAttribute("customer",customerDao.getByEmail(acc.getEmail()));
+			System.out.println(orderLst);
+			req.setAttribute("orders", orderLst);
+			return "profile";
+
 		}
-		List<Order> orderLst= orderDao.getOrderByEmail(acc.getEmail());
-		model.addAttribute("customer",customerDao.getByEmail(acc.getEmail()));
-		System.out.println(orderLst);
-		req.setAttribute("orders", orderLst);
-		return "profile";
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải thông tin tài khoản!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/index.htm";
+			
+		}
+
+			
 	}
 	@RequestMapping(value="/account/edit", method = RequestMethod.POST)
 	public String edit(@ModelAttribute("customer") Customer cus, HttpServletRequest req,RedirectAttributes redirectAttributes) {
-	    if (!ValidationUtils.isValidName(cus.getFullName())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ");
-	        return "redirect:/account.htm";
-	    }
+		try
+		{
+			if (!ValidationUtils.isValidName(cus.getFullName())) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ");
+		        return "redirect:/account.htm";
+		    }
+		    
+		    if (!ValidationUtils.isValidEmail(cus.getEmail())) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ");
+		        return "redirect:/account.htm";
+		    }
+		    
+		    if (!ValidationUtils.isValidPhone(cus.getPhone())) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ");
+		        return "redirect:/account.htm";
+		    }
+		    
+		    if (!ValidationUtils.isValidAddress(cus.getAddress())) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ");
+		        return "redirect:/account.htm";
+		    }
+		    
+		    // If validation passes, update customer
+		    boolean updateSuccess = customerDao.update(cus);
+		    if (!updateSuccess) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật thông tin");
+		        return "redirect:/account.htm";
+		    }
+		    else {
+		        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công");
+		    }
+		    HttpSession session = req.getSession();
+		    Account acc = (Account) session.getAttribute("user");
+		    Customer c = customerDao.getByEmail(acc.getEmail());
+		    session.setAttribute("userName", c.getFullName());    
+		    return "redirect:/account.htm";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi chỉnh sửa thông tin tài khoản!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/account.htm";
+			
+		}
+
 	    
-	    if (!ValidationUtils.isValidEmail(cus.getEmail())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ");
-	        return "redirect:/account.htm";
-	    }
-	    
-	    if (!ValidationUtils.isValidPhone(cus.getPhone())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ");
-	        return "redirect:/account.htm";
-	    }
-	    
-	    if (!ValidationUtils.isValidAddress(cus.getAddress())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ");
-	        return "redirect:/account.htm";
-	    }
-	    
-	    // If validation passes, update customer
-	    boolean updateSuccess = customerDao.update(cus);
-	    if (!updateSuccess) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật thông tin");
-	        return "redirect:/account.htm";
-	    }
-	    else {
-	        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công");
-	    }
-	    HttpSession session = req.getSession();
-	    Account acc = (Account) session.getAttribute("user");
-	    Customer c = customerDao.getByEmail(acc.getEmail());
-	    session.setAttribute("userName", c.getFullName());    
-	    return "redirect:/account.htm";
 	}
 	@RequestMapping(value="/account/changepass",method=RequestMethod.POST)
 	public String changePass(HttpServletRequest req, RedirectAttributes redirectAttributes) {
-	    HttpSession session = req.getSession();
-	    String pass = req.getParameter("pass");
-	    String newpass = req.getParameter("newpass");
-	    String confirmpass = req.getParameter("confirmpass");
-	    Account acc = (Account) session.getAttribute("user");
+		try
+		{
+			HttpSession session = req.getSession();
+		    String pass = req.getParameter("pass");
+		    String newpass = req.getParameter("newpass");
+		    String confirmpass = req.getParameter("confirmpass");
+		    Account acc = (Account) session.getAttribute("user");
 
-	    // Validate current password
-	    if (!ValidationUtils.isValidPassword(pass)) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không được để trống");
-	        return "redirect:/account.htm";
-	    }
+		    // Validate current password
+		    if (!ValidationUtils.isValidPassword(pass)) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không được để trống");
+		        return "redirect:/account.htm";
+		    }
 
-	    // Validate new password
-	    if (!ValidationUtils.isValidPassword(newpass)) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được để trống");
-	        return "redirect:/account.htm";
-	    }
+		    // Validate new password
+		    if (!ValidationUtils.isValidPassword(newpass)) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được để trống");
+		        return "redirect:/account.htm";
+		    }
 
-	    // Confirm new password
-	    if (!newpass.equals(confirmpass)) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu xác nhận không khớp");
-	        return "redirect:/account.htm";
-	    }
+		    // Confirm new password
+		    if (!newpass.equals(confirmpass)) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu xác nhận không khớp");
+		        return "redirect:/account.htm";
+		    }
 
 
-	    // Check if old password is correct
-	    if (!acc.getPassword().equals(getMD5Hash(pass))) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không đúng");
-	        return "redirect:/account.htm";
-	    }
+		    // Check if old password is correct
+		    if (!acc.getPassword().equals(getMD5Hash(pass))) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không đúng");
+		        return "redirect:/account.htm";
+		    }
 
-	    // Update password
-	    acc.setPassword(getMD5Hash(newpass));
-	    accountDao.update(acc);
-	    redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công");
+		    // Update password
+		    acc.setPassword(getMD5Hash(newpass));
+		    accountDao.update(acc);
+		    redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công");
 
-	    return "redirect:/account.htm";
+		    return "redirect:/account.htm";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi đổi mật khẩu!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/account.htm";
+			
+		}
+	
 	}
 
 }

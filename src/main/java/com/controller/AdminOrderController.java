@@ -238,7 +238,7 @@ public class AdminOrderController {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm đơn hàng thất bại!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
-			return "redirect" + referer;
+			return "redirect:" + referer;
 			
 		}
 		

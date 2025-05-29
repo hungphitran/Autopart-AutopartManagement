@@ -44,7 +44,7 @@ public class OrderDetail_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

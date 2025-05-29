@@ -73,7 +73,7 @@ public class Discount_DAO {
         return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
