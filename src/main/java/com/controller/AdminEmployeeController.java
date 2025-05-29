@@ -143,6 +143,8 @@ public class AdminEmployeeController {
 		
 		try
 		{
+			
+			
 			if (emp.getStatus() == null) {
 				emp.setStatus("Inactive");
 	        }
