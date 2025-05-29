@@ -1,19 +1,38 @@
 package com.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,6 +50,8 @@ import com.dao.Brand_DAO;
 import com.dao.Customer_DAO;
 import com.dao.Employee_DAO;
 import com.dao.GeneralSettings_DAO;
+import com.dao.ImportDetail_DAO;
+import com.dao.Import_DAO;
 import com.dao.OrderDetail_DAO;
 import com.dao.Order_DAO;
 //import com.dao.Permission_DAO;
@@ -49,6 +70,7 @@ import com.entity.Blog;
 import com.entity.BlogGroup;
 import com.entity.Discount;
 import com.entity.Employee;
+import com.entity.Import;
 import com.entity.Order;
 import com.entity.OrderDetail;
 
@@ -98,6 +120,12 @@ public class AdminController {
 	
 	@Autowired
 	GeneralSettings_DAO gsdao;
+	
+	@Autowired
+	ImportDetail_DAO importDetailDao;
+	
+	@Autowired
+	Import_DAO importDao;
 	
 	private String getMD5Hash(String input) {
 	    try {
@@ -163,7 +191,6 @@ public class AdminController {
         return "adminview/account/access-denied";
     }
 	
-    @SuppressWarnings("deprecation")
     @RequestMapping("/statistic")
     public String showStatistic(HttpServletRequest req, @RequestParam(required = false) String fromDate, 
                                 @RequestParam(required = false) String toDate) {
@@ -358,8 +385,24 @@ public class AdminController {
         // Get pending orders
         List<Order> newOrders = orderDao.getOrderByStatus("Pending");
         
+        
+        for(int i = 0; i < labels.size(); i++) {
+        	String label = labels.get(i);
+			labels.set(i, "'" + label + "'"); // Format to YYYY-MM-DD
+		}
+        
+        for(int i = 0; i < dailyIncome.size(); i++) {
+        	BigDecimal incomeValue = dailyIncome.get(i);
+            if(incomeValue.compareTo(BigDecimal.ZERO) < 0) {
+            	dailyIncome.set(i, BigDecimal.ZERO); // Ensure no negative values
+            }
+            else {
+            	dailyIncome.set(i, dailyIncome.get(i).setScale(2, BigDecimal.ROUND_HALF_UP)); // Format to 2 decimal places
+            }
+        }
         // Set request attributes for view
         req.setAttribute("income", income);
+        req.setAttribute("dailyIncome", dailyIncome);
         req.setAttribute("totalProductThisYear", totalProductThisYear);
         req.setAttribute("totalProductLastYear", totalProductLastYear);
         req.setAttribute("productGrowth", productGrowth);
@@ -383,6 +426,520 @@ public class AdminController {
         return "adminview/statistic";
     }
 	
+    @RequestMapping("/product-report")
+    public String showProductReport(HttpServletRequest req) {
+    	String fromDate = req.getParameter("fromDate");
+		String toDate = req.getParameter("toDate");
+		
+		System.out.println(fromDate+"--" + toDate);
+
+    	// Default to last 30 days if not provided
+        LocalDate startDate = fromDate != null ? LocalDate.parse(fromDate) : LocalDate.now().minusDays(30);
+        LocalDate endDate = toDate != null ? LocalDate.parse(toDate) : LocalDate.now();
+        
+        List<Product> products = productDao.getAll();
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
+        
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        
+        for (Order order : orders) {
+			orderDetails.addAll(orderDetailDao.getAllByOrderId(order.getOrderId()));
+		}
+        
+        Map<Product, Integer> productSales = new HashMap<>();
+        for (OrderDetail detail : orderDetails) {
+			Product product = productDao.getById(detail.getProductId());
+			if (product != null) {
+				productSales.put(product, productSales.getOrDefault(product, 0) + detail.getAmount());
+			}
+		}
+        
+        // Sort products by sales in descending order
+        List<Map.Entry<Product, Integer>> sortedProductSales = new ArrayList<>(productSales.entrySet());
+        sortedProductSales.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+        
+        
+        req.setAttribute("products", products);
+        req.setAttribute("productSales", sortedProductSales);
+        
+        req.setAttribute("fromDate", startDate);
+        req.setAttribute("toDate", endDate);
+    	return "adminview/report/product-report";
+    }
+    @RequestMapping("/financial-report")
+    public String showFinancialReport(HttpServletRequest req) {
+        String fromDate = req.getParameter("fromDate");
+        String toDate = req.getParameter("toDate");
+        System.out.println(fromDate + "--" + toDate);
+
+        // Default to last 30 days if not provided
+        LocalDate startDate = fromDate != null && !fromDate.isEmpty() ? LocalDate.parse(fromDate) : LocalDate.now().minusDays(30);
+        LocalDate endDate = toDate != null && !toDate.isEmpty() ? LocalDate.parse(toDate) : LocalDate.now();
+
+        // Get orders from DAO
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
+        
+        List<Import> imports = importDao.getAll();
+        
+        
+
+        // Initialize totals
+        BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalCost = BigDecimal.ZERO;
+
+        // Aggregate data by day for chart
+        Map<LocalDate, BigDecimal> revenueByDate = new HashMap<>();
+        Map<LocalDate, BigDecimal> costByDate = new HashMap<>();
+        List<LocalDate> dateRange = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+
+        // Initialize maps with zeros for all dates in range
+        for (LocalDate date : dateRange) {
+        	System.out.println(date);
+            revenueByDate.put(date, BigDecimal.ZERO);
+            costByDate.put(date, BigDecimal.ZERO);
+        }
+    	BigDecimal productCost = BigDecimal.ZERO;
+
+        // Aggregate revenue and cost from orders
+        for (Order order : orders) {
+        	
+        	List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
+     	   // calculate product cost from order details
+        	for (OrderDetail detail : orderDetails) {
+				Product product = productDao.getById(detail.getProductId());
+				if (product != null) {
+					productCost = productCost.add(BigDecimal.valueOf(detail.getAmount()*(product.getCostPrice())));
+					totalCost = totalCost.add(productCost);
+				}
+			}
+        	
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            if (!orderDate.isBefore(startDate) && !orderDate.isAfter(endDate)) {
+                BigDecimal orderCost = order.getTotalCost();
+                totalIncome = totalIncome.add(orderCost);
+                totalCost = totalCost.add(orderCost); // Assuming cost equals revenue for now
+                revenueByDate.merge(orderDate, orderCost, BigDecimal::add);
+//                costByDate.merge(orderDate, orderCost, BigDecimal::add); // Adjust if cost calculation differs
+            }
+        }
+        for (Import imp : imports) {
+			LocalDate importDate = imp.getImportDate().toLocalDate();
+			if (!importDate.isBefore(startDate) && !importDate.isAfter(endDate)) {
+				BigDecimal importCost = imp.getImportCost();
+				totalCost = totalCost.add(importCost);
+				costByDate.merge(importDate, importCost, BigDecimal::add);
+			}
+		}
+        // Prepare chart data
+        List<String> labels = dateRange.stream()
+                .map(LocalDate::toString)
+                .collect(Collectors.toList());
+        for (int i = 0; i < labels.size(); i++) {
+			String label = labels.get(i);	
+			labels.set(i, "'"+label+"'" ); // Format to YYYY-MM-DD
+		}
+        List<BigDecimal> revenueData = dateRange.stream()
+                .map(revenueByDate::get)
+                .collect(Collectors.toList());
+        List<BigDecimal> costData = dateRange.stream()
+                .map(costByDate::get)
+                .collect(Collectors.toList());
+
+        // Calculate profit and profit margin
+        BigDecimal profit = totalIncome.subtract(totalCost);
+        
+        Map<String, BigDecimal> costDetails = new HashMap<>();
+        costDetails.put("Lợi nhuận", profit);
+        costDetails.put("Tổng chi phí", totalCost);
+        costDetails.put("Tổng doanh thu", totalIncome); // Assuming cost equals revenue for orders
+        costDetails.put("Tổng phí vận chuyển", totalIncome.subtract(productCost)); // Assuming cost equals revenue for orders
+        costDetails.put("Tổng giá trị hàng bán", productCost); // Total cost of products sold
+        if(totalIncome.compareTo(BigDecimal.ZERO) > 0) {
+			req.setAttribute("profitRate", profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, BigDecimal.ROUND_HALF_UP));
+		} else {
+			req.setAttribute("profitRate", BigDecimal.ZERO);
+		}
+        // Set attributes for view
+        System.out.println("Total Income: " + totalIncome);
+        System.out.println("Total Cost: " + totalCost);
+        System.out.println("Profit: " + profit);
+        req.setAttribute("labels", labels);
+        req.setAttribute("revenueData", revenueData);
+        req.setAttribute("costData", costData);
+        req.setAttribute("totalIncome", totalIncome);
+        req.setAttribute("totalCost", totalCost);
+        req.setAttribute("profit", profit);
+        req.setAttribute("shippingCost", totalIncome.subtract(productCost));
+        req.setAttribute("costDetails", costDetails);
+        req.setAttribute("fromDate", startDate.toString());
+        req.setAttribute("toDate", endDate.toString());        
+        return "adminview/report/financial-report";
+    }
+    
+    @RequestMapping("/export-excel")
+    public void exportReportsToExcel(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            String fromDate = req.getParameter("fromDate");
+            String toDate = req.getParameter("toDate");
+            String reportType = req.getParameter("reportType");
+
+            // Default to last 30 days if not provided
+            LocalDate startDate = fromDate != null && !fromDate.isEmpty() ? LocalDate.parse(fromDate) : LocalDate.now().minusDays(30);
+            LocalDate endDate = toDate != null && !toDate.isEmpty() ? LocalDate.parse(toDate) : LocalDate.now();
+
+            // Create workbook
+            Workbook workbook = new XSSFWorkbook();
+
+            // Generate sheets based on reportType
+            switch (reportType != null ? reportType : "all") {
+                
+                case "product":
+                    createProductReportSheet(workbook, startDate, endDate);
+                    break;
+                case "financial":
+                    createFinancialReportSheet(workbook, startDate, endDate);
+                    break;
+                default:
+                    break;
+            }
+
+            // Set response headers
+            resp.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            resp.setHeader("Content-Disposition", "attachment; filename=\"Bao_cao_" +
+                    startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "_den_" +
+                    endDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".xlsx\"");
+
+            // Write directly to response output stream
+            try (ServletOutputStream out = resp.getOutputStream()) {
+                workbook.write(out);
+                out.flush();
+            }
+
+            workbook.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi tạo file Excel");
+            } catch (IOException ioEx) {
+                ioEx.printStackTrace();
+            }
+        }
+    }
+
+    
+    private void createStatisticSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
+        Sheet sheet = workbook.createSheet("Thống kê tổng quan");
+        
+        // Create styles
+        CellStyle headerStyle = createHeaderStyle(workbook);
+        CellStyle titleStyle = createTitleStyle(workbook);
+        CellStyle dataStyle = createDataStyle(workbook);
+        CellStyle currencyStyle = createCurrencyStyle(workbook);
+        
+        int rowNum = 0;
+        
+        // Title
+        Row titleRow = sheet.createRow(rowNum++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("BÁO CÁO THỐNG KÊ TỔNG QUAN");
+        titleCell.setCellStyle(titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+        
+        // Date range
+        Row dateRow = sheet.createRow(rowNum++);
+        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + 
+                                          " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 3));
+        
+        rowNum++; // Empty row
+        
+        // Get data
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
+        BigDecimal totalIncome = orders.stream()
+                .map(Order::getTotalCost)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        int totalOrders = orders.size();
+        int totalProducts = 0;
+        for (Order order : orders) {
+            List<OrderDetail> details = orderDetailDao.getAllByOrderId(order.getOrderId());
+            totalProducts += details.stream().mapToInt(OrderDetail::getAmount).sum();
+        }
+        
+        // Summary statistics
+        Row headerRow = sheet.createRow(rowNum++);
+        headerRow.createCell(0).setCellValue("Chỉ số");
+        headerRow.createCell(1).setCellValue("Giá trị");
+        headerRow.getCell(0).setCellStyle(headerStyle);
+        headerRow.getCell(1).setCellStyle(headerStyle);
+        
+        Row incomeRow = sheet.createRow(rowNum++);
+        incomeRow.createCell(0).setCellValue("Tổng doanh thu");
+        incomeRow.createCell(1).setCellValue(totalIncome.doubleValue());
+        incomeRow.getCell(0).setCellStyle(dataStyle);
+        incomeRow.getCell(1).setCellStyle(currencyStyle);
+        
+        Row ordersRow = sheet.createRow(rowNum++);
+        ordersRow.createCell(0).setCellValue("Tổng số đơn hàng");
+        ordersRow.createCell(1).setCellValue(totalOrders);
+        ordersRow.getCell(0).setCellStyle(dataStyle);
+        ordersRow.getCell(1).setCellStyle(dataStyle);
+        
+        Row productsRow = sheet.createRow(rowNum++);
+        productsRow.createCell(0).setCellValue("Tổng sản phẩm đã bán");
+        productsRow.createCell(1).setCellValue(totalProducts);
+        productsRow.getCell(0).setCellStyle(dataStyle);
+        productsRow.getCell(1).setCellStyle(dataStyle);
+        
+        // Auto-size columns
+        for (int i = 0; i < 4; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+    
+    private void createProductReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
+        Sheet sheet = workbook.createSheet("Báo cáo sản phẩm");
+        
+        // Create styles
+        CellStyle headerStyle = createHeaderStyle(workbook);
+        CellStyle titleStyle = createTitleStyle(workbook);
+        CellStyle dataStyle = createDataStyle(workbook);
+        CellStyle currencyStyle = createCurrencyStyle(workbook);
+        
+        int rowNum = 0;
+        
+        // Title
+        Row titleRow = sheet.createRow(rowNum++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("BÁO CÁO SẢN PHẨM");
+        titleCell.setCellStyle(titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
+        
+        // Date range
+        Row dateRow = sheet.createRow(rowNum++);
+        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + 
+                                          " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
+        
+        rowNum++; // Empty row
+        
+        // Get product sales data
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (Order order : orders) {
+            orderDetails.addAll(orderDetailDao.getAllByOrderId(order.getOrderId()));
+        }
+        
+        Map<Product, Integer> productSales = new HashMap<>();
+        Map<Product, BigDecimal> productRevenue = new HashMap<>();
+        
+        for (OrderDetail detail : orderDetails) {
+            Product product = productDao.getById(detail.getProductId());
+            if (product != null) {
+                productSales.put(product, productSales.getOrDefault(product, 0) + detail.getAmount());
+                BigDecimal revenue = BigDecimal.valueOf(detail.getAmount()).multiply(BigDecimal.valueOf(product.getSalePrice()));
+                productRevenue.put(product, productRevenue.getOrDefault(product, BigDecimal.ZERO).add(revenue));
+            }
+        }
+        
+        // Sort products by sales
+        List<Map.Entry<Product, Integer>> sortedProductSales = new ArrayList<>(productSales.entrySet());
+        sortedProductSales.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+        
+        // Headers
+        Row headerRow = sheet.createRow(rowNum++);
+        String[] headers = {"Mã sản phẩm", "Tên sản phẩm", "Giá bán", "Số lượng bán", "Tồn kho", "Doanh thu"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+        
+        // Data rows
+        for (Map.Entry<Product, Integer> entry : sortedProductSales) {
+            Product product = entry.getKey();
+            Integer quantitySold = entry.getValue();
+            BigDecimal revenue = productRevenue.get(product);
+            
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(product.getProductId());
+            dataRow.createCell(1).setCellValue(product.getProductName());
+            dataRow.createCell(2).setCellValue(product.getSalePrice());
+            dataRow.createCell(3).setCellValue(quantitySold);
+            dataRow.createCell(4).setCellValue(product.getStock());
+            dataRow.createCell(5).setCellValue(revenue.doubleValue());
+            
+            // Apply styles
+            for (int i = 0; i < 6; i++) {
+                if (i == 2 || i == 5) {
+                    dataRow.getCell(i).setCellStyle(currencyStyle);
+                } else {
+                    dataRow.getCell(i).setCellStyle(dataStyle);
+                }
+            }
+        }
+        
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+      private void createFinancialReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
+        Sheet sheet = workbook.createSheet("Báo cáo tài chính");
+        
+        // Create styles
+        CellStyle headerStyle = createHeaderStyle(workbook);
+        CellStyle titleStyle = createTitleStyle(workbook);
+        CellStyle dataStyle = createDataStyle(workbook);
+        CellStyle currencyStyle = createCurrencyStyle(workbook);
+        
+        int rowNum = 0;
+        
+        // Title
+        Row titleRow = sheet.createRow(rowNum++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("BÁO CÁO TÀI CHÍNH");
+        titleCell.setCellStyle(titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+        
+        // Date range
+        Row dateRow = sheet.createRow(rowNum++);
+        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + 
+                                          " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 3));
+        
+        rowNum++; // Empty row
+        
+        // Use the same calculation logic as the /financial-report endpoint
+        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
+        List<Import> imports = importDao.getAll();
+        
+        // Initialize totals
+        BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalCost = BigDecimal.ZERO;
+        BigDecimal productCost = BigDecimal.ZERO;
+        
+        // Calculate product cost from order details (matching /financial-report endpoint)
+        for (Order order : orders) {
+            List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
+            for (OrderDetail detail : orderDetails) {
+                Product product = productDao.getById(detail.getProductId());
+                if (product != null) {
+                    productCost = productCost.add(BigDecimal.valueOf(detail.getAmount() * product.getCostPrice()));
+                }
+            }
+            
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            if (!orderDate.isBefore(startDate) && !orderDate.isAfter(endDate)) {
+                BigDecimal orderCost = order.getTotalCost();
+                totalIncome = totalIncome.add(orderCost);
+            }
+        }
+        
+        // Add import costs for the date range
+        for (Import imp : imports) {
+            LocalDate importDate = imp.getImportDate().toLocalDate();
+            if (!importDate.isBefore(startDate) && !importDate.isAfter(endDate)) {
+                BigDecimal importCost = imp.getImportCost();
+                totalCost = totalCost.add(importCost);
+            }
+        }
+        
+        // Calculate shipping cost (matching /financial-report endpoint logic)
+        BigDecimal shippingCost = totalIncome.subtract(productCost);
+        
+        // Calculate profit and profit rate
+        BigDecimal profit = totalIncome.subtract(totalCost);
+        BigDecimal profitRate = totalIncome.compareTo(BigDecimal.ZERO) > 0 ? 
+                profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, BigDecimal.ROUND_HALF_UP) : 
+                BigDecimal.ZERO;
+        
+        // Create cost details map (matching /financial-report endpoint)
+        Map<String, BigDecimal> costDetails = new HashMap<>();
+        costDetails.put("Lợi nhuận", profit);
+        costDetails.put("Tổng chi phí", totalCost);
+        costDetails.put("Tổng doanh thu", totalIncome);
+        costDetails.put("Tổng phí vận chuyển", shippingCost);
+        costDetails.put("Tổng giá trị hàng bán", productCost);
+        
+        // Financial summary
+        Row headerRow = sheet.createRow(rowNum++);
+        headerRow.createCell(0).setCellValue("Chỉ số tài chính");
+        headerRow.createCell(1).setCellValue("Giá trị (VNĐ)");
+        headerRow.getCell(0).setCellStyle(headerStyle);
+        headerRow.getCell(1).setCellStyle(headerStyle);
+        
+        String[] metrics = {"Tổng doanh thu", "Tổng giá trị hàng bán", "Tổng phí vận chuyển", "Tổng chi phí nhập hàng", "Lợi nhuận", "Tỷ lệ lợi nhuận (%)"};
+        BigDecimal[] values = {totalIncome, productCost, shippingCost, totalCost, profit, profitRate};
+        
+        for (int i = 0; i < metrics.length; i++) {
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(metrics[i]);
+            if (i == metrics.length - 1) { // Profit rate percentage
+                dataRow.createCell(1).setCellValue(values[i].doubleValue());
+                dataRow.getCell(1).setCellStyle(dataStyle);
+            } else {
+                dataRow.createCell(1).setCellValue(values[i].doubleValue());
+                dataRow.getCell(1).setCellStyle(currencyStyle);
+            }
+            dataRow.getCell(0).setCellStyle(dataStyle);
+        }
+          rowNum += 2; // Empty rows
+        
+        // Filter imports for the date range for display
+        List<Import> filteredImports = imports.stream()
+                .filter(imp -> !imp.getImportDate().toLocalDate().isBefore(startDate) && 
+                              !imp.getImportDate().toLocalDate().isAfter(endDate))
+                .collect(Collectors.toList());
+        
+        
+        // Auto-size columns
+        for (int i = 0; i < 4; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+    
+    private CellStyle createHeaderStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        font.setColor(IndexedColors.WHITE.getIndex());
+        style.setFont(font);
+        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        return style;
+    }
+    
+    private CellStyle createTitleStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints((short) 16);
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        return style;
+    }
+    
+    private CellStyle createDataStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        return style;
+    }
+    
+    private CellStyle createCurrencyStyle(Workbook workbook) {
+        CellStyle style = createDataStyle(workbook);
+        style.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+        return style;
+    }
 	@RequestMapping("/profile")
 	public String showProfile(HttpServletRequest req, Model model) {
 		HttpSession session = req.getSession();
@@ -396,6 +953,25 @@ public class AdminController {
 	
 	@RequestMapping(value="/profile/edit", method=RequestMethod.POST)
 	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e, RedirectAttributes redirectAttributes) {
+		
+		// Validate input
+		if(!ValidationUtils.isValidEmail(e.getEmail())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidName(e.getFullName())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidAddress(e.getAddress())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidDate(e.getBirthDate())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		
 		try
 		{
 			HttpSession session = req.getSession();

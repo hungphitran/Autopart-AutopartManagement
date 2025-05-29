@@ -58,15 +58,11 @@
 					<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					  <h1 class="h3 mb-0 text-gray-800">Thống kê</h1>
 					  <div class="btn-group">
-                        <a class="btn btn-primary mr-2" href="/autopart/admin/product-report.htm">
+                        <a class="btn btn-primary mr-2" href="/autopart/admin/product-report.htm?fromDate=${fromDate}&toDate=${toDate}">
                             <i class="fas fa-box mr-1"></i>
                             Báo cáo sản phẩm
                         </a>
-                        <a class="btn btn-info mr-2" href="/autopart/admin/order-report.htm">
-                            <i class="fas fa-shopping-cart mr-1"></i>
-                            Báo cáo đơn hàng
-                        </a>
-                        <a class="btn btn-success" href="/autopart/admin/financial-report.htm">
+                        <a class="btn btn-success" href="/autopart/admin/financial-report.htm?fromDate=${fromDate}&toDate=${toDate}">
                             <i class="fas fa-chart-line mr-1"></i>
                             Báo cáo tài chính
                         </a>
@@ -102,15 +98,6 @@
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng doanh thu</div>
 					            <div class="h5 mb-0 font-weight-bold text-gray-800"><fmt:formatNumber value="${totalIncome}" pattern="#,##0"/> &#8363;</div>
 					            <div class="text-xs text-muted mt-2">
-					              <c:if test="${incomeGrowth > 0}">
-					                <span class="text-success"><i class="fas fa-arrow-up mr-1"></i><fmt:formatNumber value="${incomeGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${incomeGrowth < 0}">
-					                <span class="text-danger"><i class="fas fa-arrow-down mr-1"></i><fmt:formatNumber value="${-incomeGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${incomeGrowth == 0}">
-					                <span><i class="fas fa-equals mr-1"></i><fmt:formatNumber value="${incomeGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
 					            </div>
 					          </div>
 					          <div class="col-auto">
@@ -129,15 +116,6 @@
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Sản phẩm đã bán</div>
 					            <div class="h5 mb-0 font-weight-bold text-gray-800"><fmt:formatNumber value="${totalProductThisYear}" pattern="#,##0"/></div>
 					            <div class="text-xs text-muted mt-2">
-					              <c:if test="${productGrowth > 0}">
-					                <span class="text-success"><i class="fas fa-arrow-up mr-1"></i><fmt:formatNumber value="${productGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${productGrowth < 0}">
-					                <span class="text-danger"><i class="fas fa-arrow-down mr-1"></i><fmt:formatNumber value="${-productGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${productGrowth == 0}">
-					                <span><i class="fas fa-equals mr-1"></i><fmt:formatNumber value="${productGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
 					            </div>
 					          </div>
 					          <div class="col-auto">
@@ -156,15 +134,6 @@
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Tài khoản mới</div>
 					            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><c:out value="${accsThisMonth.size()}"/></div>
 					            <div class="text-xs text-muted mt-2">
-					              <c:if test="${accountGrowth > 0}">
-					                <span class="text-success"><i class="fas fa-arrow-up mr-1"></i><fmt:formatNumber value="${accountGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${accountGrowth < 0}">
-					                <span class="text-danger"><i class="fas fa-arrow-down mr-1"></i><fmt:formatNumber value="${-accountGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${accountGrowth == 0}">
-					                <span><i class="fas fa-equals mr-1"></i><fmt:formatNumber value="${accountGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
 					            </div>
 					          </div>
 					          <div class="col-auto">
@@ -183,15 +152,6 @@
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Đơn hàng chờ xác nhận</div>
 					            <div class="h5 mb-0 font-weight-bold text-gray-800"><c:out value="${newOrders.size()}"/></div>
 					            <div class="text-xs text-muted mt-2">
-					              <c:if test="${orderGrowth > 0}">
-					                <span class="text-success"><i class="fas fa-arrow-up mr-1"></i><fmt:formatNumber value="${orderGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${orderGrowth < 0}">
-					                <span class="text-danger"><i class="fas fa-arrow-down mr-1"></i><fmt:formatNumber value="${-orderGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
-					              <c:if test="${orderGrowth == 0}">
-					                <span><i class="fas fa-equals mr-1"></i><fmt:formatNumber value="${orderGrowth}" pattern="#,##0.0"/>%</span> so với kỳ trước
-					              </c:if>
 					            </div>
 					          </div>
 					          <div class="col-auto">
@@ -361,7 +321,7 @@
 		            new Chart(ctx, {
 		                type: 'line',
 		                data: {
-		                    labels: labelsData,
+		                    labels: ${labels},
 		                    datasets: [{
 		                        label: "Doanh thu",
 		                        lineTension: 0.3,
@@ -375,7 +335,7 @@
 		                        pointHoverBorderColor: "rgba(78, 115, 223, 1)",
 		                        pointHitRadius: 10,
 		                        pointBorderWidth: 2,
-		                        data: dailyIncomeData,
+		                        data: ${dailyIncome},
 		                    }],
 		                },
 		                options: {
