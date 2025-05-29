@@ -167,9 +167,22 @@
                                             <label for="userPhone">Số điện thoại khách hàng <span class="required-text">*</span></label>
                                             <input class="form-control" name="userPhone" required placeholder="Nhập số điện thoại"/>
                                         </div>
+                                         <div class="form-group">
+                                            <label for="userEmail">Email khách hàng <span class="required-text">*</span></label>
+                                            <input class="form-control" name="userEmail" required placeholder="Nhập email"/>
+                                        </div>
                                         <div class="form-group">
                                             <label for="shipAddress">Địa chỉ giao hàng <span class="required-text">*</span></label>
                                             <input class="form-control" name="shipAddress" required placeholder="Nhập địa chỉ giao hàng"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="shippingType">Loại vận chuyển <span class="required-text">*</span></label>
+                                            <select required class="form-control mb-3" id="shippingType" name="shippingType">
+                                                <option disabled selected>-- Chọn loại vận chuyển --</option>
+                                                <option value="20000">Vận chuyển thường - 20.000 ₫</option>
+                                                <option value="50000">Vận chuyển nhanh - 50.000 ₫</option>
+                                                <option value="15000">Vận chuyển tiết kiệm - 15.000 ₫</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -309,6 +322,10 @@
 	    // Tính tổng tiền
 	    function calculateTotal(discountAmount = 0) {
 	        let total = selectedProducts.reduce((sum, product) => sum + (product.salePrice * product.quantity), 0);
+	        // Thêm phí vận chuyển
+	        const shippingCost = parseInt($('#shippingType').val()) || 0;
+	        total += shippingCost;
+	        // Áp dụng giảm giá
 	        if (discountAmount != 0) {
 	        	total *= (100 - discountAmount) / 100;
 	        }
@@ -379,7 +396,7 @@
 	            });
 	        });
 	
-	       	updateDiscountOptions();
+	        updateDiscountOptions();
 	
 		    $(document).on('click', '.product-item', function() {
 		        const product = {
@@ -389,6 +406,13 @@
 		            productStock: $(this).data('product-stock')
 		        };
 		        addProduct(product);
+		    });
+		    
+		    // Thêm sự kiện thay đổi loại vận chuyển
+		    $('#shippingType').on('change', function() {
+		        const selectedDiscount = $('#discountSelect option:selected');
+		        const discountAmount = selectedDiscount.length ? parseFloat(selectedDiscount.attr('data-discount-amount')) || 0 : 0;
+		        calculateTotal(discountAmount);
 		    });
 		    
 		    $('form').on('submit', function(e) {
@@ -401,7 +425,6 @@
 	        });
 	    });
 	
-	    
 	</script>
 </body>
 <script type="text/javascript">

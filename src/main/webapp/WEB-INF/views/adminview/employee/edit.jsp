@@ -100,7 +100,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="email">Email <span class="text-danger">*</span></label>
-                                            <form:input path="email" type="email" class="form-control" id="email" required="true"/>
+                                            <form:input path="email" type="email" class="form-control" id="email" required="true" readonly="true" />
                                         </div>
                                         <div class="form-group">
                                             <label for="citizenId">Số CCCD <span class="text-danger">*</span></label>

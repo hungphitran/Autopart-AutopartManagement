@@ -76,6 +76,9 @@
 <bean id="GeneralSettings_DAO" class="com.dao.GeneralSettings_DAO">
     <constructor-arg ref="sessionFactory" />
 </bean>
+<bean id="ImportDetail_DAO" class="com.dao.ImportDetail_DAO">
+    <constructor-arg ref="sessionFactory" />
+</bean>
 
 
 <bean id="Product_DAO" class="com.dao.Product_DAO">

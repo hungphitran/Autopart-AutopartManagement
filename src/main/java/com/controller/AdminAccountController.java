@@ -54,19 +54,19 @@ public class AdminAccountController {
     }
 
     @RequestMapping(value = "/account/changeStatus", method = RequestMethod.POST)
-    public String changeStatus(@RequestParam("accPhone") String accPhone) {
-        accountDao.changeStatus(accPhone);
+    public String changeStatus(@RequestParam("accEmail") String accEmail) {
+        accountDao.changeStatus(accEmail);
         return "redirect:/admin/account.htm";
     }
 
     @RequestMapping(value = "/account/edit", method = RequestMethod.GET)
-    public String edit(@RequestParam("accPhone") String accPhone, HttpServletRequest req) {
+    public String edit(@RequestParam("accEmail") String accEmail, HttpServletRequest req, RedirectAttributes redirectAttributes) {
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            return "redirect:/admin/login.htm";
+        if (session == null || session.getAttribute("email") == null) {
+        	redirectAttributes.addFlashAttribute("successError", "Không tìm thấy thông tin!"); 
         }
 
-        Account account = accountDao.getByEmail(accPhone);
+        Account account = accountDao.getByEmail(accEmail);
         List<RoleGroup> roleGroup = roleGroupDao.getAll();
         req.setAttribute("account", account);
         req.setAttribute("roleGroup", roleGroup);
@@ -74,7 +74,7 @@ public class AdminAccountController {
     }
 
     @RequestMapping(value = "/account/edit", method = RequestMethod.POST)
-    public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("phone") String phone, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+    public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("email") String email, RedirectAttributes redirectAttributes, HttpServletRequest req) {
     	try
     	{
     		accountDao.update(acc);

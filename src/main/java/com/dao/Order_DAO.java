@@ -181,4 +181,15 @@ public class Order_DAO {
             if (session != null) session.close();
         }
     }
+    
+    public List<Order> getOrdersByDateRangeAndStatus(java.sql.Date startDate, java.sql.Date endDate, String status) {
+        Session session = factory.openSession();
+        String hql = "FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate AND o.status = :status";
+        Query query = session.createQuery(hql);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        query.setParameter("status", status);
+        
+        return query.list();
+    }
 }
