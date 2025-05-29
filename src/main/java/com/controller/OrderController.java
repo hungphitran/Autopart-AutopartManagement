@@ -149,6 +149,7 @@ public class OrderController {
 			{
 				discountDao.discountUsed(acc.getEmail(), discountId);
 				discount.setUsageLimit(discount.getUsageLimit()-1);
+				discountDao.update(discount);
 		    }
 			
 			//update cart

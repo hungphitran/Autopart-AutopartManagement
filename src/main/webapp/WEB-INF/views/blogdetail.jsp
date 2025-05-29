@@ -127,11 +127,15 @@
                 <div class="blog-meta">
                     <span data-aos="fade-right">
                         <i class="far fa-calendar"></i>
-                        <fmt:formatDate value="${blog.updatedAt}" pattern="dd/MM/yyyy"/>
+                        <fmt:formatDate value="${blog.createdAt}" pattern="dd/MM/yyyy"/>
                     </span>
                     <span data-aos="fade-left">
                         <i class="far fa-user"></i>
                         ${author}
+                    </span>
+                    <span data-aos="fade-left">
+                        <i class="far fa-user"></i>
+                        ${blog.blogGroup.getGroupName()}
                     </span>
                 </div>
 
@@ -145,6 +149,8 @@
             </div>
         </div>
     </div>
+  </div>
+    
 
     <footer>
         <jsp:include page="/WEB-INF/mixins/footer.jsp" />

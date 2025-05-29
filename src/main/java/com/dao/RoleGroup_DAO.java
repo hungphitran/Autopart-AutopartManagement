@@ -24,12 +24,12 @@ public class RoleGroup_DAO {
         Session session = null;
         try {
             session = factory.openSession();
-            String hql = "SELECT DISTINCT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.status IN ('Active', 'Inactive')";
+            String hql = "SELECT DISTINCT rg FROM RoleGroup rg LEFT JOIN FETCH rg.permissions WHERE rg.status IN ('Active', 'Inactive') AND rg.roleId != 'RG002'";
             Query query = session.createQuery(hql);
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }

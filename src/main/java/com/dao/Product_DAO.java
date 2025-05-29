@@ -24,7 +24,7 @@ public class Product_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -94,7 +94,7 @@ public class Product_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -110,7 +110,7 @@ public class Product_DAO {
             return (Product) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -128,7 +128,7 @@ public class Product_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -146,7 +146,7 @@ public class Product_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -167,7 +167,7 @@ public class Product_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

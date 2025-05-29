@@ -1,8 +1,11 @@
 package com.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,83 +53,190 @@ public class AdminBlogController {
 	}
 	
 	@RequestMapping(value = "/blog/add", method= RequestMethod.GET)
-	public String addBlog(Model model, HttpServletRequest req) {
-		model.addAttribute("blog", new Blog());
-		model.addAttribute("nextBlogId", blogDao.generateNextBlogId());
+	public String addBlog(Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			model.addAttribute("blog", new Blog());
+			model.addAttribute("nextBlogId", blogDao.generateNextBlogId());
+			
+			List<BlogGroup> blogGroups = blogGroupDao.getAll();
+			req.setAttribute("blogGroupList", blogGroups);
+			
+			return "adminview/blog/add";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải form thêm bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+	        return "redirect:/admin/blog.htm";
+			
+		}
+
 		
-		List<BlogGroup> blogGroups = blogGroupDao.getAll();
-		req.setAttribute("blogGroupList", blogGroups);
-		
-		return "adminview/blog/add";
 	}
 	
 	@RequestMapping(value = "/blog/add", method = RequestMethod.POST)
-    public String addBlogPost(@ModelAttribute("blog") Blog blog, HttpServletRequest req, RedirectAttributes redirectAttributes) {
-        if (blog.getStatus() == null) {
-            blog.setStatus("Inactive");
-        }
-        
-        // Set blogGroupId and blogGroup based on the selected blogGroupId
-        String blogGroupId = req.getParameter("blogGroupId"); // Get from the form
-        if (blogGroupId != null && !blogGroupId.isEmpty()) {
-            BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
-            blog.setBlogGroupId(blogGroupId);
-            //blog.setBlogGroup(blogGroup);
-        }
-        blog.setCreatedBy("tranthibinh_0901234002@example.com");
+    public String addBlogPost(@ModelAttribute("blog") Blog blog, HttpServletRequest req, RedirectAttributes redirectAttributes, HttpSession session) {
+		try
+		{
+			if (blog.getStatus() == null) {
+	            blog.setStatus("Inactive");
+	        }
+	        
+	        // Set blogGroupId and blogGroup based on the selected blogGroupId
+	        String blogGroupId = req.getParameter("blogGroupId"); // Get from the form
+	        if (blogGroupId != null && !blogGroupId.isEmpty()) {
+	            BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
+	            blog.setBlogGroupId(blogGroupId);
+//	            blog.setBlogGroup(blogGroup);
+	        }
+	        blog.setCreatedBy((String)session.getAttribute("email"));
 
-        blogDao.add(blog);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm bài viết thành công!");  
-        return "redirect:/admin/blog.htm";
+	        blogDao.add(blog);
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm bài viết thành công!");  
+	        return "redirect:/admin/blog.htm";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi thêm bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect" + referer;
+			
+		}
+
+        
     }
 	
 	@RequestMapping(value = "/blog/edit", method= RequestMethod.GET)
-	public String editBlog(@RequestParam("blogId") String blogId, HttpServletRequest req) {
-		Blog blog = blogDao.getById(blogId);
-		List<BlogGroup> blogGroup = blogGroupDao.getAll();
-		req.setAttribute("blog", blog);
-		req.setAttribute("blogGroupList", blogGroup);
-		
-		return "adminview/blog/edit";
-	}
+	public String editBlog(@RequestParam("blogId") String blogId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Blog blog = blogDao.getById(blogId);
+			List<BlogGroup> blogGroup = blogGroupDao.getAll();
+			req.setAttribute("blog", blog);
+			req.setAttribute("blogGroupList", blogGroup);
+			
+			return "adminview/blog/edit";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+	        return "redirect:/admin/blog.htm";
+			
+		}
+
+			}
 	
 	@RequestMapping(value = "/blog/edit", method = RequestMethod.POST)
-    public String editBlogPatch(@ModelAttribute("blog") Blog blog, @RequestParam("blogGroupId") String blogGroupId, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+    public String editBlogPatch(@ModelAttribute("blog") Blog blog, @RequestParam("blogGroupId") String blogGroupId, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest req) {
 		
-        if (blog.getStatus() == null) {
-            blog.setStatus("Inactive");
-        }
-        
-        // Set blogGroupId and blogGroup based on the selected blogGroupId
-        BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
-        blog.setBlogGroupId(blogGroupId);
-        //blog.setBlogGroup(blogGroup);
-        
-        blog.setCreatedBy("tranthibinh_0901234002@example.com");
-        
-        blogDao.update(blog);
-        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa bài viết thành công!");  
-        return "redirect:/admin/blog.htm";
-    }
+		try
+		{
+			if (blog.getStatus() == null) {
+	            blog.setStatus("Inactive");
+	        }
+	        
+	        // Set blogGroupId and blogGroup based on the selected blogGroupId
+	        BlogGroup blogGroup = blogGroupDao.getById(blogGroupId);
+	        blog.setBlogGroupId(blogGroupId);
+	        //blog.setBlogGroup(blogGroup);
+	        
+	        blog.setCreatedBy((String)session.getAttribute("email"));
+	        blog.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+	        
+	        blogDao.update(blog);
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa bài viết thành công!");  
+	        return "redirect:/admin/blog.htm";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+
+			redirectAttributes.addFlashAttribute("errorMessage", "có lỗi khi sửa bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect" + referer;
+			
+		}
+
+            
+	}
 	
 	@RequestMapping(value = "/blog/detail", method= RequestMethod.GET)
-	public String detailBlog(@RequestParam("blogId") String blogId, HttpServletRequest req) {
-		Blog blog = blogDao.getById(blogId);
-		req.setAttribute("blog", blog);
-		return "adminview/blog/detail";
+	public String detailBlog(@RequestParam("blogId") String blogId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Blog blog = blogDao.getById(blogId);
+			req.setAttribute("blog", blog);
+			return "adminview/blog/detail";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+	        return "redirect:/admin/blog.htm";
+			
+		}
+
+			
 	}
 	
 	@RequestMapping("/blog/delete")
 	public String deleteBlog(@RequestParam("blogId") String blogId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
-		blogDao.delete(blogId);
-        redirectAttributes.addFlashAttribute("successMessage", "Xóa bài viết thành công!");  
-		return "redirect:/admin/blog.htm";
+		try
+		{
+			blogDao.delete(blogId);
+	        redirectAttributes.addFlashAttribute("successMessage", "Xóa bài viết thành công!");  
+			return "redirect:/admin/blog.htm";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi xóa bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+	        return "redirect:/admin/blog.htm";
+			
+		}
+
+			
 	}
 	
 	@RequestMapping(value = "/blog/changeStatus", method= RequestMethod.POST)
-	public String changeStatusBlog(@RequestParam("blogId") String blogId) {
-		blogDao.changeStatus(blogId);
-		return "adminview/blog/index";
+	public String changeStatusBlog(@RequestParam("blogId") String blogId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			blogDao.changeStatus(blogId);
+			return "adminview/blog/index";
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi thay đổi trạng thái bài viết!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+	        return "redirect:/admin/blog.htm";
+			
+		}
+
 	}
 
 }

@@ -66,7 +66,7 @@ public class AdminEmployeeController {
 		catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải danh sách nhân viên thất bại!"); 
+	        req.setAttribute("errorMessage", "Có lỗi khi tải danh sách nhân viên!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
 			return "adminview/employee/index";
@@ -76,29 +76,64 @@ public class AdminEmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/changeStatus", method= RequestMethod.POST)
-	public String changeStatus(@RequestParam("empEmail") String empEmail) {
-		employeeDao.changeStatus(empEmail);
-		return "adminview/employee/index";
+	public String changeStatus(@RequestParam("empEmail") String empEmail, RedirectAttributes redirectAttributes) {
+		try
+		{
+			employeeDao.changeStatus(empEmail);
+			return "adminview/employee/index";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thay đổi trạng thái nhân viên!"); 
+			e.printStackTrace();
+			return "redirect:/admin/employee.htm";
+			
+		}
+
 	}
 	
 	@RequestMapping(value = "/employee/detail", method= RequestMethod.GET)
-	public String detail(@RequestParam("empEmail") String empPhone, HttpServletRequest req) {
-		Employee employee = employeeDao.getByEmail(empPhone);
-		
-		req.setAttribute("emp", employee);
-		return "adminview/employee/detail";
+	public String detail(@RequestParam("empEmail") String empPhone, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Employee employee = employeeDao.getByEmail(empPhone);
+			
+			req.setAttribute("emp", employee);
+			return "adminview/employee/detail";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải nhân viên!"); 
+			e.printStackTrace();
+			return "redirect:/admin/employee.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.GET)
 	public String add(Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			model.addAttribute("emp", new Employee());
+			
+			List<RoleGroup> roleGroup = roleGroupDao.getAll();
+			model.addAttribute("roleGroup", roleGroup);
+			
+			return "adminview/employee/add";
 
-		model.addAttribute("emp", new Employee());
+		}
 		
-		List<RoleGroup> roleGroup = roleGroupDao.getAll();
-		model.addAttribute("roleGroup", roleGroup);
-		
-		return "adminview/employee/add";
-		
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải giao diện thêm nhân viên!"); 
+			e.printStackTrace();
+			return "redirect:/admin/employee.htm";
+			
+		}
+
+				
 
 	}
 	
@@ -120,23 +155,38 @@ public class AdminEmployeeController {
 		}
 		catch (Exception e)
 		{
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên!"); 
 			e.printStackTrace();
-			return "redirect:/admin/employee/add.htm";
+			return "redirect" + referer;
 			
 		}
 		
 	}
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.GET)
-	public String edit(@RequestParam("empEmail") String empPhone, HttpServletRequest req) {
-		Employee emp = employeeDao.getByEmail(empPhone);
-		req.setAttribute("emp", emp);
-		
-		List<RoleGroup> roleGroup = roleGroupDao.getAll();
-		req.setAttribute("roleGroup", roleGroup);
-		
-		return "adminview/employee/edit";
+	public String edit(@RequestParam("empEmail") String empPhone, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Employee emp = employeeDao.getByEmail(empPhone);
+			req.setAttribute("emp", emp);
+			
+			List<RoleGroup> roleGroup = roleGroupDao.getAll();
+			req.setAttribute("roleGroup", roleGroup);
+			
+			return "adminview/employee/edit";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra tải nhân viên!"); 
+			e.printStackTrace();
+			return "redirect:/admin/employee.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.POST)

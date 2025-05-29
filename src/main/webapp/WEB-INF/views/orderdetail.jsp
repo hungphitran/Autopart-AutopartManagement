@@ -252,7 +252,6 @@
             </p>
             <c:if test="${order.status == 'Pending'}">
                 <div class="order-actions">
-                    <a href="/autopart/order/edit.htm?orderId=${order.orderId}" class="edit-btn">Sửa đơn hàng</a>
                     <a href="/autopart/order/cancel.htm?orderId=${order.orderId}" class="cancel-btn" onclick="return confirm('Bạn có chắc muốn hủy đơn hàng ${order.orderId}?')">Hủy đơn hàng</a>
 
                 </div>

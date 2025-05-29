@@ -26,7 +26,7 @@ public class OrderDetail_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }

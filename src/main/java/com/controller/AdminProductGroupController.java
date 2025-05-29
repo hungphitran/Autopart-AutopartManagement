@@ -44,10 +44,23 @@ public class AdminProductGroupController {
 	}
 	
 	@RequestMapping("/productGroup/add")
-	public String showAdd(HttpServletRequest req,Model model) {
-		model.addAttribute("newGroup", new ProductGroup() );
-		model.addAttribute("nextGroupId", productGroupDao.generateNextProductGroupId());
-		return "adminview/productGroup/add";
+	public String showAdd(HttpServletRequest req,Model model, RedirectAttributes redirectAttributes) {
+		try
+		{
+			model.addAttribute("newGroup", new ProductGroup() );
+			model.addAttribute("nextGroupId", productGroupDao.generateNextProductGroupId());
+			return "adminview/productGroup/add";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải danh sách nhóm sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/productGroup.htm";
+			
+		}
+
+			
 	}
 	@RequestMapping(value = "/productGroup/add", method= RequestMethod.POST)
 	public String addBrandPost(@ModelAttribute("newGroup") ProductGroup group, HttpServletRequest req, RedirectAttributes redirectAttributes) {
@@ -94,9 +107,21 @@ public class AdminProductGroupController {
 	}
 	
 	@RequestMapping(value = "/productGroup/changeStatus", method= RequestMethod.POST)
-	public String changeStatusGroup(@RequestParam("groupId") String groupId,HttpServletRequest req) {
-		productGroupDao.changeStatus(groupId);
-		req.setAttribute("productGroups", productGroupDao.getAll());
-		return "adminview/productGroup/index";
+	public String changeStatusGroup(@RequestParam("groupId") String groupId,HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			productGroupDao.changeStatus(groupId);
+			req.setAttribute("productGroups", productGroupDao.getAll());
+			return "adminview/productGroup/index";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi thay đổi trạng thái danh mục sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/productGroup.htm";
+			
+		}
+	
 	}
 }

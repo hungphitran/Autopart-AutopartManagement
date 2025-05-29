@@ -45,7 +45,7 @@ public class AdminAccountController {
     	catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải tài khoản thất bại!"); 
+	        req.setAttribute("errorMessage", "Tải danh sách tài khoản thất bại!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
             return "adminview/account/index";
@@ -54,9 +54,22 @@ public class AdminAccountController {
     }
 
     @RequestMapping(value = "/account/changeStatus", method = RequestMethod.POST)
-    public String changeStatus(@RequestParam("accEmail") String accEmail) {
-        accountDao.changeStatus(accEmail);
-        return "redirect:/admin/account.htm";
+    public String changeStatus(@RequestParam("accEmail") String accEmail, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+    	try
+    	{
+    		accountDao.changeStatus(accEmail);
+            return "redirect:/admin/account.htm";
+    	}
+    	catch (Exception e)
+		{
+			System.out.println("Test1");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Thay đổi trạng thái tài khoản thất bại!");  
+			e.printStackTrace();
+			System.out.println("Test2");
+            return "redirect:/admin/account.htm";
+			
+		}
+
     }
 
     @RequestMapping(value = "/account/edit", method = RequestMethod.GET)
@@ -78,6 +91,7 @@ public class AdminAccountController {
     	try
     	{
     		accountDao.update(acc);
+    		req.setAttribute("successMessage", "Chỉnh sửa tài khoản thành công!"); 
             return "redirect:/admin/account.htm";
     	}
     	catch (Exception e)

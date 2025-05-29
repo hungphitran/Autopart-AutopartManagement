@@ -33,7 +33,7 @@ public class AdminCustomerController {
 		catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải danh sách khách hàng thất bại!"); 
+	        req.setAttribute("errorMessage", "Có lỗi khi tải danh sách khách hàng!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
 			return "adminview/customer/index";
@@ -45,10 +45,22 @@ public class AdminCustomerController {
 	}
 	
 	@RequestMapping(value = "/customer/detail", method= RequestMethod.GET)
-	public String detailCustomer(@RequestParam("cusEmail") String cusPhone, HttpServletRequest req) {
-		Customer customer = customerDao.getByEmail(cusPhone);
-		req.setAttribute("customer", customer);
-		return "adminview/customer/detailModal";
+	public String detailCustomer(@RequestParam("cusEmail") String cusPhone, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Customer customer = customerDao.getByEmail(cusPhone);
+			req.setAttribute("customer", customer);
+			return "adminview/customer/detailModal";
+
+		}
+		catch (Exception e)
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải khách hàng!"); 
+			e.printStackTrace();
+			return "redirect:/admin/customer.htm";
+		}
+
+			
 	}
 
 }

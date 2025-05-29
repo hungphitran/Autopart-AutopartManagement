@@ -2,6 +2,7 @@ package com.entity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Blog")
@@ -38,10 +39,10 @@ public class Blog {
     private String createdBy;
  
     @Column(name = "createdAt")
-    private Timestamp createdAt;
+    private Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now());
     
     @Column(name = "updatedAt")
-    private Timestamp updatedAt;
+    private Timestamp updatedAt = Timestamp.valueOf(LocalDateTime.now());
     
     @Column(name="deleted", columnDefinition = "BIT DEFAULT 'FALSE'")
     private boolean deleted;
