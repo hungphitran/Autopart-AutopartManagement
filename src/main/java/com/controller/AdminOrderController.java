@@ -97,7 +97,6 @@ public class AdminOrderController {
 					req.setAttribute("orders", orders);
 					return "adminview/order/orderHistory";
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -108,8 +107,6 @@ public class AdminOrderController {
 			return "adminview/order/orderConfirm/index";
 			
 		}
-
-			
 	}
 	
 	@RequestMapping(value = "/order/add", method= RequestMethod.GET)
@@ -238,7 +235,7 @@ public class AdminOrderController {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm đơn hàng thất bại!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
-			return "redirect" + referer;
+			return "redirect:" + referer;
 			
 		}
 		

@@ -27,6 +27,7 @@ import com.entity.BlogGroup;
 import com.entity.Employee;
 import com.entity.Product;
 import com.entity.RoleGroup;
+import com.utils.ValidationUtils;
 
 
 @Controller
@@ -140,7 +141,41 @@ public class AdminEmployeeController {
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.POST)
 	public String addPost(@ModelAttribute("emp") Employee emp, @RequestParam("permission") String permission, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate email format
+		if(ValidationUtils.isValidEmail(emp.getEmail()) == false) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
+		else if (employeeDao.getByEmail(emp.getEmail()) != null) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
+		// Validate phone format
+		if(ValidationUtils.isValidPhone(emp.getPhone()) == false) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
+		// Validate name format
+		if(ValidationUtils.isValidName(emp.getFullName()) == false) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
 		
+		// Validate citizen ID format
+		if(emp.getCitizenId() != null && !emp.getCitizenId().isEmpty() && !ValidationUtils.isValidName(emp.getCitizenId())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
+		// Validate address format
+		if(emp.getAddress() != null && !emp.getAddress().isEmpty() && !ValidationUtils.isValidName(emp.getAddress())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
+		// Validate date of birth format
+		if(emp.getBirthDate() != null && emp.getBirthDate().toString().isEmpty()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
+			return "redirect:/admin/employee/add.htm";
+		}
 		try
 		{
 			if (emp.getStatus() == null) {
@@ -161,7 +196,7 @@ public class AdminEmployeeController {
 
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên!"); 
 			e.printStackTrace();
-			return "redirect" + referer;
+			return "redirect:/admin/employee.htm";
 			
 		}
 		
@@ -209,7 +244,7 @@ public class AdminEmployeeController {
 			System.out.println(referer); 
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa nhân viên!"); 
 			e.printStackTrace();
-	        return "redirect"+ referer ;
+	        return "redirect:"+ referer ;
 			
 		}
 		
