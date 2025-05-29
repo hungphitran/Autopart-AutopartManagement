@@ -327,8 +327,10 @@
 	
 	    // Hàm xóa sản phẩm khỏi danh sách đã chọn
 	    function removeProduct(productId) {
+	    	console.log('Removing product with ID:', productId);
+
 	        productId = String(productId);
-	        selectedProducts = selectedProducts.filter(p => p.productId !== productId);
+	        selectedProducts = selectedProducts.filter(p => p.productId != productId);
 	        updateSelectedProducts();
 	        calculateTotal();
 	        updateDiscountOptions();

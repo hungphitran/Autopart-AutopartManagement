@@ -55,23 +55,36 @@ public class DashboardController {
 	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
-		List<Product> proLst = productDao.getAll();	
-		for(int i=0;i<proLst.size();i++) {
-			String img= proLst.get(i).getImageUrls();
-			proLst.get(i).setImageUrls(img.split(",", i)[0]);
+		// Fetch top 12 products sorted by stock, including product group name
+		List<Product> proLstFav = productDao.getTopByStock(12);
+		for (Product product : proLstFav) {
+			String img = product.getImageUrls();
+			product.setImageUrls(img != null ? img.split(",")[0] : "");
 		}
-		if(proLst.size()>10) {
-			req.setAttribute("products",proLst.subList(0, 10));//show first 12 products
+		req.setAttribute("products", proLstFav);
+
+		// Fetch top 4 most-ordered products
+		List<Product> proMostOrder = productDao.getTopProductsByOrders(4);
+		for (Product product : proMostOrder) {
+			String img = product.getImageUrls();
+			product.setImageUrls(img != null ? img.split(",")[0] : "");
 		}
-		else {
-			req.setAttribute("products",proLst);//show first 12 products
-		}
+		req.setAttribute("productOrderMost", proMostOrder);
+
+		// Fetch top 6 categories with most active products
+		List<ProductGroup> categoriesHaveMostPro = pgDao.getTopByProductCount(6);
+//		req.setAttribute("categories", categoriesHaveMostPro);
+		
+		// Fetch all active product groups for categories section
+//		List<ProductGroup> groups = pgDao.getAll();
+		req.setAttribute("groups", categoriesHaveMostPro);
+		
 		//check user in session
 		HttpSession session = req.getSession();
 		Account acc =(Account) session.getAttribute("user");
 		
 		//separate parentgroup and childgroup
-		List<ProductGroup> pgLst = pgDao.getAll();
+//		List<ProductGroup> pgLst = pgDao.getAll();
 //		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
 //		for(ProductGroup pg: pgLst) {
 //			if(pg.getParentGroupId()==null) {
@@ -117,7 +130,7 @@ public class DashboardController {
 		
 		GeneralSettings g=  generalDao.get();
 		session.setAttribute("general", g);
-		session.setAttribute("groups", pgLst);
+//		session.setAttribute("groups", pgLst);
 		session.setAttribute("brands", brandDao.getAll());
 
 		return "dashboard";

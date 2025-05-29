@@ -27,7 +27,7 @@ public class Customer_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -61,7 +61,7 @@ public class Customer_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

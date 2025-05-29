@@ -27,7 +27,7 @@ public class BlogGroup_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -43,7 +43,7 @@ public class BlogGroup_DAO {
             return (BlogGroup) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

@@ -37,7 +37,7 @@ public class Account_DAO {
             return accounts;
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -78,7 +78,7 @@ public class Account_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -96,7 +96,7 @@ public class Account_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -164,7 +164,7 @@ public class Account_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

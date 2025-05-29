@@ -44,7 +44,7 @@ public class Import_DAO {
             return imports;
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -60,7 +60,7 @@ public class Import_DAO {
             return (Import) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -96,7 +96,7 @@ public class Import_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

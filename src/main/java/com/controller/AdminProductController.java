@@ -80,7 +80,7 @@ public class AdminProductController {
 		catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải danh sách sản phẩm thất bại!"); 
+	        req.setAttribute("errorMessage", "Có lỗi khi tải danh sách sản phẩm!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
 		    return "adminview/product/index";
@@ -90,17 +90,30 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.GET)
-	public String addProduct(Model model, HttpServletRequest req) {
-		model.addAttribute("product", new Product());
-		model.addAttribute("nextProductId", productDao.generateNextProductId());
-		
-		List<Brand> brandList = brandDao.getAll();
-		List<ProductGroup> productGroupList = productGroupDao.getAll();
-		
-		req.setAttribute("brandList", brandList);
-		req.setAttribute("productGroupList", productGroupList);
-		
-		return "adminview/product/add";
+	public String addProduct(Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			model.addAttribute("product", new Product());
+			model.addAttribute("nextProductId", productDao.generateNextProductId());
+			
+			List<Brand> brandList = brandDao.getAll();
+			List<ProductGroup> productGroupList = productGroupDao.getAll();
+			
+			req.setAttribute("brandList", brandList);
+			req.setAttribute("productGroupList", productGroupList);
+			
+			return "adminview/product/add";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải trang thêm sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product.htm";
+			
+		}
+
+			
 	}
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.POST)
@@ -148,22 +161,37 @@ public class AdminProductController {
 		}
 		catch (Exception e)
 		{
+			String referer = req.getHeader("Referer");
+			System.out.println(referer);
+
 	        redirectAttributes.addFlashAttribute("errorMessage", "Thêm sản phẩm thất bại!"); 
 			e.printStackTrace();
-            return "redirect:/admin/product/add.htm";
+			return "redirect" + referer;
 			
 		}
 	}
 
 	@RequestMapping(value = "/product/edit", method= RequestMethod.GET)
-	public String editProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
-		Product product = productDao.getById(productId);
-		List<Brand> brandList = brandDao.getAll();
-		List<ProductGroup> productGroupList = productGroupDao.getAll();
-		req.setAttribute("product", product);
-		req.setAttribute("brandList", brandList);
-		req.setAttribute("productGroupList", productGroupList);
-		return "adminview/product/edit";
+	public String editProduct(@RequestParam("productId") String productId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Product product = productDao.getById(productId);
+			List<Brand> brandList = brandDao.getAll();
+			List<ProductGroup> productGroupList = productGroupDao.getAll();
+			req.setAttribute("product", product);
+			req.setAttribute("brandList", brandList);
+			req.setAttribute("productGroupList", productGroupList);
+			return "adminview/product/edit";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value = "/product/edit", method= RequestMethod.POST)
@@ -246,48 +274,96 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/detail", method= RequestMethod.GET)
-	public String detailProduct(@RequestParam("productId") String productId, HttpServletRequest req) {
-		Product product = productDao.getById(productId);
-		String[] imgUrls = product.getImageUrls().split(",");
-		
-		String brandName=brandDao.getById(product.getBrandId()).getBrandName();
-		String groupName = productGroupDao.getById(product.getProductGroupId()).getGroupName();
-		
-		req.setAttribute("imgUrls", imgUrls);
-		req.setAttribute("product", product);
-		req.setAttribute("brandName", brandName);
-		req.setAttribute("groupName", groupName);
-		return "adminview/product/detail";
+	public String detailProduct(@RequestParam("productId") String productId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Product product = productDao.getById(productId);
+			String[] imgUrls = product.getImageUrls().split(",");
+			
+			String brandName=brandDao.getById(product.getBrandId()).getBrandName();
+			String groupName = productGroupDao.getById(product.getProductGroupId()).getGroupName();
+			
+			req.setAttribute("imgUrls", imgUrls);
+			req.setAttribute("product", product);
+			req.setAttribute("brandName", brandName);
+			req.setAttribute("groupName", groupName);
+			return "adminview/product/detail";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value = "/product/changeStatus", method= RequestMethod.POST)
-	public String changeStatusProduct(@RequestParam("productId") String productId) {
-		productDao.changeStatus(productId);
-		return "adminview/product/index";
+	public String changeStatusProduct(@RequestParam("productId") String productId, RedirectAttributes redirectAttributes) {
+		try
+		{
+			productDao.changeStatus(productId);
+			return "adminview/product/index";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi thay đổi trạng thái sản phẩm!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product.htm";
+			
+		}
+
+			
 	}
 	
 	@RequestMapping(value = "/product/import", method= RequestMethod.GET)
-	public String importProduct(Model model, HttpServletRequest req) {
-		List<Import> imports = importDao.getAll();
-		req.setAttribute("imports", imports);
-		return "adminview/product/import/index";
+	public String importProduct(Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			List<Import> imports = importDao.getAll();
+			req.setAttribute("imports", imports);
+			return "adminview/product/import/index";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải danh sách phiếu nhập!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product/import.htm";
+			
+		}
+
 	}
 	
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.GET)
-    public String addImportProduct(Model model, HttpServletRequest req, HttpSession session) {
-        Import importEntity = new Import();
-        importEntity.setImportId(importDao.generateNextImportId());
-        importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
-        model.addAttribute("importForm", importEntity);
+    public String addImportProduct(Model model, HttpServletRequest req, HttpSession session, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Import importEntity = new Import();
+	        importEntity.setImportId(importDao.generateNextImportId());
+	        importEntity.setImportDate(new java.sql.Date(System.currentTimeMillis())); // Ngày hiện tại
+	        model.addAttribute("importForm", importEntity);
 
-        List<Product> productList = productDao.getAll();
+	        List<Product> productList = productDao.getAll();
 
-        model.addAttribute("productList", productList);
-        model.addAttribute("empName", session.getAttribute("name"));
-        model.addAttribute("empEmail", session.getAttribute("email"));
-        
-        return "adminview/product/import/add";
-    }
+	        model.addAttribute("productList", productList);
+	        model.addAttribute("empName", session.getAttribute("name"));
+	        model.addAttribute("empEmail", session.getAttribute("email"));
+	        
+	        return "adminview/product/import/add";
+
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải giao diện tạo phiếu nhập!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product/import.htm";
+			
+		}
+   
+	}
 	
 	@RequestMapping(value = "/product/import/add", method = RequestMethod.POST)
 	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
@@ -316,7 +392,7 @@ public class AdminProductController {
 			            Product product = productDao.getById(productId);
 			            
 			            product.setStock(product.getStock() + detail.getAmount());
-//			            product.setCostPrice((product.getCostPrice() * product.getStock() + detail.getAmount() * detail.getPrice()) / (product.getStock() + detail.getAmount()));
+			            product.setCostPrice((product.getCostPrice() * product.getStock() + detail.getAmount() * detail.getPrice()) / (product.getStock() + detail.getAmount()));
 			            
 			            
 			            productDao.update(product);
@@ -340,26 +416,37 @@ public class AdminProductController {
 	}
 	
 	@RequestMapping(value = "/product/import/detail", method = RequestMethod.GET)
-    public String detailImportProduct(@RequestParam("importId") String importId, Model model, HttpServletRequest req) {
-        // Lấy thông tin phiếu nhập từ database
-        Import importEntity = importDao.getById(importId); // Giả định Import_DAO có phương thức getById
-        if (importEntity == null) {
-            model.addAttribute("error", "Phiếu nhập không tồn tại!");
-            return "adminview/product/import/detail"; // Trả về trang với thông báo lỗi
-        }
+    public String detailImportProduct(@RequestParam("importId") String importId, Model model, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			// Lấy thông tin phiếu nhập từ database
+	        Import importEntity = importDao.getById(importId); // Giả định Import_DAO có phương thức getById
+	        if (importEntity == null) {
+	            model.addAttribute("error", "Phiếu nhập không tồn tại!");
+	            return "adminview/product/import/detail"; // Trả về trang với thông báo lỗi
+	        }
 
-        // Lấy thông tin nhân viên để hiển thị tên đầy đủ
-        String employeeFullName = employeeDao.getByEmail(importEntity.getEmployeeEmail()) != null
-                ? employeeDao.getByEmail(importEntity.getEmployeeEmail()).getFullName()
-                : "Không xác định";
+	        // Lấy thông tin nhân viên để hiển thị tên đầy đủ
+	        String employeeFullName = employeeDao.getByEmail(importEntity.getEmployeeEmail()) != null
+	                ? employeeDao.getByEmail(importEntity.getEmployeeEmail()).getFullName()
+	                : "Không xác định";
 
-        // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
-        List<Product> productList = productDao.getAll();
-        model.addAttribute("importEntity", importEntity);
-        model.addAttribute("employeeFullName", employeeFullName);
-        model.addAttribute("productList", productList);
+	        // Lấy danh sách sản phẩm để hiển thị tên sản phẩm
+	        List<Product> productList = productDao.getAll();
+	        model.addAttribute("importEntity", importEntity);
+	        model.addAttribute("employeeFullName", employeeFullName);
+	        model.addAttribute("productList", productList);
 
-        return "adminview/product/import/detail";
+	        return "adminview/product/import/detail";
+		}
+		catch (Exception e)
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi khi tải phiếu nhập!"); 
+			e.printStackTrace();
+			return "redirect:/admin/product/import.htm";
+			
+		}
+
     }
 	// -- End product -
 

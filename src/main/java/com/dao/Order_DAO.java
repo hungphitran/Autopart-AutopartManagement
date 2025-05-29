@@ -34,7 +34,7 @@ public class Order_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -66,7 +66,7 @@ public class Order_DAO {
             return (Order) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }

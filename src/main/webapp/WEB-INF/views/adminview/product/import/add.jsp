@@ -126,7 +126,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="price">Giá Nhập <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="price" min="0"/>
+                                            <input type="number" class="form-control" id="price" step="0.00001" min="0"/>
                                         </div>
                                         <button type="button" class="btn btn-primary mb-3" onclick="addProductToList()">Thêm Sản Phẩm</button>
                                         <div class="selected-products">

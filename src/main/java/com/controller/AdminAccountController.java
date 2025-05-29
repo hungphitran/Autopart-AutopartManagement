@@ -1,9 +1,12 @@
 package com.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +48,7 @@ public class AdminAccountController {
     	catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải tài khoản thất bại!"); 
+	        req.setAttribute("errorMessage", "Tải danh sách tài khoản thất bại!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
             return "adminview/account/index";
@@ -54,9 +57,22 @@ public class AdminAccountController {
     }
 
     @RequestMapping(value = "/account/changeStatus", method = RequestMethod.POST)
-    public String changeStatus(@RequestParam("accEmail") String accEmail) {
-        accountDao.changeStatus(accEmail);
-        return "redirect:/admin/account.htm";
+    public String changeStatus(@RequestParam("accEmail") String accEmail, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+    	try
+    	{
+    		accountDao.changeStatus(accEmail);
+            return "redirect:/admin/account.htm";
+    	}
+    	catch (Exception e)
+		{
+			System.out.println("Test1");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Thay đổi trạng thái tài khoản thất bại!");  
+			e.printStackTrace();
+			System.out.println("Test2");
+            return "redirect:/admin/account.htm";
+			
+		}
+
     }
 
     @RequestMapping(value = "/account/edit", method = RequestMethod.GET)
@@ -72,12 +88,24 @@ public class AdminAccountController {
         req.setAttribute("roleGroup", roleGroup);
         return "adminview/account/editModal";
     }
-
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
     @RequestMapping(value = "/account/edit", method = RequestMethod.POST)
     public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("email") String email, RedirectAttributes redirectAttributes, HttpServletRequest req) {
     	try
     	{
+    		acc.setPassword(getMD5Hash(acc.getPassword()));
     		accountDao.update(acc);
+    		req.setAttribute("successMessage", "Chỉnh sửa tài khoản thành công!"); 
             return "redirect:/admin/account.htm";
     	}
     	catch (Exception e)

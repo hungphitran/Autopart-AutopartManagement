@@ -35,7 +35,7 @@ public class AdminBrandController {
 		catch (Exception e)
 		{
 			System.out.println("Test1");
-	        req.setAttribute("errorMessage", "Tải danh sách nhãn hàng thất bại!"); 
+	        req.setAttribute("errorMessage", "Có lỗi khi tải danh sách nhãn hàng!"); 
 			e.printStackTrace();
 			System.out.println("Test2");
 			return "adminview/brand/index";
@@ -59,12 +59,21 @@ public class AdminBrandController {
 	public String addBrandPost(@ModelAttribute("brand") Brand brand, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		try
 		{
-			List<Brand> brands = brandDao.getAll();
-			for(int i=0;i<brands.size();i++) {
-				if(brands.get(i).getBrandName().toLowerCase().equals(brand.getBrandName().toLowerCase())){
-					return "redirect:/admin/brand.htm";
-				} // sửa lại bằng cách viết thêm hàm checkExistByName
+			
+			if(brandDao.checkExistByName(brand.getBrandName()))
+			{
+				String referer = req.getHeader("Referer");
+				System.out.println(referer);
+				redirectAttributes.addFlashAttribute("errorMessage", "Thương hiệu đã tồn tại!"); 
+				return "redirect" + referer;
+
 			}
+//			List<Brand> brands = brandDao.getAll();
+//			for(int i=0;i<brands.size();i++) {
+//				if(brands.get(i).getBrandName().toLowerCase().equals(brand.getBrandName().toLowerCase())){
+//					return "redirect:/admin/brand.htm";
+//				} // sửa lại bằng cách viết thêm hàm checkExistByName
+//			}
 		
 		
 			brand.setBrandId(brandDao.generateNextBrandId());
@@ -84,11 +93,23 @@ public class AdminBrandController {
 	}
 	
 	@RequestMapping(value = "/brand/edit", method= RequestMethod.GET)
-	public String editBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
-		Brand brand = brandDao.getById(brandId);
-		req.setAttribute("brand", brand);
+	public String editBrand(@RequestParam("brandId") String brandId, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			Brand brand = brandDao.getById(brandId);
+			req.setAttribute("brand", brand);
 
-		return "adminview/brand/editModal";
+			return "adminview/brand/editModal";
+
+		}
+		catch (Exception e)
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải thương hiệu!"); 
+			e.printStackTrace();
+			return "redirect:/admin/brand.htm";
+		}
+
+			
 	}
 	
 	@RequestMapping(value = "/brand/edit", method= RequestMethod.POST)
@@ -111,16 +132,38 @@ public class AdminBrandController {
 	} 
 	
 	@RequestMapping(value = "/brand/detail", method= RequestMethod.GET)
-	public String detailBrand(@RequestParam("brandId") String brandId, HttpServletRequest req) {
-		Brand brand = brandDao.getById(brandId);
-		req.setAttribute("brand", brand);
-		return "adminview/brand/detailModal";
+	public String detailBrand(@RequestParam("brandId") String brandId, HttpServletRequest req, RedirectAttributes redirectAttributes) { 
+		try
+		{
+			Brand brand = brandDao.getById(brandId);
+			req.setAttribute("brand", brand);
+			return "adminview/brand/detailModal";
+		}
+		catch (Exception e)
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải thương hiệu!"); 
+			e.printStackTrace();
+			return "redirect:/admin/brand.htm";
+		}
+
+		
 	}
 	
 	@RequestMapping(value = "/brand/changeStatus", method= RequestMethod.POST)
-	public String changeStatusBrand(@RequestParam("brandId") String brandId) {
-		brandDao.changeStatus(brandId);
-		return "adminview/brand/index";
+	public String changeStatusBrand(@RequestParam("brandId") String brandId, RedirectAttributes redirectAttributes) {
+		try
+		{
+			brandDao.changeStatus(brandId);
+			return "adminview/brand/index";
+
+		}
+		catch (Exception e)
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thay đổi trạng thái thương hiệu!"); 
+			e.printStackTrace();
+			return "redirect:/admin/brand.htm";
+		}
+
 	}
 
 }

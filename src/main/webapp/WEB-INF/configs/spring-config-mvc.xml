@@ -30,7 +30,7 @@
 	<mvc:annotation-driven/>
    	
    	<!-- Cấu hình package chứa các controller -->
-	<context:component-scan base-package="com.controller, com.filter"/>
+	<context:component-scan base-package="com.controller, com.filter, com.entity"/>
 	
 	<!-- Cấu hình multipartResolver -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

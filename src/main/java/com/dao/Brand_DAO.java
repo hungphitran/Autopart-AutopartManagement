@@ -27,7 +27,7 @@ public class Brand_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -77,7 +77,7 @@ public class Brand_DAO {
             return (Brand) query.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -166,7 +166,7 @@ public class Brand_DAO {
             return query.uniqueResult() != null;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
