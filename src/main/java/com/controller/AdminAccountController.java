@@ -1,9 +1,12 @@
 package com.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,11 +88,22 @@ public class AdminAccountController {
         req.setAttribute("roleGroup", roleGroup);
         return "adminview/account/editModal";
     }
-
+	private String getMD5Hash(String input) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(input.getBytes());
+	        byte[] digest = md.digest();
+	        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
     @RequestMapping(value = "/account/edit", method = RequestMethod.POST)
     public String editPatch(@ModelAttribute("account") Account acc, @RequestParam("email") String email, RedirectAttributes redirectAttributes, HttpServletRequest req) {
     	try
     	{
+    		acc.setPassword(getMD5Hash(acc.getPassword()));
     		accountDao.update(acc);
     		req.setAttribute("successMessage", "Chỉnh sửa tài khoản thành công!"); 
             return "redirect:/admin/account.htm";

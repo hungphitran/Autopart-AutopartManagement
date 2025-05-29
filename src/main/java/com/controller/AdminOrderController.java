@@ -97,7 +97,6 @@ public class AdminOrderController {
 					req.setAttribute("orders", orders);
 					return "adminview/order/orderHistory";
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -108,8 +107,6 @@ public class AdminOrderController {
 			return "adminview/order/orderConfirm/index";
 			
 		}
-
-			
 	}
 	
 	@RequestMapping(value = "/order/add", method= RequestMethod.GET)
