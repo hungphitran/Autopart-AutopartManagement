@@ -1,5 +1,6 @@
 package com.utils;
 
+import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,4 +66,16 @@ public class ValidationUtils {
         // Use the regular expression to match the input address
         return address.matches(pattern);
     }
+
+	public static boolean isValidDate(Date birthDate) {
+		// TODO Auto-generated method stub
+		if (birthDate == null) {
+			return false;
+		}
+		Date today = new Date(System.currentTimeMillis());
+		if (birthDate.after(today)) {
+			return false; // Birth date cannot be in the future
+		}
+		return false;
+	}
 }

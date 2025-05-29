@@ -151,10 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-</html>
-<script src="<c:url value="/resources/js/adminjs/profile.js" />"></script>
+	<script src="<c:url value="/resources/js/adminjs/profile.js" />"></script>
 	<script src="<c:url value="/resources/vendor/jquery/jquery.min.js" />"></script>
 	<script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"></script>
 	<script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
 	<script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
+</html>
+
 	

@@ -84,7 +84,6 @@ public class AdminEmployeeController {
 	@RequestMapping(value = "/employee/detail", method= RequestMethod.GET)
 	public String detail(@RequestParam("empEmail") String empPhone, HttpServletRequest req) {
 		Employee employee = employeeDao.getByEmail(empPhone);
-		
 		req.setAttribute("emp", employee);
 		return "adminview/employee/detail";
 	}
