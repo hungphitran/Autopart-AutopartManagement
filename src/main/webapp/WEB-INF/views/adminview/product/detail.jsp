@@ -83,20 +83,6 @@
 										</c:otherwise>
 									</c:choose>
 									<div class="mb-3">
-										<strong>Ngày ngừng bán:</strong>
-										<c:choose>
-											<c:when test="${empty product.deletedAt}">
-												<p class="text-muted mb-0">Chưa ngừng bán</p>
-											</c:when>
-											<c:otherwise>
-												<p class="text-muted mb-0">
-													<fmt:formatDate value="${product.deletedAt}"
-														pattern="dd/MM/yyyy" />
-												</p>
-											</c:otherwise>
-										</c:choose>
-									</div>
-									<div class="mb-3">
 										<a
 											href="${pageContext.request.contextPath}/admin/product/edit.htm?productId=${product.productId}"
 											class="btn btn-primary btn-block">Chỉnh sửa sản phẩm</a>

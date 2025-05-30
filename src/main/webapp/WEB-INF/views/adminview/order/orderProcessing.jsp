@@ -135,6 +135,7 @@
 	<script>
 		$(document).ready(function () {
 			$('#dataTable').DataTable({
+			 	"ordering": false,
 				"language": {
 					"search": "Tìm kiếm",
 					"lengthMenu": "Hiển thị _MENU_ dòng",

@@ -60,6 +60,8 @@ public class AdminBrandController {
 		try
 		{
 			
+			
+			
 			if(brandDao.checkExistByName(brand.getBrandName()))
 			{
 				String referer = req.getHeader("Referer");
@@ -114,6 +116,14 @@ public class AdminBrandController {
 	
 	@RequestMapping(value = "/brand/edit", method= RequestMethod.POST)
 	public String editBrandPatch(@ModelAttribute("brand") Brand brand, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+		
+		if(!brand.getBrandName().equals(brandDao.getById(brand.getBrandId()).getBrandName()) && brandDao.checkExistByName(brand.getBrandName()))
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Thương hiệu đã tồn tại!"); 
+			return "redirect:/admin/brand.htm";
+
+		}
+		
 		try
 		{
 			if (brand.getStatus() == null) {

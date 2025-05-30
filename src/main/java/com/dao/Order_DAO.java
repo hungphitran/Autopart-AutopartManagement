@@ -25,8 +25,8 @@ public class Order_DAO {
         try {
             session = factory.openSession();
             String hql = (status == "History") 
-            		? "FROM Order o WHERE o.status IN ('Cancelled', 'Completed')" 
-            		: "FROM Order o WHERE o.status = :status";
+                    ? "FROM Order o WHERE o.status IN ('Cancelled', 'Completed') ORDER BY o.orderDate DESC" 
+                    : "FROM Order o WHERE o.status = :status ORDER BY o.orderDate DESC";
             Query query = session.createQuery(hql);
             if (!status.equals("History")) {
                 query.setParameter("status", status);
@@ -50,7 +50,7 @@ public class Order_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -73,7 +73,7 @@ public class Order_DAO {
     }
 
     @Transactional
-    public boolean add(Order order) throws Exception{
+    public boolean add(Order order) {
         Session session = null;
         Transaction transaction = null;
         try {
@@ -83,17 +83,17 @@ public class Order_DAO {
             transaction.commit();
             return true;
         } 
-//            catch (Exception e) {
-//            if (transaction != null) transaction.rollback();
-//            
-//            return false;
-//        } 
+            catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            
+            throw e;
+        } 
             finally {
             if (session != null) session.close();
         }
     }
 
-    public boolean update(Order order)throws Exception {
+    public boolean update(Order order) {
         Session session = null;
         Transaction transaction = null;
         try {
@@ -103,11 +103,11 @@ public class Order_DAO {
             transaction.commit();
             return true;
         } 
-//        catch (Exception e) {
-//            if (transaction != null) transaction.rollback();
-//            e.printStackTrace();
-//            return false;
-//        } 
+        catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            throw e;
+        } 
         finally {
             if (session != null) session.close();
         }

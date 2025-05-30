@@ -30,6 +30,23 @@ public class Product_DAO {
         }
     }
     
+    public List<Product> getAllStockLargerThanZero() {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM Product p WHERE p.status = 'Active' AND p.stock > 0";
+            Query query = session.createQuery(hql);
+            return query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+    
     public List<Product> getTopByStock(int limit) {
         Session session = null;
         try {
@@ -40,7 +57,7 @@ public class Product_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -60,7 +77,7 @@ public class Product_DAO {
             return query.list();
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            throw e;
         } finally {
             if (session != null) session.close();
         }

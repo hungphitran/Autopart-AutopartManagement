@@ -55,84 +55,98 @@ public class DashboardController {
 	
 	@RequestMapping("/index")
 	public String showDashboard(HttpServletRequest req) {
-		// Fetch top 12 products sorted by stock, including product group name
-		List<Product> proLstFav = productDao.getTopByStock(12);
-		for (Product product : proLstFav) {
-			String img = product.getImageUrls();
-			product.setImageUrls(img != null ? img.split(",")[0] : "");
-		}
-		req.setAttribute("products", proLstFav);
-
-		// Fetch top 4 most-ordered products
-		List<Product> proMostOrder = productDao.getTopProductsByOrders(4);
-		for (Product product : proMostOrder) {
-			String img = product.getImageUrls();
-			product.setImageUrls(img != null ? img.split(",")[0] : "");
-		}
-		req.setAttribute("productOrderMost", proMostOrder);
-
-		// Fetch top 6 categories with most active products
-		List<ProductGroup> categoriesHaveMostPro = pgDao.getTopByProductCount(6);
-//		req.setAttribute("categories", categoriesHaveMostPro);
-		
-		// Fetch all active product groups for categories section
-//		List<ProductGroup> groups = pgDao.getAll();
-		req.setAttribute("groups", categoriesHaveMostPro);
-		
-		//check user in session
-		HttpSession session = req.getSession();
-		Account acc =(Account) session.getAttribute("user");
-		
-		//separate parentgroup and childgroup
-//		List<ProductGroup> pgLst = pgDao.getAll();
-//		List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
-//		for(ProductGroup pg: pgLst) {
-//			if(pg.getParentGroupId()==null) {
-//				parentGroups.add(pg);
-//			}
-//		}
-//	
-//		Map<String, List<String>> groups = new HashMap<String, List<String>>();
-//		for(ProductGroup pg: parentGroups) {
-//			List<String> childGroups= new ArrayList<String>();
-//			for(ProductGroup pgr: pgLst) {
-//				if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
-//					continue;
-//				}
-//				else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
-//					childGroups.add(pgr.getGroupName());
-//				}
-//			}
-//			groups.put(pg.getGroupName(), childGroups);
-//		}
-		
-//		pgLst.clear();
-//		parentGroups.clear();
-
-		
-		
-		List<BlogGroup> blogGroups = blogGroupDao.getAll();
-		session.setAttribute("blogGroups", blogGroups);
-		
-		
-		if(acc != null ) {//get cart if user logged in
-			Customer cus = customerDao.getByEmail(acc.getEmail());
-			Cart cart =cartDao.getById(cus.getCartId());
-			req.setAttribute("cart", cart);
-			Map<String,Integer> productsInCart =cart.getProducts();
-
-			Map<Product,Integer> products= new HashMap<Product, Integer>();
-			for(String key : productsInCart.keySet()) {
-				products.put(productDao.getById(key),productsInCart.get(key));
+		try
+		{
+			// Fetch top 12 products sorted by stock, including product group name
+			List<Product> proLstFav = productDao.getTopByStock(12);
+			for (Product product : proLstFav) {
+				String img = product.getImageUrls();
+				product.setImageUrls(img != null ? img.split(",")[0] : "");
 			}
-			req.setAttribute("productInCart", products);
-		}
-		
-		GeneralSettings g=  generalDao.get();
-		session.setAttribute("general", g);
-//		session.setAttribute("groups", pgLst);
-		session.setAttribute("brands", brandDao.getAll());
+			req.setAttribute("products", proLstFav);
 
-		return "dashboard";
+			// Fetch top 4 most-ordered products
+			List<Product> proMostOrder = productDao.getTopProductsByOrders(4);
+			for (Product product : proMostOrder) {
+				String img = product.getImageUrls();
+				product.setImageUrls(img != null ? img.split(",")[0] : "");
+			}
+			req.setAttribute("productOrderMost", proMostOrder);
+
+			// Fetch top 6 categories with most active products
+			List<ProductGroup> categoriesHaveMostPro = pgDao.getTopByProductCount(6);
+//			req.setAttribute("categories", categoriesHaveMostPro);
+			
+			// Fetch all active product groups for categories section
+			List<ProductGroup> groups = pgDao.getAll();
+			req.setAttribute("groups", categoriesHaveMostPro);
+			
+			//check user in session
+			HttpSession session = req.getSession();
+			Account acc =(Account) session.getAttribute("user");
+			
+			//separate parentgroup and childgroup
+//			List<ProductGroup> pgLst = pgDao.getAll();
+//			List<ProductGroup> parentGroups = new ArrayList<ProductGroup>();
+//			for(ProductGroup pg: pgLst) {
+//				if(pg.getParentGroupId()==null) {
+//					parentGroups.add(pg);
+//				}
+//			}
+	//	
+//			Map<String, List<String>> groups = new HashMap<String, List<String>>();
+//			for(ProductGroup pg: parentGroups) {
+//				List<String> childGroups= new ArrayList<String>();
+//				for(ProductGroup pgr: pgLst) {
+//					if(pg.getProductGroupId().equals(pgr.getProductGroupId())) {
+//						continue;
+//					}
+//					else if(pgr.getParentGroupId()!=null &&  pgr.getParentGroupId().equals(pg.getProductGroupId())) {
+//						childGroups.add(pgr.getGroupName());
+//					}
+//				}
+//				groups.put(pg.getGroupName(), childGroups);
+//			}
+			
+//			pgLst.clear();
+//			parentGroups.clear();
+
+			
+			
+			List<BlogGroup> blogGroups = blogGroupDao.getAll();
+			session.setAttribute("blogGroups", blogGroups);
+			
+			
+			if(acc != null ) {//get cart if user logged in
+				Customer cus = customerDao.getByEmail(acc.getEmail());
+				Cart cart =cartDao.getById(cus.getCartId());
+				req.setAttribute("cart", cart);
+				Map<String,Integer> productsInCart =cart.getProducts();
+
+				Map<Product,Integer> products= new HashMap<Product, Integer>();
+				for(String key : productsInCart.keySet()) {
+					products.put(productDao.getById(key),productsInCart.get(key));
+				}
+				req.setAttribute("productInCart", products);
+			}
+			
+			GeneralSettings g=  generalDao.get();
+			session.setAttribute("general", g);
+			session.setAttribute("productGroups", groups);
+			session.setAttribute("brands", brandDao.getAll());
+
+			return "dashboard";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+	        req.setAttribute("errorMessage", "Có lỗi khi tải trang chủ!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "dashboard";
+			
+		}
+
 	}
+	
 }

@@ -162,7 +162,7 @@ public class AdminEmployeeController {
 		}
 		
 		// Validate citizen ID format
-		if(emp.getCitizenId() != null && !emp.getCitizenId().isEmpty() && !ValidationUtils.isValidName(emp.getCitizenId())) {
+		if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() ) {
 			redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
@@ -178,6 +178,8 @@ public class AdminEmployeeController {
 		}
 		try
 		{
+			
+			
 			if (emp.getStatus() == null) {
 				emp.setStatus("Inactive");
 	        }
@@ -227,6 +229,44 @@ public class AdminEmployeeController {
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.POST)
 	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+
+				// Validate phone format
+				if(ValidationUtils.isValidPhone(emp.getPhone()) == false) {
+			    	String referer = req.getHeader("Referer");
+					System.out.println(referer);
+					redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!"); 
+					return "redirect:" + referer;
+				}
+				// Validate name format
+				if(ValidationUtils.isValidName(emp.getFullName()) == false) {
+			    	String referer = req.getHeader("Referer");
+					System.out.println(referer);
+					redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!"); 
+					return "redirect:" + referer;
+				}
+				
+				// Validate citizen ID format
+				if(!(emp.getCitizenId() != null) || emp.getCitizenId().isEmpty()) {
+			    	String referer = req.getHeader("Referer");
+					System.out.println(referer);
+					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
+					return "redirect:" + referer;
+				}
+				// Validate address format
+				if(emp.getAddress() != null && !emp.getAddress().isEmpty() && !ValidationUtils.isValidName(emp.getAddress())) {
+			    	String referer = req.getHeader("Referer");
+					System.out.println(referer);
+					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
+					return "redirect:" + referer;
+				}
+				// Validate date of birth format
+				if(emp.getBirthDate() != null && emp.getBirthDate().toString().isEmpty()) {
+			    	String referer = req.getHeader("Referer");
+					System.out.println(referer);
+					redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
+					return "redirect:" + referer;
+				}
+				
 		try
 		{
 			if (emp.getStatus() == null) {

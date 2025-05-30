@@ -85,7 +85,7 @@
                             <c:if test="${not empty error}">
                                 <div class="alert alert-danger">${error}</div>
                             </c:if>
-                            <form:form action="${pageContext.request.contextPath}/admin/product/import/add.htm" method="post" modelAttribute="importForm">
+                            <form:form action="${pageContext.request.contextPath}/admin/product/import/add.htm" method="post" modelAttribute="importForm" onsubmit="return validateForm()">
                                 <div class="row">
                                     <!-- Cột 1: Thông tin phiếu nhập -->
                                     <div class="col-lg-6 order-info-column">
@@ -190,9 +190,14 @@
             const amount = parseInt(document.getElementById("amount").value);
             const price = parseFloat(document.getElementById("price").value);
 
-            if (!productId || amount <= 0 || price < 0) {
+            if (!productId) {
                 alert("Vui lòng nhập đầy đủ thông tin sản phẩm!");
                 return;
+            }
+            
+            if (amount <= 0 || price < 0) {
+            	alert("Số lượng hoặc giá tiền không được âm!");
+            	return;
             }
 
             const existingProduct = selectedProducts.find(p => p.productId === productId);
@@ -239,6 +244,14 @@
             const totalCost = selectedProducts.reduce((sum, product) => sum + (product.amount * product.price), 0);
             $('#totalCostlbl').text(formatCurrency(totalCost));
 	        $('#importCost').val(totalCost);
+        }
+        
+        function validateForm() {
+            if (selectedProducts.length === 0) {
+                alert("Vui lòng chọn ít nhất một sản phẩm");
+                return false;
+            }
+            return true;
         }
     </script>
 </body>
