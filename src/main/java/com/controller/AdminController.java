@@ -2,6 +2,7 @@ package com.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
@@ -200,25 +201,31 @@ public class AdminController {
         
         // Setup date range
         java.util.Date today = new java.util.Date();
-        int currentYear = today.getYear() + 1900;
-        int currentMonth = today.getMonth();
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(today);
+        int currentYear = cal.get(java.util.Calendar.YEAR);
+        int currentMonth = cal.get(java.util.Calendar.MONTH);
         
         java.sql.Date startDate = null;
         java.sql.Date endDate = null;
         
         // Auto-filter from beginning of current year to today if not specified
         if (fromDate == null || fromDate.isEmpty()) {
-            startDate = new java.sql.Date(currentYear - 1900, 0, 1); // Start of current year
+            cal.set(currentYear, 0, 1, 0, 0, 0);
+            cal.set(java.util.Calendar.MILLISECOND, 0);
+            startDate = new java.sql.Date(cal.getTimeInMillis());
         } else {
             try {
                 startDate = java.sql.Date.valueOf(fromDate);
             } catch (Exception e) {
-                startDate = new java.sql.Date(currentYear - 1900, 0, 1);
+                cal.set(currentYear, 0, 1, 0, 0, 0);
+                cal.set(java.util.Calendar.MILLISECOND, 0);
+                startDate = new java.sql.Date(cal.getTimeInMillis());
             }
         }
         
         if (toDate == null || toDate.isEmpty()) {
-            endDate = new java.sql.Date(today.getTime()); // Today
+            endDate = new java.sql.Date(today.getTime());
         } else {
             try {
                 endDate = java.sql.Date.valueOf(toDate);
@@ -234,8 +241,6 @@ public class AdminController {
         // Get orders within date range
         List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(startDate, endDate, "Completed");
         
-        //get pending orders
-        
         // Initialize income tracking
         BigDecimal[] income = new BigDecimal[12];
         for (int i = 0; i < income.length; i++) {
@@ -247,16 +252,14 @@ public class AdminController {
         List<Order> ordersThisMonth = new ArrayList<>();
         List<Order> ordersLastMonth = new ArrayList<>();
         List<Order> ordersLastYear = new ArrayList<>();
-        int totalProductThisYear = 0;
-        int totalProductLastYear = 0;
         
         // For tracking daily income (for chart)
         List<BigDecimal> dailyIncome = new ArrayList<>();
         List<String> labels = new ArrayList<>();
         
         // Create date labels for each day in the range
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(startDate);
+        java.util.Calendar startCal = java.util.Calendar.getInstance();
+        startCal.setTime(startDate);
         java.util.Calendar endCal = java.util.Calendar.getInstance();
         endCal.setTime(endDate);
         endCal.add(java.util.Calendar.DATE, 1); // Include end date
@@ -264,27 +267,33 @@ public class AdminController {
         // Initialize daily income map
         Map<String, BigDecimal> dailyIncomeMap = new HashMap<>();
         
-        while (cal.before(endCal)) {
-            String dateStr = new java.sql.Date(cal.getTimeInMillis()).toString();
+        while (startCal.before(endCal)) {
+            String dateStr = new java.sql.Date(startCal.getTimeInMillis()).toString();
             labels.add(dateStr);
             dailyIncomeMap.put(dateStr, BigDecimal.ZERO);
-            cal.add(java.util.Calendar.DATE, 1);
+            startCal.add(java.util.Calendar.DATE, 1);
         }
         
         // Product sales tracking
         Map<Product, Integer> products = new TreeMap<>(new Comparator<Product>() {
             @Override
             public int compare(Product p1, Product p2) {
-                return p2.getProductId().compareTo(p1.getProductId());
+                return p1.getProductId().compareTo(p2.getProductId());
             }
         });
         
         // Process orders for statistics
         BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalCost = BigDecimal.ZERO;
+        int totalProductThisYear = 0;
+        int totalProductLastYear = 0;
+        
         for (Order o : orders) {
             Date orderDate = o.getOrderDate();
-            int orderYear = orderDate.getYear() + 1900;// Adjust year to match java.util.Date
-            int orderMonth = orderDate.getMonth();// Adjust month to match java.util.Date
+            java.util.Calendar orderCal = java.util.Calendar.getInstance();
+            orderCal.setTime(orderDate);
+            int orderYear = orderCal.get(java.util.Calendar.YEAR);
+            int orderMonth = orderCal.get(java.util.Calendar.MONTH);
             
             // Add to monthly income
             income[orderMonth] = income[orderMonth].add(o.getTotalCost());
@@ -299,12 +308,30 @@ public class AdminController {
                 dailyIncomeMap.put(orderDateStr, dayIncome.add(o.getTotalCost()));
             }
             
+            // Get order details to calculate costs
+            List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(o.getOrderId());
+            BigDecimal orderCostPrice = BigDecimal.ZERO;
+            
+            for (OrderDetail detail : orderDetails) {
+                Product product = productDao.getById(detail.getProductId());
+                if (product != null) {
+                    // Calculate cost for this order detail
+                    BigDecimal detailCost = new BigDecimal(product.getCostPrice())
+                        .multiply(new BigDecimal(detail.getAmount()));
+                    orderCostPrice = orderCostPrice.add(detailCost);
+                    
+                    // Track product sales
+                    products.put(product, products.getOrDefault(product, 0) + detail.getAmount());
+                }
+            }
+            
+            totalCost = totalCost.add(orderCostPrice);
+            
             // Categorize orders by year and month
             if (orderYear == currentYear) {
                 ordersThisYear.add(o);
                 
                 // Count products sold this year
-                List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(o.getOrderId());
                 totalProductThisYear += orderDetails.stream().mapToInt(OrderDetail::getAmount).sum();
                 
                 if (orderMonth == currentMonth) {
@@ -316,17 +343,7 @@ public class AdminController {
                 ordersLastYear.add(o);
                 
                 // Count products sold last year
-                List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(o.getOrderId());
                 totalProductLastYear += orderDetails.stream().mapToInt(OrderDetail::getAmount).sum();
-            }
-            
-            // Process product sales
-            List<OrderDetail> details = orderDetailDao.getAllByOrderId(o.getOrderId());
-            for (OrderDetail detail : details) {
-                Product product = productDao.getById(detail.getProductId());
-                if (product != null) {
-                    products.put(product, products.getOrDefault(product, 0) + detail.getAmount());
-                }
             }
         }
         
@@ -335,23 +352,29 @@ public class AdminController {
             dailyIncome.add(dailyIncomeMap.getOrDefault(dateStr, BigDecimal.ZERO));
         }
         
-        // Calculate statistics for this month
-        BigDecimal incomeThisMonth = income[currentMonth];
-        BigDecimal incomeLastMonth = income[currentMonth > 0 ? currentMonth - 1 : 11];
-        BigDecimal incomeGrowth = BigDecimal.ZERO;
+        // Calculate profit (income - cost)
+        BigDecimal totalProfit = totalIncome.subtract(totalCost);
         
+        // Calculate statistics for this month vs last month
+        BigDecimal incomeThisMonth = income[currentMonth];
+        BigDecimal incomeLastMonth = currentMonth > 0 ? income[currentMonth - 1] : income[11];
+        
+        // Calculate income growth percentage
+        BigDecimal incomeGrowth = BigDecimal.ZERO;
         if (incomeLastMonth.compareTo(BigDecimal.ZERO) > 0) {
             incomeGrowth = incomeThisMonth.subtract(incomeLastMonth)
                          .multiply(new BigDecimal(100))
-                         .divide(incomeLastMonth, 2, BigDecimal.ROUND_HALF_UP);
-        } else {
-            incomeLastMonth = BigDecimal.ONE;
+                         .divide(incomeLastMonth, 2, RoundingMode.HALF_UP);
+        } else if (incomeThisMonth.compareTo(BigDecimal.ZERO) > 0) {
+            incomeGrowth = new BigDecimal(100); // 100% growth if last month was 0
         }
         
         // Calculate product growth
         int productGrowth = 0;
         if (totalProductLastYear > 0) {
             productGrowth = ((totalProductThisYear - totalProductLastYear) * 100) / totalProductLastYear;
+        } else if (totalProductThisYear > 0) {
+            productGrowth = 100; // 100% growth if last year was 0
         }
         
         // Calculate order growth
@@ -360,6 +383,8 @@ public class AdminController {
         int orderGrowth = 0;
         if (orderLastMonthCount > 0) {
             orderGrowth = ((orderThisMonthCount - orderLastMonthCount) * 100) / orderLastMonthCount;
+        } else if (orderThisMonthCount > 0) {
+            orderGrowth = 100; // 100% growth if last month was 0
         }
         
         // Calculate account growth
@@ -369,31 +394,30 @@ public class AdminController {
         for (Account a : accs) {
             if (a.getCreatedAt() != null) {
                 LocalDateTime createdAt = a.getCreatedAt().toLocalDateTime();
-                if(createdAt.isAfter(startDate.toLocalDate().atStartOfDay()) && createdAt.isBefore(endDate.toLocalDate().atStartOfDay())) {
-					newAccs.add(a);
-				}
+                LocalDateTime startDateTime = startDate.toLocalDate().atStartOfDay();
+                LocalDateTime endDateTime = endDate.toLocalDate().atTime(23, 59, 59);
                 
+                if (createdAt.isAfter(startDateTime) && createdAt.isBefore(endDateTime)) {
+                    newAccs.add(a);
+                }
             }
         }
         
         // Get pending orders
         List<Order> newOrders = orderDao.getOrderByStatus("Pending");
         
-        
-        for(int i = 0; i < labels.size(); i++) {
-        	String label = labels.get(i);
-			labels.set(i, "'" + label + "'"); // Format to YYYY-MM-DD
-		}
-        
-        for(int i = 0; i < dailyIncome.size(); i++) {
-        	BigDecimal incomeValue = dailyIncome.get(i);
-            if(incomeValue.compareTo(BigDecimal.ZERO) < 0) {
-            	dailyIncome.set(i, BigDecimal.ZERO); // Ensure no negative values
-            }
-            else {
-            	dailyIncome.set(i, dailyIncome.get(i).setScale(2, BigDecimal.ROUND_HALF_UP)); // Format to 2 decimal places
-            }
+        // Format labels for JavaScript
+        for (int i = 0; i < labels.size(); i++) {
+            String label = labels.get(i);
+            labels.set(i, "'" + label + "'");
         }
+        
+        // Format daily income values
+        for (int i = 0; i < dailyIncome.size(); i++) {
+            BigDecimal incomeValue = dailyIncome.get(i);
+            dailyIncome.set(i, incomeValue.setScale(2, RoundingMode.HALF_UP));
+        }
+        
         // Set request attributes for view
         req.setAttribute("income", income);
         req.setAttribute("dailyIncome", dailyIncome);
@@ -406,14 +430,15 @@ public class AdminController {
         req.setAttribute("ordersThisMonth", ordersThisMonth);
         req.setAttribute("orderGrowth", orderGrowth);
         req.setAttribute("newOrders", newOrders);
-        req.setAttribute("newAccs",newAccs);
+        req.setAttribute("newAccs", newAccs);
         req.setAttribute("incomeLastMonth", incomeLastMonth);
         req.setAttribute("incomeThisMonth", incomeThisMonth);
         req.setAttribute("incomeGrowth", incomeGrowth);
         req.setAttribute("products", products);
-        req.setAttribute("dailyIncome", dailyIncome);
         req.setAttribute("labels", labels);
         req.setAttribute("totalIncome", totalIncome);
+        req.setAttribute("totalCost", totalCost);
+        req.setAttribute("totalProfit", totalProfit);
         
         return "adminview/statistic";
     }
@@ -458,6 +483,7 @@ public class AdminController {
         req.setAttribute("toDate", endDate);
     	return "adminview/report/product-report";
     }
+    
     @RequestMapping("/financial-report")
     public String showFinancialReport(HttpServletRequest req) {
         String fromDate = req.getParameter("fromDate");
@@ -470,14 +496,12 @@ public class AdminController {
 
         // Get orders from DAO
         List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
-        
         List<Import> imports = importDao.getAll();
-        
-        
 
         // Initialize totals
         BigDecimal totalIncome = BigDecimal.ZERO;
-        BigDecimal totalCost = BigDecimal.ZERO;
+        BigDecimal totalCost = BigDecimal.ZERO; // Tổng giá nhập của sản phẩm đã bán
+        BigDecimal totalImportCost = BigDecimal.ZERO; // Tổng chi phí nhập hàng
 
         // Aggregate data by day for chart
         Map<LocalDate, BigDecimal> revenueByDate = new HashMap<>();
@@ -486,50 +510,57 @@ public class AdminController {
 
         // Initialize maps with zeros for all dates in range
         for (LocalDate date : dateRange) {
-        	System.out.println(date);
+            System.out.println(date);
             revenueByDate.put(date, BigDecimal.ZERO);
             costByDate.put(date, BigDecimal.ZERO);
         }
-    	BigDecimal productCost = BigDecimal.ZERO;
 
-        // Aggregate revenue and cost from orders
+        // Aggregate revenue and product cost from orders
         for (Order order : orders) {
-        	
-        	List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
-     	   // calculate product cost from order details
-        	for (OrderDetail detail : orderDetails) {
-				Product product = productDao.getById(detail.getProductId());
-				if (product != null) {
-					productCost = productCost.add(BigDecimal.valueOf(detail.getAmount()*(product.getCostPrice())));
-					totalCost = totalCost.add(productCost);
-				}
-			}
-        	
+            List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
+            
+            // Calculate product cost from order details (giá nhập của sản phẩm đã bán)
+            BigDecimal orderProductCost = BigDecimal.ZERO;
+            for (OrderDetail detail : orderDetails) {
+                Product product = productDao.getById(detail.getProductId());
+                if (product != null) {
+                    BigDecimal detailCost = BigDecimal.valueOf(detail.getAmount()).multiply(BigDecimal.valueOf(product.getCostPrice()));
+                    orderProductCost = orderProductCost.add(detailCost);
+                }
+            }
+            
+            totalCost = totalCost.add(orderProductCost); // Cộng giá nhập sản phẩm vào tổng chi phí
+            
             LocalDate orderDate = order.getOrderDate().toLocalDate();
             if (!orderDate.isBefore(startDate) && !orderDate.isAfter(endDate)) {
-                BigDecimal orderCost = order.getTotalCost();
-                totalIncome = totalIncome.add(orderCost);
-                totalCost = totalCost.add(orderCost); // Assuming cost equals revenue for now
-                revenueByDate.merge(orderDate, orderCost, BigDecimal::add);
-//                costByDate.merge(orderDate, orderCost, BigDecimal::add); // Adjust if cost calculation differs
+                BigDecimal orderRevenue = order.getTotalCost();
+                totalIncome = totalIncome.add(orderRevenue);
+                
+                // Add revenue to chart data
+                revenueByDate.merge(orderDate, orderRevenue, BigDecimal::add);
+                // Add product cost to chart data
+                costByDate.merge(orderDate, orderProductCost, BigDecimal::add);
             }
         }
+
+        // Calculate import costs (chỉ để hiển thị thông tin, không tính vào totalCost)
         for (Import imp : imports) {
-			LocalDate importDate = imp.getImportDate().toLocalDate();
-			if (!importDate.isBefore(startDate) && !importDate.isAfter(endDate)) {
-				BigDecimal importCost = imp.getImportCost();
-				totalCost = totalCost.add(importCost);
-				costByDate.merge(importDate, importCost, BigDecimal::add);
-			}
-		}
+            LocalDate importDate = imp.getImportDate().toLocalDate();
+            if (!importDate.isBefore(startDate) && !importDate.isAfter(endDate)) {
+                BigDecimal importCost = imp.getImportCost();
+                totalImportCost = totalImportCost.add(importCost);
+                // Import cost không được thêm vào costByDate vì nó không phải chi phí bán hàng
+            }
+        }
+
         // Prepare chart data
         List<String> labels = dateRange.stream()
                 .map(LocalDate::toString)
                 .collect(Collectors.toList());
         for (int i = 0; i < labels.size(); i++) {
-			String label = labels.get(i);	
-			labels.set(i, "'"+label+"'" ); // Format to YYYY-MM-DD
-		}
+            String label = labels.get(i);
+            labels.set(i, "'" + label + "'"); // Format to YYYY-MM-DD
+        }
         List<BigDecimal> revenueData = dateRange.stream()
                 .map(revenueByDate::get)
                 .collect(Collectors.toList());
@@ -538,33 +569,39 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         // Calculate profit and profit margin
-        BigDecimal profit = totalIncome.subtract(totalCost);
-        
+        BigDecimal profit = totalIncome.subtract(totalCost); // Doanh thu - Giá nhập sản phẩm đã bán
+        BigDecimal shippingCost = totalIncome.subtract(totalCost); // Phí vận chuyển = Doanh thu - Giá nhập sản phẩm
+
         Map<String, BigDecimal> costDetails = new HashMap<>();
         costDetails.put("Lợi nhuận", profit);
-        costDetails.put("Tổng chi phí", totalCost);
-        costDetails.put("Tổng doanh thu", totalIncome); // Assuming cost equals revenue for orders
-        costDetails.put("Tổng phí vận chuyển", totalIncome.subtract(productCost)); // Assuming cost equals revenue for orders
-        costDetails.put("Tổng giá trị hàng bán", productCost); // Total cost of products sold
-        if(totalIncome.compareTo(BigDecimal.ZERO) > 0) {
-			req.setAttribute("profitRate", profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, BigDecimal.ROUND_HALF_UP));
-		} else {
-			req.setAttribute("profitRate", BigDecimal.ZERO);
-		}
+        costDetails.put("Tổng chi phí", totalCost); // Tổng giá nhập sản phẩm đã bán
+        costDetails.put("Tổng doanh thu", totalIncome);
+        costDetails.put("Tổng phí vận chuyển", shippingCost);
+        costDetails.put("Tổng giá trị hàng bán", totalCost); // Giống với tổng chi phí
+        
+        if (totalIncome.compareTo(BigDecimal.ZERO) > 0) {
+        	req.setAttribute("profitRate", profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, RoundingMode.HALF_UP));
+        } else {
+            req.setAttribute("profitRate", BigDecimal.ZERO);
+        }
+
         // Set attributes for view
         System.out.println("Total Income: " + totalIncome);
-        System.out.println("Total Cost: " + totalCost);
+        System.out.println("Total Cost (Product Cost): " + totalCost);
+        System.out.println("Total Import Cost: " + totalImportCost);
         System.out.println("Profit: " + profit);
+        
         req.setAttribute("labels", labels);
         req.setAttribute("revenueData", revenueData);
         req.setAttribute("costData", costData);
         req.setAttribute("totalIncome", totalIncome);
         req.setAttribute("totalCost", totalCost);
         req.setAttribute("profit", profit);
-        req.setAttribute("shippingCost", totalIncome.subtract(productCost));
+        req.setAttribute("shippingCost", shippingCost);
         req.setAttribute("costDetails", costDetails);
         req.setAttribute("fromDate", startDate.toString());
-        req.setAttribute("toDate", endDate.toString());        
+        req.setAttribute("toDate", endDate.toString());
+        
         return "adminview/report/financial-report";
     }
     
@@ -777,120 +814,141 @@ public class AdminController {
             sheet.autoSizeColumn(i);
         }
     }
-      private void createFinancialReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
+    private void createFinancialReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
         Sheet sheet = workbook.createSheet("Báo cáo tài chính");
-        
-        // Create styles
+
         CellStyle headerStyle = createHeaderStyle(workbook);
         CellStyle titleStyle = createTitleStyle(workbook);
         CellStyle dataStyle = createDataStyle(workbook);
         CellStyle currencyStyle = createCurrencyStyle(workbook);
-        
+
         int rowNum = 0;
-        
-        // Title
+
+        // Tiêu đề
         Row titleRow = sheet.createRow(rowNum++);
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue("BÁO CÁO TÀI CHÍNH");
         titleCell.setCellStyle(titleStyle);
-        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
-        
-        // Date range
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 9));
+
+        // Khoảng thời gian
         Row dateRow = sheet.createRow(rowNum++);
-        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + 
-                                          " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 3));
-        
-        rowNum++; // Empty row
-        
-        // Use the same calculation logic as the /financial-report endpoint
+        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+                                           " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 9));
+
+        rowNum++;
+
+        // Dữ liệu đơn hàng
         List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
-        List<Import> imports = importDao.getAll();
-        
-        // Initialize totals
-        BigDecimal totalIncome = BigDecimal.ZERO;
+
+        BigDecimal totalRevenue = BigDecimal.ZERO;
         BigDecimal totalCost = BigDecimal.ZERO;
-        BigDecimal productCost = BigDecimal.ZERO;
-        
-        // Calculate product cost from order details (matching /financial-report endpoint)
+
+        List<Object[]> detailRows = new ArrayList<>();
+
         for (Order order : orders) {
-            List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
-            for (OrderDetail detail : orderDetails) {
+            List<OrderDetail> details = orderDetailDao.getAllByOrderId(order.getOrderId());
+
+            BigDecimal orderTotal = order.getTotalCost();
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            totalRevenue = totalRevenue.add(orderTotal);
+
+            boolean isFirst = true;
+
+            for (OrderDetail detail : details) {
                 Product product = productDao.getById(detail.getProductId());
-                if (product != null) {
-                    productCost = productCost.add(BigDecimal.valueOf(detail.getAmount() * product.getCostPrice()));
+                if (product == null) continue;
+
+                BigDecimal costPrice = BigDecimal.valueOf(product.getCostPrice());
+                BigDecimal totalItemCost = costPrice.multiply(BigDecimal.valueOf(detail.getAmount()));
+                totalCost = totalCost.add(totalItemCost);
+
+                detailRows.add(new Object[]{
+                    isFirst ? order.getOrderId() : "",
+                    isFirst ? orderDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "",
+                    isFirst ? orderTotal.doubleValue() : "",
+                    isFirst ? "Hoàn thành" : "",
+                    detail.getProductId(),
+                    product.getProductName(),
+                    detail.getAmount(),
+                    detail.getUnitPrice(),
+                    product.getCostPrice(),
+                    totalItemCost.doubleValue()
+                });
+                isFirst = false;
+            }
+        }
+
+        BigDecimal profit = totalRevenue.subtract(totalCost);
+        BigDecimal profitRate = totalRevenue.compareTo(BigDecimal.ZERO) > 0 ?
+                profit.multiply(BigDecimal.valueOf(100)).divide(totalRevenue, 2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+
+        // Tóm tắt tài chính
+        sheet.createRow(rowNum++); // trống
+        Row summaryHeader = sheet.createRow(rowNum++);
+        summaryHeader.createCell(0).setCellValue("Tóm Tắt Tài Chính");
+
+        Object[][] summary = {
+            {"Tổng doanh thu", totalRevenue.doubleValue()},
+            {"Tổng chi phí", totalCost.doubleValue()},
+            {"Lợi nhuận", profit.doubleValue()},
+            {"Tỷ suất lợi nhuận", profitRate.doubleValue()}
+        };
+
+        for (Object[] rowData : summary) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue((String) rowData[0]);
+            Cell valCell = row.createCell(1);
+            valCell.setCellValue((Double) rowData[1]);
+            if (!"Tỷ suất lợi nhuận".equals(rowData[0])) {
+                valCell.setCellStyle(currencyStyle);
+            } else {
+                valCell.setCellStyle(dataStyle);
+            }
+        }
+
+        rowNum++;
+        sheet.createRow(rowNum++).createCell(0).setCellValue("Chi Tiết Đơn Hàng");
+
+        // Header chi tiết
+        String[] headers = {
+            "Mã Đơn Hàng", "Ngày Đặt Hàng", "Tổng Tiền Đơn", "Trạng Thái",
+            "Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Giá", "Giá Vốn", "Tổng Giá Vốn SP"
+        };
+
+        Row headerRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Dữ liệu chi tiết đơn hàng
+        for (Object[] data : detailRows) {
+            Row row = sheet.createRow(rowNum++);
+            for (int i = 0; i < data.length; i++) {
+                Cell cell = row.createCell(i);
+                Object val = data[i];
+                if (val instanceof String) {
+                    cell.setCellValue((String) val);
+                } else if (val instanceof Number) {
+                    cell.setCellValue(((Number) val).doubleValue());
+                    if (i >= 7 && i <= 9 || i == 2) {
+                        cell.setCellStyle(currencyStyle);
+                    } else {
+                        cell.setCellStyle(dataStyle);
+                    }
                 }
             }
-            
-            LocalDate orderDate = order.getOrderDate().toLocalDate();
-            if (!orderDate.isBefore(startDate) && !orderDate.isAfter(endDate)) {
-                BigDecimal orderCost = order.getTotalCost();
-                totalIncome = totalIncome.add(orderCost);
-            }
         }
-        
-        // Add import costs for the date range
-        for (Import imp : imports) {
-            LocalDate importDate = imp.getImportDate().toLocalDate();
-            if (!importDate.isBefore(startDate) && !importDate.isAfter(endDate)) {
-                BigDecimal importCost = imp.getImportCost();
-                totalCost = totalCost.add(importCost);
-            }
-        }
-        
-        // Calculate shipping cost (matching /financial-report endpoint logic)
-        BigDecimal shippingCost = totalIncome.subtract(productCost);
-        
-        // Calculate profit and profit rate
-        BigDecimal profit = totalIncome.subtract(totalCost);
-        BigDecimal profitRate = totalIncome.compareTo(BigDecimal.ZERO) > 0 ? 
-                profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, BigDecimal.ROUND_HALF_UP) : 
-                BigDecimal.ZERO;
-        
-        // Create cost details map (matching /financial-report endpoint)
-        Map<String, BigDecimal> costDetails = new HashMap<>();
-        costDetails.put("Lợi nhuận", profit);
-        costDetails.put("Tổng chi phí", totalCost);
-        costDetails.put("Tổng doanh thu", totalIncome);
-        costDetails.put("Tổng phí vận chuyển", shippingCost);
-        costDetails.put("Tổng giá trị hàng bán", productCost);
-        
-        // Financial summary
-        Row headerRow = sheet.createRow(rowNum++);
-        headerRow.createCell(0).setCellValue("Chỉ số tài chính");
-        headerRow.createCell(1).setCellValue("Giá trị (VNĐ)");
-        headerRow.getCell(0).setCellStyle(headerStyle);
-        headerRow.getCell(1).setCellStyle(headerStyle);
-        
-        String[] metrics = {"Tổng doanh thu", "Tổng giá trị hàng bán", "Tổng phí vận chuyển", "Tổng chi phí nhập hàng", "Lợi nhuận", "Tỷ lệ lợi nhuận (%)"};
-        BigDecimal[] values = {totalIncome, productCost, shippingCost, totalCost, profit, profitRate};
-        
-        for (int i = 0; i < metrics.length; i++) {
-            Row dataRow = sheet.createRow(rowNum++);
-            dataRow.createCell(0).setCellValue(metrics[i]);
-            if (i == metrics.length - 1) { // Profit rate percentage
-                dataRow.createCell(1).setCellValue(values[i].doubleValue());
-                dataRow.getCell(1).setCellStyle(dataStyle);
-            } else {
-                dataRow.createCell(1).setCellValue(values[i].doubleValue());
-                dataRow.getCell(1).setCellStyle(currencyStyle);
-            }
-            dataRow.getCell(0).setCellStyle(dataStyle);
-        }
-          rowNum += 2; // Empty rows
-        
-        // Filter imports for the date range for display
-        List<Import> filteredImports = imports.stream()
-                .filter(imp -> !imp.getImportDate().toLocalDate().isBefore(startDate) && 
-                              !imp.getImportDate().toLocalDate().isAfter(endDate))
-                .collect(Collectors.toList());
-        
-        
-        // Auto-size columns
-        for (int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
     }
+
+
     
     private CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
