@@ -167,18 +167,17 @@ public class AdminEmployeeController {
 			return "redirect:/admin/employee/add.htm";
 		}
 		// Validate address format
-		if(emp.getAddress() != null && !emp.getAddress().isEmpty() && !ValidationUtils.isValidName(emp.getAddress())) {
+		if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
 		// Validate date of birth format
-		if(emp.getBirthDate() != null && emp.getBirthDate().toString().isEmpty()) {
+		if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
 		try
 		{
-			
 			
 			if (emp.getStatus() == null) {
 				emp.setStatus("Inactive");
@@ -246,21 +245,21 @@ public class AdminEmployeeController {
 				}
 				
 				// Validate citizen ID format
-				if(!(emp.getCitizenId() != null) || emp.getCitizenId().isEmpty()) {
+				if((emp.getCitizenId() == null) || emp.getCitizenId().isEmpty()) {
 			    	String referer = req.getHeader("Referer");
 					System.out.println(referer);
 					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
 					return "redirect:" + referer;
 				}
 				// Validate address format
-				if(emp.getAddress() != null && !emp.getAddress().isEmpty() && !ValidationUtils.isValidName(emp.getAddress())) {
+				if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
 			    	String referer = req.getHeader("Referer");
 					System.out.println(referer);
 					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
 					return "redirect:" + referer;
 				}
 				// Validate date of birth format
-				if(emp.getBirthDate() != null && emp.getBirthDate().toString().isEmpty()) {
+				if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
 			    	String referer = req.getHeader("Referer");
 					System.out.println(referer);
 					redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
