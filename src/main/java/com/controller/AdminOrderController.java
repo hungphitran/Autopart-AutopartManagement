@@ -404,10 +404,15 @@ public class AdminOrderController {
 		{
 			// Tìm thông tin khách hàng
 			Customer existedCus = customerDao.getByEmail(order.getUserEmail());
+			System.out.println(existedCus);
 			if (existedCus == null) {
+				
 				Account acc = new Account(order.getUserEmail(), getMD5Hash("1111"), null, "RG002", "Active",  Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false); 
+				System.out.println(acc);
+
 				accountDao.add(acc);
 				
+
 				// Lưu khách hàng
 				Customer cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(), order.getShipAddress(), "Active",Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()) );
 				customerDao.add(cus);
