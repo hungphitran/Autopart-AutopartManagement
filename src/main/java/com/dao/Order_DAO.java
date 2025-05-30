@@ -25,8 +25,8 @@ public class Order_DAO {
         try {
             session = factory.openSession();
             String hql = (status == "History") 
-            		? "FROM Order o WHERE o.status IN ('Cancelled', 'Completed')" 
-            		: "FROM Order o WHERE o.status = :status";
+                    ? "FROM Order o WHERE o.status IN ('Cancelled', 'Completed') ORDER BY o.orderDate DESC" 
+                    : "FROM Order o WHERE o.status = :status ORDER BY o.orderDate DESC";
             Query query = session.createQuery(hql);
             if (!status.equals("History")) {
                 query.setParameter("status", status);

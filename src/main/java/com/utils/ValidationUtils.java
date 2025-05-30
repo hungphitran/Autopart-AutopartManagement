@@ -76,6 +76,6 @@ public class ValidationUtils {
 		if (birthDate.after(today)) {
 			return false; // Birth date cannot be in the future
 		}
-		return false;
+		return true;
 	}
 }

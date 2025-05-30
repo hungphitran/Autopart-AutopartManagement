@@ -1010,7 +1010,7 @@ public class AdminController {
 			HttpSession session = req.getSession();
 			Account acc = (Account) session.getAttribute("account");
 			if(getMD5Hash(pass).equals(acc.getPassword()) && newPass.equals(confirmPass)) {
-				acc.setPassword(getMD5Hash(pass));
+				acc.setPassword(getMD5Hash(confirmPass));
 				accountDao.update(acc);
 			}
 			else {

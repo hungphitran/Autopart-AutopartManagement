@@ -391,8 +391,8 @@ public class AdminProductController {
 			            String productId = detail.getId().getProductId();
 			            Product product = productDao.getById(productId);
 			            
-			            product.setStock(product.getStock() + detail.getAmount());
 			            product.setCostPrice((product.getCostPrice() * product.getStock() + detail.getAmount() * detail.getPrice()) / (product.getStock() + detail.getAmount()));
+			            product.setStock(product.getStock() + detail.getAmount());
 			            
 			            
 			            productDao.update(product);

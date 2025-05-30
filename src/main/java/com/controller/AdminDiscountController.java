@@ -85,7 +85,7 @@ public class AdminDiscountController {
 
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm khuyến mãi!"); 
 			e.printStackTrace();
-			return "redirect" + referer;
+			return "redirect:" + referer;
 			
 		}
 	}
@@ -127,7 +127,7 @@ public class AdminDiscountController {
 			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa khuyến mãi!"); 
 			e.printStackTrace();
-			return "redirect" + referer;
+			return "redirect:" + referer;
 			
 		}
 	}  
