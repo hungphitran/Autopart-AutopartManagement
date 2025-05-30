@@ -3,6 +3,7 @@ package com.controller;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -141,67 +142,98 @@ public class AdminEmployeeController {
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.POST)
 	public String addPost(@ModelAttribute("emp") Employee emp, @RequestParam("permission") String permission, HttpServletRequest req, RedirectAttributes redirectAttributes) {
-		// Validate email format
-		if(ValidationUtils.isValidEmail(emp.getEmail()) == false) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		else if (employeeDao.getByEmail(emp.getEmail()) != null) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		// Validate phone format
-		if(ValidationUtils.isValidPhone(emp.getPhone()) == false) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		// Validate name format
-		if(ValidationUtils.isValidName(emp.getFullName()) == false) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		
-		// Validate citizen ID format
-		if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() ) {
-			redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		// Validate address format
-		if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		// Validate date of birth format
-		if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
-			return "redirect:/admin/employee/add.htm";
-		}
-		try
-		{
-			
-			if (emp.getStatus() == null) {
-				emp.setStatus("Inactive");
-	        }
-	        
-			Account acc = new Account(emp.getEmail(), getMD5Hash("1111"), null, permission, emp.getStatus(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-			accountDao.add(acc);
-			
-			employeeDao.add(emp);
-	        redirectAttributes.addFlashAttribute("successMessage", "Thêm nhân viên thành công!"); 
-	        return "redirect:/admin/employee.htm";
-		}
-		catch (Exception e)
-		{
-			String referer = req.getHeader("Referer");
-			System.out.println(referer);
+	    // Validate email format
+	    if (!ValidationUtils.isValidEmail(emp.getEmail())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    } else if (employeeDao.getByEmail(emp.getEmail()) != null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
 
-	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên!"); 
-			e.printStackTrace();
-			return "redirect:/admin/employee.htm";
-			
-		}
-		
+	    // Validate phone format
+	    if (!ValidationUtils.isValidPhone(emp.getPhone())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    // Validate name format
+	    if (!ValidationUtils.isValidName(emp.getFullName())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    // Validate citizen ID
+	    if (emp.getCitizenId() == null || emp.getCitizenId().isEmpty()) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    // Validate address
+	    if (emp.getAddress() == null || emp.getAddress().isEmpty()) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    // Validate birth date
+	    if (emp.getBirthDate() == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    // Validate start date
+	    if (emp.getStartDate() == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu làm việc không hợp lệ!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    LocalDate today = LocalDate.now();
+	    LocalDate birthDate = emp.getBirthDate().toLocalDate();
+	    LocalDate startDate = emp.getStartDate().toLocalDate();
+
+	    if (!birthDate.isBefore(today)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh phải nhỏ hơn ngày hiện tại!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    if (!startDate.isAfter(today)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu làm việc phải lớn hơn ngày hiện tại!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    if (!birthDate.isBefore(startDate)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh phải nhỏ hơn ngày bắt đầu làm việc!");
+	        return "redirect:/admin/employee/add.htm";
+	    }
+
+	    try {
+	        if (emp.getStatus() == null) {
+	            emp.setStatus("Inactive");
+	        }
+
+	        Account acc = new Account(
+	            emp.getEmail(),
+	            getMD5Hash("1111"),
+	            null,
+	            permission,
+	            emp.getStatus(),
+	            Timestamp.valueOf(LocalDateTime.now()),
+	            Timestamp.valueOf(LocalDateTime.now()),
+	            false
+	        );
+
+	        accountDao.add(acc);
+	        employeeDao.add(emp);
+
+	        redirectAttributes.addFlashAttribute("successMessage", "Thêm nhân viên thành công!");
+	        return "redirect:/admin/employee.htm";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên!");
+	        return "redirect:/admin/employee.htm";
+	    }
 	}
+
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.GET)
 	public String edit(@RequestParam("empEmail") String empPhone, HttpServletRequest req, RedirectAttributes redirectAttributes) {
@@ -226,66 +258,79 @@ public class AdminEmployeeController {
 	
 	}
 	
-	@RequestMapping(value = "/employee/edit", method= RequestMethod.POST)
+	@RequestMapping(value = "/employee/edit", method = RequestMethod.POST)
 	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+	    String referer = req.getHeader("Referer");
 
-				// Validate phone format
-				if(ValidationUtils.isValidPhone(emp.getPhone()) == false) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
-					redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!"); 
-					return "redirect:" + referer;
-				}
-				// Validate name format
-				if(ValidationUtils.isValidName(emp.getFullName()) == false) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
-					redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!"); 
-					return "redirect:" + referer;
-				}
-				
-				// Validate citizen ID format
-				if((emp.getCitizenId() == null) || emp.getCitizenId().isEmpty()) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
-					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
-					return "redirect:" + referer;
-				}
-				// Validate address format
-				if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
-					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
-					return "redirect:" + referer;
-				}
-				// Validate date of birth format
-				if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
-					redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
-					return "redirect:" + referer;
-				}
-				
-		try
-		{
-			if (emp.getStatus() == null) {
-				emp.setStatus("Inactive");
+	    // Validate phone format
+	    if (!ValidationUtils.isValidPhone(emp.getPhone())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Validate name format
+	    if (!ValidationUtils.isValidName(emp.getFullName())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Validate citizen ID
+	    if (emp.getCitizenId() == null || emp.getCitizenId().isEmpty()) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Validate address
+	    if (emp.getAddress() == null || emp.getAddress().isEmpty()) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Validate birth date
+	    if (emp.getBirthDate() == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Validate start date
+	    if (emp.getStartDate() == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu làm việc không hợp lệ!");
+	        return "redirect:" + referer;
+	    }
+
+	    // Logic date check
+	    LocalDate today = LocalDate.now();
+	    LocalDate birthDate = emp.getBirthDate().toLocalDate();
+	    LocalDate startDate = emp.getStartDate().toLocalDate();
+
+	    if (!birthDate.isBefore(today)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh phải nhỏ hơn ngày hiện tại!");
+	        return "redirect:" + referer;
+	    }
+
+	    if (!startDate.isAfter(today)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu làm việc phải lớn hơn ngày hiện tại!");
+	        return "redirect:" + referer;
+	    }
+
+	    if (!birthDate.isBefore(startDate)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh phải nhỏ hơn ngày bắt đầu làm việc!");
+	        return "redirect:" + referer;
+	    }
+
+	    try {
+	        if (emp.getStatus() == null) {
+	            emp.setStatus("Inactive");
 	        }
-			
-			employeeDao.update(emp);
-	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa nhân viên thành công!"); 
 
+	        employeeDao.update(emp);
+	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa nhân viên thành công!");
 	        return "redirect:/admin/employee.htm";
-		}
-		catch (Exception e)
-		{
-			String referer = req.getHeader("Referer");
-			System.out.println(referer); 
-	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa nhân viên!"); 
-			e.printStackTrace();
-	        return "redirect:"+ referer ;
-			
-		}
-		
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi chỉnh sửa nhân viên!");
+	        return "redirect:" + referer;
+	    }
 	}
+
 }

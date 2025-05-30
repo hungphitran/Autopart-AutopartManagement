@@ -95,14 +95,14 @@ public class AdminDiscountController {
 	    }
 
 	    // Validate end date (not null and after start date)
-	    if (discount.getApplyEndDate() == null || !ValidationUtils.isValidDate(discount.getApplyEndDate())||
-	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	    if (discount.getApplyStartDate() == null || discount.getApplyEndDate() == null || !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	    	System.out.println("-----------------------");
+	    	System.out.println(discount.getApplyStartDate());
+	    	System.out.println(discount.getApplyEndDate());
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");
 	        return "redirect:/admin/discount/add.htm";
 	    }
-	    
-	    
-	    
+	       
 		
 		try
 		{
