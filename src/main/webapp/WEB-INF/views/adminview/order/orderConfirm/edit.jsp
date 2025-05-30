@@ -174,21 +174,21 @@
 										                         data-usage-limit="${discount.usageLimit}"
 										                         data-apply-start="${discount.applyStartDate}"
 										                         data-apply-end="${discount.applyEndDate}"
-										                         disabled="true"/>
+										                         readonly="true"/>
 										        </c:forEach>
 										    </form:select>
 										</div>
 										<div class="form-group">
                                             <label for="userName">Họ tên khách hàng <span class="required-text">*</span></label>
-                                            <input class="form-control" value="${userName}" name="userName" required disabled placeholder="Nhập họ và tên"/>
+                                            <input class="form-control" value="${userName}" name="userName" required readonly placeholder="Nhập họ và tên"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="userPhone">Số điện thoại khách hàng <span class="required-text">*</span></label>
-                                            <input class="form-control" name="userPhone" required disabled placeholder="Nhập số điện thoại"/>
+                                            <input class="form-control" name="userPhone" required readonly placeholder="Nhập số điện thoại"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="userPhone">Email khách hàng <span class="required-text">*</span></label>
-                                            <form:input class="form-control" path="userEmail" name="userEmail" required="true" disabled="true" placeholder="Nhập email"/>
+                                            <form:input class="form-control" path="userEmail" name="userEmail" required="true" readonly="true" placeholder="Nhập email"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="shipAddress">Địa chỉ giao hàng <span class="required-text">*</span></label>
@@ -441,7 +441,7 @@
             if ($selectedOption) {
                 $selectedOption.prop("selected", true);
              // Disable the selected option to lock it
-                $selectedOption.prop("disabled", true);
+                $selectedOption.prop("readonly", true);
                 
                 // Update total with discount
                 let discountAmount = parseFloat($selectedOption.attr("data-discount-amount")) || 0;
