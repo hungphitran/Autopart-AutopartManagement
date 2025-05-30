@@ -70,7 +70,7 @@
             </div>
 
             <div id="password-message" style="color: red; display: none;"></div>
-            <div>${message}</div>
+            <div style="color: red;">${message}</div>
 
             <button type="submit">Đăng ký</button>
 

@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -233,6 +234,8 @@ public class AdminController {
         // Get orders within date range
         List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(startDate, endDate, "Completed");
         
+        //get pending orders
+        
         // Initialize income tracking
         BigDecimal[] income = new BigDecimal[12];
         for (int i = 0; i < income.length; i++) {
@@ -280,8 +283,8 @@ public class AdminController {
         BigDecimal totalIncome = BigDecimal.ZERO;
         for (Order o : orders) {
             Date orderDate = o.getOrderDate();
-            int orderYear = orderDate.getYear() + 1900;
-            int orderMonth = orderDate.getMonth();
+            int orderYear = orderDate.getYear() + 1900;// Adjust year to match java.util.Date
+            int orderMonth = orderDate.getMonth();// Adjust month to match java.util.Date
             
             // Add to monthly income
             income[orderMonth] = income[orderMonth].add(o.getTotalCost());
@@ -361,25 +364,16 @@ public class AdminController {
         
         // Calculate account growth
         List<Account> accs = accountDao.getAll();
-        List<Account> accsThisMonth = new ArrayList<>();
-        List<Account> accsLastMonth = new ArrayList<>();
+        List<Account> newAccs = new ArrayList<>();
         
         for (Account a : accs) {
             if (a.getCreatedAt() != null) {
-                int accountMonth = a.getCreatedAt().getMonth();
-                if (accountMonth == currentMonth) {
-                    accsThisMonth.add(a);
-                } else if (accountMonth == (currentMonth > 0 ? currentMonth - 1 : 11)) {
-                    accsLastMonth.add(a);
-                }
+                LocalDateTime createdAt = a.getCreatedAt().toLocalDateTime();
+                if(createdAt.isAfter(startDate.toLocalDate().atStartOfDay()) && createdAt.isBefore(endDate.toLocalDate().atStartOfDay())) {
+					newAccs.add(a);
+				}
+                
             }
-        }
-        
-        int accountThisMonthCount = accsThisMonth.size();
-        int accountLastMonthCount = accsLastMonth.size();
-        int accountGrowth = 0;
-        if (accountLastMonthCount > 0) {
-            accountGrowth = ((accountThisMonthCount - accountLastMonthCount) * 100) / accountLastMonthCount;
         }
         
         // Get pending orders
@@ -412,9 +406,7 @@ public class AdminController {
         req.setAttribute("ordersThisMonth", ordersThisMonth);
         req.setAttribute("orderGrowth", orderGrowth);
         req.setAttribute("newOrders", newOrders);
-        req.setAttribute("accsLastMonth", accsLastMonth);
-        req.setAttribute("accsThisMonth", accsThisMonth);
-        req.setAttribute("accountGrowth", accountGrowth);
+        req.setAttribute("newAccs",newAccs);
         req.setAttribute("incomeLastMonth", incomeLastMonth);
         req.setAttribute("incomeThisMonth", incomeThisMonth);
         req.setAttribute("incomeGrowth", incomeGrowth);
@@ -971,7 +963,10 @@ public class AdminController {
 			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!");
 			return "redirect:/admin/profile.htm";
 		}
-		
+		if(!ValidationUtils.isValidPhone(e.getPhone())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
 		try
 		{
 			HttpSession session = req.getSession();
@@ -1002,6 +997,27 @@ public class AdminController {
 	}
 	@RequestMapping(value="/profile/changepass", method= RequestMethod.POST)
 	public String changePass(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate input
+		if(!ValidationUtils.isValidPassword(req.getParameter("newpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidPassword(req.getParameter("confirmpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Xác nhận mật khẩu không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!req.getParameter("newpass").equals(req.getParameter("confirmpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(req.getParameter("newpass").equals(req.getParameter("pass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được trùng với mật khẩu cũ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidPassword(req.getParameter("pass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới quá yếu, vui lòng chọn mật khẩu khác!");
+			return "redirect:/admin/profile.htm";
+		}
 		try
 		{
 			String pass= req.getParameter("pass");
@@ -1009,7 +1025,7 @@ public class AdminController {
 			String confirmPass = req.getParameter("confirmpass");
 			HttpSession session = req.getSession();
 			Account acc = (Account) session.getAttribute("account");
-			if(getMD5Hash(pass).equals(acc.getPassword()) && newPass.equals(confirmPass)) {
+			if(getMD5Hash(pass).equals(acc.getPassword())) {
 				acc.setPassword(getMD5Hash(confirmPass));
 				accountDao.update(acc);
 			}
