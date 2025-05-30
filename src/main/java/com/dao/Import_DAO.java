@@ -30,7 +30,7 @@ public class Import_DAO {
         try {
             session = factory.openSession();
 
-            String hql = "SELECT i FROM Import i LEFT JOIN FETCH i.employee";
+            String hql = "SELECT i FROM Import i LEFT JOIN FETCH i.employee ORDER BY i.importDate DESC";
             Query query = session.createQuery(hql);
             
             List<Import> imports = (List<Import>) query.list();

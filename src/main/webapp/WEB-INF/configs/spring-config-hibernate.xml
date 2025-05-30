@@ -23,6 +23,7 @@
 			p:password="10802">
 
 
+
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->

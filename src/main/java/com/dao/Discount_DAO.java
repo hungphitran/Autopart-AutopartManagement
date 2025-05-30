@@ -264,6 +264,24 @@ public class Discount_DAO {
             if (session != null) session.close();
         }
     }
+    
+    @Transactional
+    public boolean checkExistByUsedDiscount(String email, String discountId) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "SELECT 1 FROM [dbo].[UsedDiscount] ud WHERE ud.email = :email AND ud.discountId = :discountId";
+            Query query = session.createSQLQuery(hql);
+            query.setParameter("email", email);
+            query.setParameter("discountId", discountId);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 
     public String generateNextDiscountId() {
         Session session = null;

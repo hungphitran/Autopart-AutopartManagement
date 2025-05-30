@@ -195,6 +195,13 @@ public class AdminOrderController {
 	        
 	    }
 	    
+	    if(discount!=null && discountDao.checkExistByUsedDiscount(order.getUserEmail(), order.getDiscountId())) 
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Khách hàng đã sử dụng mã khuyến mãi!");  
+	        return "redirect:/admin/order/add.htm";
+	        
+	    }
+	    
 	    	    
 		try
 		{
@@ -397,8 +404,6 @@ public class AdminOrderController {
 	    	order.setShippingType(shippingType);
 	    }
 	    
-	    Discount discount = discountDao.getById(order.getDiscountId());
-
 	    
 		try
 		{
@@ -433,21 +438,24 @@ public class AdminOrderController {
 		    }
 
 		    // Cập nhật Order
-		    orderDao.update(order);
+		    System.out.println(order.getDiscountId());
+		    System.out.println(orderDao.getById(order.getOrderId()).getDiscountId());
 		    
-		    
-		   if (discount == null && order.getDiscountId() != null) 
+		   if (order.getDiscountId() == null && orderDao.getById(order.getOrderId()).getDiscountId() != null) 
 		   {
 		        // Case 3: Previous discount, remove discount
 				//System.out.println(discount.getUsageLimit());
-			   	Discount orderDiscount = discountDao.getById(order.getDiscountId());
+			   	Discount orderDiscount = discountDao.getById(orderDao.getById(order.getOrderId()).getDiscountId());
 				System.out.println(orderDiscount.getUsageLimit());
-		        discountDao.deleteDiscountUsed(order.getDiscountId(), order.getUserEmail());
+		        discountDao.deleteDiscountUsed(orderDiscount.getDiscountId(), order.getUserEmail());
 		        orderDiscount.setUsageLimit(orderDiscount.getUsageLimit() + 1);
 		        discountDao.update(orderDiscount);
 				//System.out.println(discount.getUsageLimit());
 				System.out.println(orderDiscount.getUsageLimit());
 		    }
+		   
+		    orderDao.update(order);
+
 
 		    // Cập nhật chi tiết đơn hàng
 		    if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
@@ -471,6 +479,8 @@ public class AdminOrderController {
 		            orderDetailDao.add(detail);
 		        }
 		    }
+		   
+		   
 	        redirectAttributes.addFlashAttribute("successMessage", "Chỉnh sửa đơn hàng thành công!"); 
 
 		    return "redirect:/admin/order.htm?status=pending";

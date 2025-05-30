@@ -121,7 +121,7 @@ public class AdminProductController {
 	public String addProductPost(@ModelAttribute("product") Product product, @RequestParam("imageFiles") MultipartFile[] imageFiles, HttpServletRequest req, RedirectAttributes redirectAttributes) throws IOException {
 		  // Validate stock (non-negative)
 	    if (product.getWeight() <= 0) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Khối lượn không đucợ bằng 0 hay nhỏ hơn 0!");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Khối lượng không được bằng 0 hay nhỏ hơn 0!");
 	        return "redirect:/admin/product/add.htm";
 	    }
 		
@@ -215,7 +215,7 @@ public class AdminProductController {
             HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		
 		// Validate sale price (positive)
-	    if ( product.getSalePrice() <= 0) {
+	    if (product.getCostPrice() != 0 && product.getSalePrice() <= 0) {
 	    	String referer = req.getHeader("Referer");
 			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Giá bán phải lớn hơn 0!");
@@ -231,12 +231,14 @@ public class AdminProductController {
 	    }
 		
 		// Validate image files (at least one valid image)
-	    if (imageFiles == null || imageFiles.length == 0 || 
-	        Arrays.stream(imageFiles).noneMatch(ValidationUtils::isValidImageFile)) {
-	    	String referer = req.getHeader("Referer");
-			System.out.println(referer);
-	        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng tải lên ít nhất một file ảnh định dạng JPG hoặc PNG!");
-			return "redirect:" + referer;
+	    if (product.getImageUrls().length() == 0) {
+	    	if (imageFiles == null || imageFiles.length == 0 || 
+    	        Arrays.stream(imageFiles).noneMatch(ValidationUtils::isValidImageFile)) {
+    	    	String referer = req.getHeader("Referer");
+    			System.out.println(referer);
+    	        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng tải lên ít nhất một file ảnh định dạng JPG hoặc PNG!");
+    			return "redirect:" + referer;
+    	    }
 	    }
 		
 		try
