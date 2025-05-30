@@ -142,6 +142,7 @@ public class AdminEmployeeController {
 	
 	@RequestMapping(value = "/employee/add", method= RequestMethod.POST)
 	public String addPost(@ModelAttribute("emp") Employee emp, @RequestParam("permission") String permission, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+
 	    // Validate email format
 	    if (!ValidationUtils.isValidEmail(emp.getEmail())) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!");
@@ -261,6 +262,7 @@ public class AdminEmployeeController {
 	@RequestMapping(value = "/employee/edit", method = RequestMethod.POST)
 	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 	    String referer = req.getHeader("Referer");
+
 
 	    // Validate phone format
 	    if (!ValidationUtils.isValidPhone(emp.getPhone())) {

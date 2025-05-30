@@ -316,8 +316,9 @@
 	            return p;
 	        });
 	        updateSelectedProducts(); // Cập nhật lại input ẩn khi thay đổi số lượng
-	        calculateTotal();
 	        updateDiscountOptions();
+
+	        calculateTotal();
 	    }
 	
 	    // Tính tổng tiền
@@ -336,7 +337,10 @@
 	
 	    // Hàm cập nhật danh sách mã giảm giá dựa trên tổng tiền
 	    function updateDiscountOptions() {
-	        const totalCost = Number($('#totalCost').val());
+	        const shippingCost = parseInt($('#shippingType').val()) || 0;
+
+	        const totalCost = Number($('#totalCost').val()) - shippingCost;
+	        console.log(totalCost)
 	        const currentDate = new Date();
 			
 	        $('#discountSelect option').each(function() {

@@ -399,7 +399,9 @@
 
         // Update discount options based on total cost
         function updateDiscountOptions() {
-            const totalCost = Number($('#totalCost').val());
+            const shippingCost = parseInt($('#shippingType').val()) || 0;
+
+            const totalCost = Number($('#totalCost').val()) - shippingCost;
             const currentDate = new Date();
 
             $('#discountSelect option').each(function() {

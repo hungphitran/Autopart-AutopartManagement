@@ -463,9 +463,9 @@ footer {
             </c:otherwise>
         </c:choose>
 
-        <a class="back-btn" href="javascript:history.back()">
-            <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
-        </a>
+        <a class="back-btn" href="/autopart">
+    		<i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+		</a>
     </div>
 
     <footer>
