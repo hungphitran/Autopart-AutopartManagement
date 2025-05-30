@@ -132,7 +132,7 @@
 					        <div class="row no-gutters align-items-center">
 					          <div class="col mr-2">
 					            <div class="text-xs font-weight-bold text-uppercase mb-1">Tài khoản mới</div>
-					            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><c:out value="${accsThisMonth.size()}"/></div>
+					            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><c:out value="${newAccs.size()}"/></div>
 					            <div class="text-xs text-muted mt-2">
 					            </div>
 					          </div>
@@ -180,8 +180,9 @@
 					    <div class="card mb-4">
 					      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 					        <h6 class="m-0 font-weight-bold">Sản phẩm đã bán</h6>
-					        <span class="small text-gray-600"><c:out value="${products.size()}"/> sản phẩm</span>
+					        <span class="small text-gray-600"><c:out value="${products.size()}"/> Sản phẩm</span>
 					      </div>
+					      <c:if test="${products.size() !=0}">
 					      <div class="card-body" id="products">
                             <div class="products-container">
                                 <c:forEach items="${products}" var="p">
@@ -238,6 +239,12 @@
                                 </c:forEach>
                             </div>
                           </div>
+                          </c:if>
+                          <c:if test="${products.size() == 0}">
+                            <div class="card-body text-center">
+                                <p class="text-muted">Không có sản phẩm nào được bán trong khoảng thời gian này.</p>
+                                </div>
+                           </c:if>
                           <div class="card-footer py-2 bg-light">
                             <button id="showMoreProducts" class="btn btn-link text-primary w-100" type="button">
                                 <span class="text-primary">Xem thêm</span>
