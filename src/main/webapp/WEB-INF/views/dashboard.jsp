@@ -104,7 +104,7 @@
                                 <a class="action-btn quick-view" href="/autopart/product/detailproduct.htm?productId=${product.productId}" title="Xem nhanh">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <form action="/autopart/product/add.htm" method="post">
+                                <form action="/autopart/product/addproduct.htm" method="post">
                                     <input type="hidden" name="quantity" value="1">
                                     <input type="hidden" name="productId" value="${product.productId}">
                                     <button type="submit" class="action-btn add-to-cart" title="Thêm vào giỏ" data-product-id="${product.productId}">
@@ -198,12 +198,7 @@
                 <div class="cta-content">
                     <h2>Bạn cần tư vấn về phụ tùng?</h2>
                     <p>Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
-                    <div class="cta-buttons">
-                   
-                        <a class="btn-contact" href="/autopart/order/checkOrder.htm">
-                            <i class="fas fa-magnifying-glass"></i> Tra cứu đơn hàng
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
         </div>

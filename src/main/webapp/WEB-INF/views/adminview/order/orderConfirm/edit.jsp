@@ -142,7 +142,7 @@
 								                                    <form:hidden path="orderDetails[${loop.index}].productId" />
 								                                    <form:hidden path="orderDetails[${loop.index}].productName" />
 								                                    <form:hidden path="orderDetails[${loop.index}].unitPrice" />
-								                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${loop.index})">Xóa</button>
+								                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeProductModal" data-product-id="${detail.productId}">Xóa</button>
 								                                </div>
 								                            </div>
 								                        </c:forEach>
@@ -173,21 +173,26 @@
 										                         data-status="${discount.status}"
 										                         data-usage-limit="${discount.usageLimit}"
 										                         data-apply-start="${discount.applyStartDate}"
-										                         data-apply-end="${discount.applyEndDate}"/>
+										                         data-apply-end="${discount.applyEndDate}"
+										                         disabled="true"/>
 										        </c:forEach>
 										    </form:select>
 										</div>
 										<div class="form-group">
                                             <label for="userName">Họ tên khách hàng <span class="required-text">*</span></label>
-                                            <input class="form-control" value="${userName}" name="userName" required placeholder="Nhập họ và tên"/>
+                                            <input class="form-control" value="${userName}" name="userName" required disabled placeholder="Nhập họ và tên"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userPhone">Số điện thoại khách hàng <span class="required-text">*</span></label>
+                                            <input class="form-control" name="userPhone" required disabled placeholder="Nhập số điện thoại"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="userPhone">Email khách hàng <span class="required-text">*</span></label>
-                                            <form:input class="form-control" path="userEmail" name="userEmail" required="true" placeholder="Nhập số email"/>
+                                            <form:input class="form-control" path="userEmail" name="userEmail" required="true" disabled="true" placeholder="Nhập email"/>
                                         </div>
                                         <div class="form-group">
                                             <label for="shipAddress">Địa chỉ giao hàng <span class="required-text">*</span></label>
-                                            <form:input class="form-control" path="shipAddress" name="shipAddress" required="true" placeholder="Nhập địa chỉ giao hàng"/>
+                                            <form:input class="form-control" path="shipAddress" name="shipAddress" required="true"  placeholder="Nhập địa chỉ giao hàng"/>
                                         </div>
                                         <div class="form-group">
 										    <label for="shippingType">Loại vận chuyển <span class="required-text">*</span></label>
@@ -238,6 +243,26 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Modal Remove Product -->
+                    <div class="modal fade" id="removeProductModal" tabindex="-1" role="dialog" aria-labelledby="removeProductModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="removeProductModalLabel">Xác nhận xóa sản phẩm</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Nếu xóa sản phẩm khiến hóa đơn dưới mức tiền cần thiết để áp dụng khuyến mãi và mã khuyến mãi sẽ tự động hủy, Có thể hủy đơn và đặt lại để sử dụng 1 mã khuyến mãi khác.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Hủy</button>
+                                    <button type="button" class="btn btn-danger" id="confirmRemoveProduct">Xác nhận</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,19 +278,21 @@
     <script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
     <script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
 	
-        <script>
+  <script>
         let selectedProducts = [];
 
-        // Initialize selectedProducts from orderDetails
-        <c:forEach items="${order.orderDetails}" var="detail">
-            selectedProducts.push({
-                productId: '${detail.productId}',
-                productName: '${detail.productName}',
-                salePrice: ${detail.unitPrice},
-                quantity: ${detail.amount},
-                productStock: ${products.stream().filter(p -> p.productId == detail.productId).findFirst().orElse(null).stock}
-            });
-        </c:forEach>
+     // Khởi tạo selectedProducts từ các phần tử HTML hiện có trong selectedProducts
+	    $(document).ready(function() {
+	        $('.selected-item').each(function() {
+	            var index = $(this).data('index');
+	            var product = {
+	                productId: $(this).data('product-id'),
+	                productName: $(this).data('product-name'),
+	                salePrice: $(this).data('unit-price'),
+	                quantity: parseInt($(this).data('amount')) || 1
+	            };
+	            selectedProducts.push(product);
+	        })});
 
         function formatCurrency(amount) {
             const number = Number(amount);
@@ -295,16 +322,24 @@
             }
         }
 
-        // Remove product from selected list
+     // Remove product from selected list
         function removeProduct(productId) {
-            console.log('Removing product with ID:', productId);
-            productId = String(productId);
-            selectedProducts = selectedProducts.filter(p => p.productId != productId);
-            updateSelectedProducts();
-            calculateTotal();
-            updateDiscountOptions();
+            productIdToRemove = String(productId);
+            $('#removeProductModal').modal('show');
         }
 
+        // Confirm product removal
+        $('#confirmRemoveProduct').on('click', function() {
+            if (productIdToRemove) {
+                selectedProducts = selectedProducts.filter(p => p.productId != productIdToRemove);
+                updateSelectedProducts();
+                calculateTotal();
+                updateDiscountOptions();
+                productIdToRemove = null;
+            }
+            $('#removeProductModal').modal('hide');
+        });
+        
         // Update selected products display and hidden inputs
         function updateSelectedProducts() {
             let html = '';
@@ -405,6 +440,8 @@
 
             if ($selectedOption) {
                 $selectedOption.prop("selected", true);
+             // Disable the selected option to lock it
+                $selectedOption.prop("disabled", true);
                 
                 // Update total with discount
                 let discountAmount = parseFloat($selectedOption.attr("data-discount-amount")) || 0;

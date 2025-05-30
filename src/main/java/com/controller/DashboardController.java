@@ -78,7 +78,7 @@ public class DashboardController {
 //			req.setAttribute("categories", categoriesHaveMostPro);
 			
 			// Fetch all active product groups for categories section
-//			List<ProductGroup> groups = pgDao.getAll();
+			List<ProductGroup> groups = pgDao.getAll();
 			req.setAttribute("groups", categoriesHaveMostPro);
 			
 			//check user in session
@@ -132,7 +132,7 @@ public class DashboardController {
 			
 			GeneralSettings g=  generalDao.get();
 			session.setAttribute("general", g);
-//			session.setAttribute("groups", pgLst);
+			session.setAttribute("productGroups", groups);
 			session.setAttribute("brands", brandDao.getAll());
 
 			return "dashboard";

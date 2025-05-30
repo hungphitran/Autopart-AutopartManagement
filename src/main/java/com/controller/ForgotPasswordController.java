@@ -206,7 +206,19 @@ public class ForgotPasswordController
 	{	
 		try
 		{
-			Account account = accountDao.getByEmail((String) req.getSession().getAttribute("recoveringMail"));
+			String email = null;
+	        Cookie[] cookies = req.getCookies();
+	        if (cookies != null) {
+	            for (Cookie cookie : cookies) {
+	                if ("recoveringMail".equals(cookie.getName())) {
+	                    email = cookie.getValue();
+	                    break;
+	                }
+	            }
+	        }
+
+	        
+			Account account = accountDao.getByEmail(email);
 			String password = req.getParameter("password");
 			String confirmPassword = req.getParameter("confirmPassword");
 			System.out.println(account);

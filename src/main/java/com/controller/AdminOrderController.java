@@ -214,11 +214,7 @@ public class AdminOrderController {
 				cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(), req.getParameter("userPhone"),  order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 				customerDao.add(cus); 
 			}
-			
-			
-			
-			
-			
+				
 			// Đặt các giá trị mặc định
 		    if (order.getStatus() == null) {
 		        order.setStatus("Processing");
@@ -352,34 +348,38 @@ public class AdminOrderController {
 	@RequestMapping(value = "/order/edit", method = RequestMethod.POST)
 	public String editOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		// Validate user name
-	    if (!ValidationUtils.isValidName(req.getParameter("userName"))) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Họ tên khách hàng không hợp lệ!");
-	        return "redirect:/admin/order/add.htm";
-	    }
-
-	    // Validate user phone
+//	    if (!ValidationUtils.isValidName(req.getParameter("userName"))) {
+//	        redirectAttributes.addFlashAttribute("errorMessage", "Họ tên khách hàng không hợp lệ!");
+//	        return "redirect:/admin/order/add.htm";
+//	    }
+//
+//	    // Validate user phone
 //	    if (!ValidationUtils.isValidPhone(req.getParameter("userPhone"))) {
 //	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại khách hàng không hợp lệ!");
 //	        return "redirect:/admin/order/add.htm";
 //	    }
-
-	    // Validate user email
-	    if (!ValidationUtils.isValidEmail(order.getUserEmail())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Email khách hàng không hợp lệ!");
-	        return "redirect:/admin/order/add.htm";
-	    }
+//
+//	    // Validate user email
+//	    if (!ValidationUtils.isValidEmail(order.getUserEmail())) {
+//	        redirectAttributes.addFlashAttribute("errorMessage", "Email khách hàng không hợp lệ!");
+//	        return "redirect:/admin/order/add.htm";
+//	    }
 
 	    // Validate ship address
 	    if (!ValidationUtils.isValidAddress(order.getShipAddress())) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ giao hàng không hợp lệ!");
-	        return "redirect:/admin/order/add.htm";
+			return "redirect:" + referer;
 	    }
 		
 	    String shippingType = order.getShippingType();
 	 // Validate shipping type 
 	    if (shippingType == null) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Loại vận chuyển không hợp lệ!");
-	        return "redirect:/admin/order/add.htm";
+			return "redirect:" + referer;
 	    }
 	    else
 	    {
@@ -396,6 +396,8 @@ public class AdminOrderController {
 	    	
 	    	order.setShippingType(shippingType);
 	    }
+	    
+	    Discount discount = discountDao.getById(order.getDiscountId());
 
 	    
 		try
@@ -427,6 +429,20 @@ public class AdminOrderController {
 
 		    // Cập nhật Order
 		    orderDao.update(order);
+		    
+		    
+		   if (discount == null && order.getDiscountId() != null) 
+		   {
+		        // Case 3: Previous discount, remove discount
+				//System.out.println(discount.getUsageLimit());
+			   	Discount orderDiscount = discountDao.getById(order.getDiscountId());
+				System.out.println(orderDiscount.getUsageLimit());
+		        discountDao.deleteDiscountUsed(order.getDiscountId(), order.getUserEmail());
+		        orderDiscount.setUsageLimit(orderDiscount.getUsageLimit() + 1);
+		        discountDao.update(orderDiscount);
+				//System.out.println(discount.getUsageLimit());
+				System.out.println(orderDiscount.getUsageLimit());
+		    }
 
 		    // Cập nhật chi tiết đơn hàng
 		    if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
@@ -543,6 +559,25 @@ public class AdminOrderController {
 				else if ("Cancelled".equals(status)) {
 					order.setStatus("Cancelled");
 					orderDao.update(order);	
+					
+					// Cập nhật số lượng sản phẩm trong chi tiết đơn hàng
+				    if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {  
+				        for (OrderDetail detail : order.getOrderDetails()) {
+				        	// Cập nhật số lượng sản phẩm
+				        	Product product = productDao.getById(detail.getProductId());
+				        	product.setStock(Math.abs(product.getStock() + detail.getAmount()));
+				        	productDao.update(product);
+				        	
+				        }
+				    }
+				    
+				    if(order.getDiscountId()!=null)
+				    {
+				    	Discount discount =discountDao.getById(order.getDiscountId());
+				    	discountDao.deleteDiscountUsed(order.getUserEmail(), discount.getDiscountId());
+				    	discount.setUsageLimit(discount.getUsageLimit()+1);
+				    	discountDao.update(discount);
+				    }
 					
 					subject = "Đơn hàng đã bị hủy";
 	                body = String.format(
