@@ -994,6 +994,27 @@ public class AdminController {
 	}
 	@RequestMapping(value="/profile/changepass", method= RequestMethod.POST)
 	public String changePass(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate input
+		if(!ValidationUtils.isValidPassword(req.getParameter("newpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidPassword(req.getParameter("confirmpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Xác nhận mật khẩu không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!req.getParameter("newpass").equals(req.getParameter("confirmpass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(req.getParameter("newpass").equals(req.getParameter("pass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được trùng với mật khẩu cũ!");
+			return "redirect:/admin/profile.htm";
+		}
+		if(!ValidationUtils.isValidPassword(req.getParameter("pass"))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới quá yếu, vui lòng chọn mật khẩu khác!");
+			return "redirect:/admin/profile.htm";
+		}
 		try
 		{
 			String pass= req.getParameter("pass");
@@ -1001,7 +1022,7 @@ public class AdminController {
 			String confirmPass = req.getParameter("confirmpass");
 			HttpSession session = req.getSession();
 			Account acc = (Account) session.getAttribute("account");
-			if(getMD5Hash(pass).equals(acc.getPassword()) && newPass.equals(confirmPass)) {
+			if(getMD5Hash(pass).equals(acc.getPassword())) {
 				acc.setPassword(getMD5Hash(confirmPass));
 				accountDao.update(acc);
 			}

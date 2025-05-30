@@ -162,7 +162,7 @@ public class AdminEmployeeController {
 		}
 		
 		// Validate citizen ID format
-		if(emp.getCitizenId() != null && !emp.getCitizenId().isEmpty() && !ValidationUtils.isValidName(emp.getCitizenId())) {
+		if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() ) {
 			redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
@@ -246,7 +246,7 @@ public class AdminEmployeeController {
 				}
 				
 				// Validate citizen ID format
-				if(emp.getCitizenId() != null && !emp.getCitizenId().isEmpty() && !ValidationUtils.isValidName(emp.getCitizenId())) {
+				if(!(emp.getCitizenId() != null) || emp.getCitizenId().isEmpty()) {
 			    	String referer = req.getHeader("Referer");
 					System.out.println(referer);
 					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 

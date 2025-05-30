@@ -228,8 +228,11 @@ public class OrderController {
 			String orderId=req.getParameter("orderId");
 			Order order= orderDao.getById(orderId);
 			
+			Customer cus = customerDao.getByEmail(acc.getEmail());
+			
 			List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(orderId);
 			
+			req.setAttribute("customer", cus);
 			req.setAttribute("order", order);
 			req.setAttribute("products", orderDetails);
 			return "orderdetail";
@@ -288,7 +291,7 @@ public class OrderController {
 			System.out.println(products);
 			
 			if(products.size() == 0) {
-				redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng trống");
+				redirectAttributes.addFlashAttribute("errorMessage", "Chưa có sản phẩm nào được chọn!");
 				return "redirect:/index.htm";
 			}
 			req.setAttribute("products", products);

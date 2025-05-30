@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let inputs = document.querySelectorAll(".input-field input[type='text']");
-let phoneInput = document.querySelector(".input-field input[type='phone']")
+let phoneInput = document.querySelector(".input-field input[type='tel']")
 let emailInput = document.querySelector(".input-field input[type='email']")
 let editBtn = document.querySelector(".edit-btn");
 let form = document.querySelector("form"); // Assuming your form element is present
