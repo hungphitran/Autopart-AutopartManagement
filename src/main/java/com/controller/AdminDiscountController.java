@@ -185,8 +185,8 @@ public class AdminDiscountController {
 	    }
 
 	    // Validate end date (not null and after start date)
-	    if (discount.getApplyEndDate() == null ||
-	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	    if (discount.getApplyEndDate() == null || 
+		        !discount.getApplyEndDate().after(discount.getApplyStartDate()))  {
 	    	String referer = req.getHeader("Referer");
 			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");

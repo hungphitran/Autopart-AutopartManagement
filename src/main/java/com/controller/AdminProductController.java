@@ -409,6 +409,7 @@ public class AdminProductController {
 	public String addImportProductPost(@ModelAttribute("importForm") Import importForm, 
 	                                   BindingResult result, 
 	                                   Model model, RedirectAttributes redirectAttributes, HttpSession session) {
+		
 		try
 		{
 			 if (result.hasErrors()) {

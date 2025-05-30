@@ -273,9 +273,10 @@ public class Discount_DAO {
             Query query = session.createQuery(hql);
             String maxId = (String) query.uniqueResult();
             if (maxId == null) {
-                return "DIST001";
+                return "DIS001";
             }
-            int currentNum = Integer.parseInt(maxId.substring(4));
+            int currentNum = Integer.parseInt(maxId.substring(3));
+            System.out.println(currentNum);
             return String.format("DIS%03d", currentNum + 1);
         } catch (Exception e) {
             e.printStackTrace();

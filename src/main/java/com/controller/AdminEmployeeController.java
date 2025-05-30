@@ -146,7 +146,7 @@ public class AdminEmployeeController {
 			redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
-		else if (employeeDao.getByEmail(emp.getEmail()) != null) {
+		else if (employeeDao.getByEmail(emp.getEmail()) != null || accountDao.getByEmail(emp.getEmail())!=null) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
@@ -172,10 +172,18 @@ public class AdminEmployeeController {
 			return "redirect:/admin/employee/add.htm";
 		}
 		// Validate date of birth format
-		if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
+		if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty() || ValidationUtils.isValidDate(emp.getBirthDate()) == false) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
+		
+		 // Validate end date (not null and after birth date)
+	    if (emp.getStartDate() == null || 
+	        !emp.getStartDate().after(emp.getBirthDate())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu làm việc phải sau ngày sinh!");
+			return "redirect:/admin/employee/add.htm";
+	    }
+	    
 		try
 		{
 			
