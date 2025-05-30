@@ -120,7 +120,6 @@
                     </div>
                 </a>
             </li>
-            <li><a href="/autopart/chat.htm">Liên hệ</a></li>
             <li>
                 <a class="menu-item" href="#brand" id="brand">
                     Nhãn hàng
