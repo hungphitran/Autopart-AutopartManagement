@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.dao.ProductGroup_DAO;
 import com.entity.Brand;
 import com.entity.ProductGroup;
+import com.utils.ValidationUtils;
 
 @Controller
 @RequestMapping("/admin")
@@ -66,12 +67,25 @@ public class AdminProductGroupController {
 	public String addBrandPost(@ModelAttribute("newGroup") ProductGroup group, HttpServletRequest req, RedirectAttributes redirectAttributes) {
 		try
 		{
-			List<ProductGroup> groups = productGroupDao.getAll();
-			for(int i=0;i<groups.size();i++) {
-				if(groups.get(i).getGroupName().toLowerCase().equals(group.getGroupName().toLowerCase())){
-					return "redirect:/admin/productGroup.htm";
-				} // sửa lại bằng cách viết thêm hàm checkExistByName
+			
+			if(ValidationUtils.isValidName(group.getGroupName()) == false) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Tên danh mục không hợp lệ!"); 
+	            return "redirect:/admin/productGroup/add.htm";
 			}
+			
+			if(productGroupDao.checkExistByName(group.getGroupName()))
+			{
+				redirectAttributes.addFlashAttribute("errorMessage", "Danh mục sản phẩm đã tồn tại!"); 
+	            return "redirect:/admin/productGroup/add.htm";
+
+			}
+			
+//			List<ProductGroup> groups = productGroupDao.getAll();
+//			for(int i=0;i<groups.size();i++) {
+//				if(groups.get(i).getGroupName().toLowerCase().equals(group.getGroupName().toLowerCase())){
+//					return "redirect:/admin/productGroup.htm";
+//				} // sửa lại bằng cách viết thêm hàm checkExistByName
+//			}
 			
 			group.setProductGroupId(productGroupDao.generateNextProductGroupId());
 			Boolean success = productGroupDao.add(group);

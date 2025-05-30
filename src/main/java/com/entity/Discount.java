@@ -23,7 +23,7 @@ public class Discount {
     private Integer discountAmount;
 
     @Column(name = "minimumAmount")
-    private BigDecimal minimumAmount;
+    private double minimumAmount;
 
     @Column(name = "usageLimit")
     private Integer usageLimit;
@@ -54,7 +54,7 @@ public class Discount {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Discount(String discountId, String discountDesc, Integer discountAmount, BigDecimal minimumAmount,
+	public Discount(String discountId, String discountDesc, Integer discountAmount, double minimumAmount,
 			Integer usageLimit, Date applyStartDate, Date applyEndDate, String status, Timestamp createdAt,
 			Timestamp updatedAt, Timestamp deletedAt, boolean deleted) {
 		super();
@@ -96,11 +96,11 @@ public class Discount {
 		this.discountAmount = discountAmount;
 	}
 
-	public BigDecimal getMinimumAmount() {
+	public double getMinimumAmount() {
 		return minimumAmount;
 	}
 
-	public void setMinimumAmount(BigDecimal minimumAmount) {
+	public void setMinimumAmount(double minimumAmount) {
 		this.minimumAmount = minimumAmount;
 	}
 

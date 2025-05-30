@@ -144,6 +144,23 @@ public class ProductGroup_DAO {
         }
     }
     
+    
+    public boolean checkExistByName(String productGroupName) {
+        Session session = null;
+        try {
+            session = factory.openSession();
+            String hql = "FROM ProductGroup pg WHERE pg.groupName = :groupName";
+            Query query = session.createQuery(hql);
+            query.setParameter("groupName", productGroupName);
+            return query.uniqueResult() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+    
     public String generateNextProductGroupId() {
         Session session = null;
         try {
@@ -163,6 +180,8 @@ public class ProductGroup_DAO {
             if (session != null) session.close();
         }
     }
+    
+    
     
     
     public boolean changeStatus(String groupId) {

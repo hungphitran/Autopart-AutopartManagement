@@ -229,6 +229,34 @@ public class AdminEmployeeController {
 	
 	@RequestMapping(value = "/employee/edit", method= RequestMethod.POST)
 	public String editPatch(@ModelAttribute("emp") Employee emp, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+
+				// Validate phone format
+				if(ValidationUtils.isValidPhone(emp.getPhone()) == false) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!"); 
+					return "redirect:/admin/employee/add.htm";
+				}
+				// Validate name format
+				if(ValidationUtils.isValidName(emp.getFullName()) == false) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Tên không hợp lệ!"); 
+					return "redirect:/admin/employee/add.htm";
+				}
+				
+				// Validate citizen ID format
+				if(emp.getCitizenId() != null && !emp.getCitizenId().isEmpty() && !ValidationUtils.isValidName(emp.getCitizenId())) {
+					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
+					return "redirect:/admin/employee/add.htm";
+				}
+				// Validate address format
+				if(emp.getAddress() != null && !emp.getAddress().isEmpty() && !ValidationUtils.isValidName(emp.getAddress())) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
+					return "redirect:/admin/employee/add.htm";
+				}
+				// Validate date of birth format
+				if(emp.getBirthDate() != null && emp.getBirthDate().toString().isEmpty()) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!"); 
+					return "redirect:/admin/employee/add.htm";
+				}
+				
 		try
 		{
 			if (emp.getStatus() == null) {

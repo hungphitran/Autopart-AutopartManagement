@@ -34,6 +34,7 @@ import com.entity.ImportDetail;
 import com.entity.ImportDetailId;
 import com.entity.Product;
 import com.entity.ProductGroup;
+import com.utils.ValidationUtils;
 
 @Controller
 @RequestMapping("/admin")
@@ -118,6 +119,19 @@ public class AdminProductController {
 	
 	@RequestMapping(value = "/product/add", method= RequestMethod.POST)
 	public String addProductPost(@ModelAttribute("product") Product product, @RequestParam("imageFiles") MultipartFile[] imageFiles, HttpServletRequest req, RedirectAttributes redirectAttributes) throws IOException {
+		  // Validate stock (non-negative)
+	    if (product.getWeight() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Khối lượn không đucợ bằng 0 hay nhỏ hơn 0!");
+	        return "redirect:/admin/product/add.htm";
+	    }
+		
+		// Validate image files (at least one valid image)
+	    if (imageFiles == null || imageFiles.length == 0 || 
+	        Arrays.stream(imageFiles).noneMatch(ValidationUtils::isValidImageFile)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng tải lên ít nhất một file ảnh định dạng JPG hoặc PNG!");
+	        return "redirect:/admin/product/add.htm";
+	    }
+		
 		try
 		{
 			if (product.getStatus() == null) {
@@ -198,7 +212,27 @@ public class AdminProductController {
 	public String editProductPatch(@ModelAttribute("product") Product product,
             @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
             @RequestParam(value = "confirmDeleteImg", required = false) String confirmDeleteImg,
-            HttpServletRequest req, RedirectAttributes redirectAttributes) throws IOException {
+            HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		
+		// Validate sale price (positive)
+	    if ( product.getSalePrice() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Giá bán phải lớn hơn 0!");
+	        return "redirect:/admin/product/add.htm";
+	    }
+	    
+	    // Validate stock (non-negative)
+	    if (product.getWeight() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Khối lượn không đucợ bằng 0 hay nhỏ hơn 0!");
+	        return "redirect:/admin/product/add.htm";
+	    }
+		
+		// Validate image files (at least one valid image)
+	    if (imageFiles == null || imageFiles.length == 0 || 
+	        Arrays.stream(imageFiles).noneMatch(ValidationUtils::isValidImageFile)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng tải lên ít nhất một file ảnh định dạng JPG hoặc PNG!");
+	        return "redirect:/admin/product/add.htm";
+	    }
+		
 		try
 		{
 			if (product.getStatus() == null) {
