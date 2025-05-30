@@ -12,6 +12,7 @@ public class ValidationUtils {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final String PHONE_PATTERN = "^0\\d{9}$";
     private static final String NAME_PATTERN = "^[\\p{L} .'-]+$"; // 
+    private static final String DIGITS_PATTERN = "^[0-9]+$";
     
     // Minimum length requirements
     private static final int MIN_PASSWORD_LENGTH = 4;
@@ -79,6 +80,16 @@ public class ValidationUtils {
 			return false; // Birth date cannot be in the future
 		}
 		return true;
+	}
+	
+	
+	public static boolean isValidDigits(String input) {
+	    if (input == null || input.isEmpty()) {
+	        return false;
+	    }
+	    Pattern pattern = Pattern.compile(DIGITS_PATTERN);
+	    Matcher matcher = pattern.matcher(input);
+	    return matcher.matches();
 	}
 	
 	
