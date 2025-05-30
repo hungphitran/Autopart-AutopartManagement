@@ -114,7 +114,7 @@
                     Danh mục
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                     <div class="group-items items">
-                        <c:forEach items="${groups}" var="group">
+                        <c:forEach items="${productGroups}" var="group">
                             <h4 class="item" data-name="${group.groupName}">${group.groupName}</h4>
                         </c:forEach>
                     </div>
@@ -138,7 +138,34 @@
 </div>
 
 <script src="/resources/js/dropdown-navigation.js"></script>
+
+<script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMessage = document.querySelector('.alert-success');
+            const errorMessage = document.querySelector('.alert-danger');
+            if (successMessage) {
+                setTimeout(function() {
+                    successMessage.style.transition = 'opacity 0.5s';
+                    successMessage.style.opacity = '0';
+                    setTimeout(function() {
+                        successMessage.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+            if (errorMessage) {
+                setTimeout(function() {
+                    errorMessage.style.transition = 'opacity 0.5s';
+                    errorMessage.style.opacity = '0';
+                    setTimeout(function() {
+                        errorMessage.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+        });
+    </script>
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Handle cart item clicks
     const cartItems = document.querySelectorAll('.header__cart-item');
@@ -207,41 +234,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-<<<<<<< HEAD
-</script>
-=======
-
 </script>
 
-<script type="text/javascript">
-//Handle clicks on cart items
-const cartItems = document.querySelectorAll('.header__cart-item');
-
-cartItems.forEach(item => {
-  // Make the entire item clickable, not just the checkbox
-  item.addEventListener('click', function(e) {
-    // Prevent click handling when clicking on specific elements
-    if (e.target.closest('.header__cart-item-remove') || 
-        e.target.closest('a[href]') || 
-        e.target.tagName === 'INPUT') {
-      return;
-    }
-    
-    // Toggle the checkbox when clicking on the item
-    const checkbox = this.querySelector('input[type="checkbox"]');
-    if (checkbox) {
-      checkbox.checked = !checkbox.checked;
-    }
-  });
-  
-  // Prevent checkbox clicks from triggering the item click handler
-  const checkbox = item.querySelector('input[type="checkbox"]');
-  if (checkbox) {
-    checkbox.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-  }
-});
-</script>
-
->>>>>>> b80385efbb14ad00fcefce98d334679aa8ef542c

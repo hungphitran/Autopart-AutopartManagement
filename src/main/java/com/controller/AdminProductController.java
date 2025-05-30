@@ -216,21 +216,27 @@ public class AdminProductController {
 		
 		// Validate sale price (positive)
 	    if ( product.getSalePrice() <= 0) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Giá bán phải lớn hơn 0!");
-	        return "redirect:/admin/product/add.htm";
+			return "redirect:" + referer;
 	    }
 	    
 	    // Validate stock (non-negative)
 	    if (product.getWeight() <= 0) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Khối lượn không đucợ bằng 0 hay nhỏ hơn 0!");
-	        return "redirect:/admin/product/add.htm";
+			return "redirect:" + referer;
 	    }
 		
 		// Validate image files (at least one valid image)
 	    if (imageFiles == null || imageFiles.length == 0 || 
 	        Arrays.stream(imageFiles).noneMatch(ValidationUtils::isValidImageFile)) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng tải lên ít nhất một file ảnh định dạng JPG hoặc PNG!");
-	        return "redirect:/admin/product/add.htm";
+			return "redirect:" + referer;
 	    }
 		
 		try

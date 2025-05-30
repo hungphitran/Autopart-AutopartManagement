@@ -70,6 +70,8 @@ public class AdminDiscountController {
 		// Validate discount amount (0 < discountAmount <= 100)
 	    if (discount.getDiscountAmount() == null || discount.getDiscountAmount() <= 0 || 
 	        discount.getDiscountAmount() > 100) {
+
+
 	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền giảm giá phải từ 1% đến 100%!");
 	        return "redirect:/admin/discount/add.htm";
 	    }
@@ -150,33 +152,43 @@ public class AdminDiscountController {
 		// Validate discount amount (0 < discountAmount <= 100)
 	    if (discount.getDiscountAmount() == null || discount.getDiscountAmount() <= 0 || 
 	        discount.getDiscountAmount() > 100) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền giảm giá phải từ 1% đến 100%!");
-	        return "redirect:/admin/discount/add.htm";
+			return "redirect:" + referer;
 	    }
 
 	    // Validate minimum amount (positive)
 	    if (discount.getMinimumAmount() <= 0) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền tối thiểu phải lớn hơn 0!");
-	        return "redirect:/admin/discount/add.htm";
+			return "redirect:" + referer;
 	    }
 
 	    // Validate usage limit (positive)
 	    if (discount.getUsageLimit() == null || discount.getUsageLimit() <= 0) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Giới hạn sử dụng phải lớn hơn 0!");
-	        return "redirect:/admin/discount/add.htm";
+			return "redirect:" + referer;
 	    }
 
 	    // Validate start date (not null and not in the past)
 	    if (discount.getApplyStartDate() == null ) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");
-	        return "redirect:/admin/discount/add.htm";
+			return "redirect:" + referer;
 	    }
 
 	    // Validate end date (not null and after start date)
 	    if (discount.getApplyEndDate() == null ||
 	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	    	String referer = req.getHeader("Referer");
+			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");
-	        return "redirect:/admin/discount/add.htm";
+			return "redirect:" + referer;
 	    }
 	    
 		try
