@@ -60,7 +60,7 @@ public class Account_DAO {
             return account;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
@@ -117,11 +117,33 @@ public class Account_DAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             if (session != null) session.close();
         }
     }
+    
+    public boolean hardDelete(String email) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = factory.openSession();
+            transaction = session.beginTransaction();
+            String hql = "DELETE FROM Account a WHERE a.email = :email";
+            Query query = session.createQuery(hql);
+            query.setParameter("email", email);
+            int rowsAffected = query.executeUpdate();
+            transaction.commit();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
 
     public boolean checkExistByEmail(String email) {
         Session session = null;

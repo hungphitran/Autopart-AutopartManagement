@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class ValidationUtils {
     
     // Validation patterns
@@ -78,4 +80,16 @@ public class ValidationUtils {
 		}
 		return true;
 	}
+	
+	
+	/**
+     * Validates an image file (checks for non-empty and valid format)
+     */
+    public static boolean isValidImageFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        String fileName = file.getOriginalFilename().toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png");
+    }
 }

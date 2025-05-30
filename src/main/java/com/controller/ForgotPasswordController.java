@@ -151,24 +151,37 @@ public class ForgotPasswordController
 		return "forgot-password/enter-otp";
 	}
 	
-	@RequestMapping(value= "otpVerify", method = RequestMethod.POST)
-	private String otpVerify(HttpServletRequest req, ModelMap model, RedirectAttributes redirectAttributes)
-	{	
-		//req.getSession().setAttribute("otp", "12345");
-		System.out.println(req.getSession().getAttribute("otp"));
-		String otp = req.getParameter("otp");
-		if(otp.equals(req.getSession().getAttribute("otp")))
-		{
-			model.addAttribute("message", "OTP đúng");
-			return "redirect:/enter-password.htm";
-		}
-		else
-		{
-			model.addAttribute("message", "OTP không đúng");
-			return "redirect:/enter-otp.htm";
-		}
-		
-	}
+	@RequestMapping(value = "otpVerify", method = RequestMethod.POST)
+    private String otpVerify(HttpServletRequest req, ModelMap model, RedirectAttributes redirectAttributes) {
+        // Lấy OTP từ cookie
+        String storedOtp = null;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("otp".equals(cookie.getName())) {
+                    storedOtp = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // Lấy OTP từ request
+        String otp = req.getParameter("otp");
+
+        // Kiểm tra nếu OTP từ cookie không tồn tại
+        if (storedOtp == null || storedOtp.isEmpty()) {
+            redirectAttributes.addFlashAttribute("message", "Mã OTP không hợp lệ hoặc đã hết hạn!");
+            return "redirect:/enter-otp.htm";
+        }
+
+        // So sánh OTP
+        if (otp != null && otp.equals(storedOtp)) {
+            return "redirect:/enter-password.htm";
+        } else {
+            redirectAttributes.addFlashAttribute("message", "OTP không đúng");
+            return "redirect:/enter-otp.htm";
+        }
+    }
 	
 	@RequestMapping("enter-password")
 	private String showPasswordForm(HttpServletRequest req)
@@ -191,24 +204,34 @@ public class ForgotPasswordController
 	@RequestMapping(value= "updatePassword", method = RequestMethod.POST)
 	private String updatePassword(HttpServletRequest req, ModelMap model, RedirectAttributes redirectAttributes)
 	{	
-		Account account = accountDao.getByEmail((String) req.getSession().getAttribute("recoveringMail"));
-		String password = req.getParameter("password");
-		String confirmPassword = req.getParameter("confirmPassword");
-		System.out.println(account);
+		try
+		{
+			Account account = accountDao.getByEmail((String) req.getSession().getAttribute("recoveringMail"));
+			String password = req.getParameter("password");
+			String confirmPassword = req.getParameter("confirmPassword");
+			System.out.println(account);
 
-		if(password.equals(confirmPassword))
-		{
-			account.setPassword(getMD5Hash(confirmPassword));
-			accountDao.update(account);
-			redirectAttributes.addFlashAttribute("successMessage", "Thay đổi mật khẩu thành công");
-			return "redirect:/login.htm";
+			if(password.equals(confirmPassword))
+			{
+				account.setPassword(getMD5Hash(confirmPassword));
+				accountDao.update(account);
+				redirectAttributes.addFlashAttribute("successMessage", "Thay đổi mật khẩu thành công");
+				return "redirect:/login.htm";
+			}
+			else
+			{
+				model.addAttribute("message", "Mật khẩu không khớp");
+				return "redirect:/enter-otp.htm";
+			}
+
 		}
-		else
-		{
-			model.addAttribute("message", "Mật khẩu không khớp");
-			return "redirect:/enter-otp.htm";
-		}
-		
+		catch (Exception ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", "Đã có lỗi xảy ra khi đổi mật khẩu vui lòng thử lại!");
+            return "redirect:/enter-password.htm";
+        }
+
+				
 	}
 	
 }

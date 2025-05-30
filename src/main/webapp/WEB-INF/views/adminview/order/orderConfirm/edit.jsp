@@ -189,6 +189,15 @@
                                             <label for="shipAddress">Địa chỉ giao hàng <span class="required-text">*</span></label>
                                             <form:input class="form-control" path="shipAddress" name="shipAddress" required="true" placeholder="Nhập địa chỉ giao hàng"/>
                                         </div>
+                                        <div class="form-group">
+										    <label for="shippingType">Loại vận chuyển <span class="required-text">*</span></label>
+										    <form:select path="shippingType" class="form-control mb-3" id="shippingType" name="shippingType" required="required">
+										        <form:option value="" disabled="true">-- Chọn loại vận chuyển --</form:option>
+										        <form:option value="20000" selected="${order.shippingType == 'Normal' ? 'true' : 'false'}">Vận chuyển thường - 20.000 ₫</form:option>
+										        <form:option value="50000" selected="${order.shippingType == 'Express' ? 'true' : 'false'}">Vận chuyển nhanh - 50.000 ₫</form:option>
+										        <form:option value="15000" selected="${order.shippingType == 'Economy' ? 'true' : 'false'}">Vận chuyển tiết kiệm - 15.000 ₫</form:option>
+										    </form:select>
+										</div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -244,201 +253,216 @@
     <script src="<c:url value="/resources/vendor/jquery-easing/jquery.easing.min.js" />"></script>
     <script src="<c:url value="/resources/js/ruang-admin.min.js" />"></script>
 	
-    <script>
-	    let selectedProducts = [];
-	
-	    // Khởi tạo selectedProducts từ các phần tử HTML hiện có trong selectedProducts
-	    $(document).ready(function() {
-	        $('.selected-item').each(function() {
-	            var index = $(this).data('index');
-	            var product = {
-	                productId: $(this).data('product-id'),
-	                productName: $(this).data('product-name'),
-	                salePrice: $(this).data('unit-price'),
-	                quantity: parseInt($(this).data('amount')) || 1
-	            };
-	            selectedProducts.push(product);
-	        });
-	
-	        updateSelectedProducts();
-	        calculateTotal();
-	        updateDiscountOptions();
-	
-	        $('#productSearch').on('input', function() {
-	            const searchTerm = $(this).val().toLowerCase();
-	            $('.product-item').each(function() {
-	                const productName = $(this).data('product-name').toLowerCase();
-	                if (productName.includes(searchTerm)) {
-	                    $(this).show();
-	                } else {
-	                    $(this).hide();
-	                }
-	            });
-	        });
-	
-	        $(document).on('click', '.product-item', function() {
-	            const product = {
-	                productId: $(this).data('product-id'),
-	                productName: $(this).data('product-name'),
-	                salePrice: $(this).data('sale-price'),
-	                productStock: $(this).data('product-stock')
-	            };
-	            addProduct(product);
-	        });
-	        
-	        $('form').on('submit', function(e) {
-	            if (selectedProducts.length === 0) {
-	                e.preventDefault();
-	                alert('Vui lòng chọn ít nhất một sản phẩm trước khi lưu đơn hàng!');
-	                return false;
-	            }
-	            updateSelectedProducts(); // Đảm bảo input ẩn được cập nhật trước khi submit
-	        });
-	    });
-	
-	    function formatCurrency(amount) {
-	        const number = Number(amount);
-	        
-	        if (isNaN(number)) {
-	            return "0₫";
-	        }
-	
-	        let formattedNumber = number.toLocaleString('vi-VN', {
-	            minimumFractionDigits: 0, 
-	            maximumFractionDigits: 0 
-	        });
-	        
-	        formattedNumber = formattedNumber.replace(/\./g, ',');
-	
-	        return formattedNumber + '₫';
-	    }
-	
-	    // Hàm thêm sản phẩm vào danh sách đã chọn
-	    function addProduct(product) {
-	        if (!selectedProducts.some(p => p.productId === product.productId)) {
-	            selectedProducts.push({ ...product, quantity: 1 }); // Thêm quantity mặc định là 1
-	            updateSelectedProducts();
-	            calculateTotal();
-	            updateDiscountOptions(); // Cập nhật danh sách giảm giá khi thêm sản phẩm
-	        } else {
-	            alert('Sản phẩm đã được chọn!');
-	        }
-	    }
-	
-	    // Hàm xóa sản phẩm khỏi danh sách đã chọn
-	    function removeProduct(productId) {
-	    	console.log('Removing product with ID:', productId);
+        <script>
+        let selectedProducts = [];
 
-	        productId = String(productId);
-	        selectedProducts = selectedProducts.filter(p => p.productId != productId);
-	        updateSelectedProducts();
-	        calculateTotal();
-	        updateDiscountOptions();
-	    }
-	
-	    // Cập nhật danh sách sản phẩm đã chọn
-	    function updateSelectedProducts() {
-	        let html = '';
-	        let inputsHtml = '';
-	        selectedProducts.forEach((product, index) => {
-	            html += '<div class="selected-item" data-index="' + index + '" ' +
-	                    'data-product-id="' + product.productId + '" ' +
-	                    'data-product-name="' + product.productName + '" ' +
-	                    'data-unit-price="' + product.salePrice + '" ' +
-	                    'data-amount="' + product.quantity + '">' +
-	                    '<div>' + 
-	                        '<div>' + product.productName + '</div>' + 
-	                        '<div> Giá: ' + formatCurrency(product.salePrice) + '</div>' +
-	                    '</div>' +
-	                    '<div class="d-flex justify-content-end">' +
-	                        '<input type="number" class="quantity-input" min="1" max="' + product.productStock + '" value="' + product.quantity + '" onchange="updateQuantity(\'' + product.productId + '\', this.value)">' +
-	                        '<button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(\'' + product.productId + '\')">Xóa</button>' +
-	                    '</div>' +
-	                    '</div>';
-	
-	            // Thêm input ẩn cho từng sản phẩm (ánh xạ vào orderDetails)
-	            inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].productId" value="' + product.productId + '" />';
-	            inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].productName" value="' + product.productName + '" />';
-	            inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].amount" value="' + product.quantity + '" />';
-	            inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].unitPrice" value="' + product.salePrice + '" />';
-	        });
-	        $('#selectedProducts').html(html);
-	        $('#selectedProductsInputs').html(inputsHtml); 
-	    }
-	
-	    // Hàm cập nhật số lượng
-	    function updateQuantity(productId, newQuantity) {
-	        selectedProducts = selectedProducts.map(p => {
-	            if (p.productId === productId) {
-	                p.quantity = parseInt(newQuantity) || 1;
-	            }
-	            return p;
-	        });
-	        updateSelectedProducts(); // Cập nhật lại input ẩn khi thay đổi số lượng
-	        calculateTotal();
-	        updateDiscountOptions();
-	    }
-	
-	    // Tính tổng tiền
-	    function calculateTotal(discountAmount = 0) {
-	        let total = selectedProducts.reduce((sum, product) => sum + (product.salePrice * product.quantity), 0);
-	        if (discountAmount != 0) {
-	        	total *= (100 - discountAmount) / 100;
-	        }
-	        $('#totalCostlbl').text(formatCurrency(total));
-	        $('#totalCost').val(total); // Lưu giá trị tổng vào hidden input
-	    }
-	
-	    // Hàm cập nhật danh sách mã giảm giá dựa trên tổng tiền
-	    function updateDiscountOptions() {
-	        const totalCost = Number($('#totalCost').val());
-	        const currentDate = new Date();
-	
-	        $('#discountSelect option').each(function() {
-	            const minimumAmount = Number($(this).data('minimum-amount'));
-	            const status = $(this).data('status');
-	            const usageLimit = Number($(this).data('usage-limit'));
-	            const applyStart = new Date($(this).data('apply-start'));
-	            const applyEnd = new Date($(this).data('apply-end'));
-	
-	            const isValid = (
-	                totalCost >= minimumAmount &&
-	                status === 'Active' && 
-	                currentDate >= applyStart && 
-	                currentDate <= applyEnd && 
-	                usageLimit > 0 
-	            );
-	
-	            $(this).prop('disabled', !isValid); 
-	            $(this).toggle(isValid); 
-	        });
-	
-	        const selectedDiscount = $('#discountSelect').val();
-	        if (!selectedDiscount || $('#discountSelect option[value="' + selectedDiscount + '"]').is(':hidden')) {
-	            $('#discountSelect').val(''); 
-	        }
-	        
-	        // Chọn ra mã khuyến mãi giảm nhiều nhất
-	        let maxAmount = -Infinity; // Giá trị nhỏ nhất để so sánh
-	        let $selectedOption = null;
+        // Initialize selectedProducts from orderDetails
+        <c:forEach items="${order.orderDetails}" var="detail">
+            selectedProducts.push({
+                productId: '${detail.productId}',
+                productName: '${detail.productName}',
+                salePrice: ${detail.unitPrice},
+                quantity: ${detail.amount},
+                productStock: ${products.stream().filter(p -> p.productId == detail.productId).findFirst().orElse(null).stock}
+            });
+        </c:forEach>
 
-	        $('#discountSelect option:enabled').each(function() {
-	            let currentAmount = parseFloat($(this).attr("data-discount-amount")) || 0; 
-	            if (currentAmount > maxAmount) {
-	                maxAmount = currentAmount;
-	                $selectedOption = $(this); 
-	            }
-	        });
+        function formatCurrency(amount) {
+            const number = Number(amount);
+            
+            if (isNaN(number)) {
+                return "0₫";
+            }
 
-	        if ($selectedOption) {
-	            $selectedOption.prop("selected", true);
-	            
-	            // Cập nhật giá tiền
-	            let discountAmount = parseFloat($selectedOption.attr("data-discount-amount")) || 0;
-	            calculateTotal(discountAmount);
-	        }
-	    }
-	</script>
+            let formattedNumber = number.toLocaleString('vi-VN', {
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0 
+            });
+            
+            formattedNumber = formattedNumber.replace(/\./g, ',');
+            return formattedNumber + '₫';
+        }
+
+        // Add product to selected list
+        function addProduct(product) {
+            if (!selectedProducts.some(p => p.productId === product.productId)) {
+                selectedProducts.push({ ...product, quantity: 1 }); // Default quantity is 1
+                updateSelectedProducts();
+                calculateTotal();
+                updateDiscountOptions();
+            } else {
+                alert('Sản phẩm đã được chọn!');
+            }
+        }
+
+        // Remove product from selected list
+        function removeProduct(productId) {
+            console.log('Removing product with ID:', productId);
+            productId = String(productId);
+            selectedProducts = selectedProducts.filter(p => p.productId != productId);
+            updateSelectedProducts();
+            calculateTotal();
+            updateDiscountOptions();
+        }
+
+        // Update selected products display and hidden inputs
+        function updateSelectedProducts() {
+            let html = '';
+            let inputsHtml = '';
+            selectedProducts.forEach((product, index) => {
+                html += '<div class="selected-item" data-index="' + index + '" ' +
+                        'data-product-id="' + product.productId + '" ' +
+                        'data-product-name="' + product.productName + '" ' +
+                        'data-unit-price="' + product.salePrice + '" ' +
+                        'data-amount="' + product.quantity + '">' +
+                        '<div>' + 
+                            '<div>' + product.productName + '</div>' + 
+                            '<div> Giá: ' + formatCurrency(product.salePrice) + '</div>' +
+                        '</div>' +
+                        '<div class="d-flex justify-content-end">' +
+                            '<input type="number" class="quantity-input" min="1" max="' + product.productStock + '" value="' + product.quantity + '" onchange="updateQuantity(\'' + product.productId + '\', this.value)">' +
+                            '<button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(\'' + product.productId + '\')">Xóa</button>' +
+                        '</div>' +
+                        '</div>';
+
+                // Add hidden inputs for each product (maps to orderDetails)
+                inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].productId" value="' + product.productId + '" />';
+                inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].productName" value="' + product.productName + '" />';
+                inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].amount" value="' + product.quantity + '" />';
+                inputsHtml += '<input type="hidden" name="orderDetails[' + index + '].unitPrice" value="' + product.salePrice + '" />';
+            });
+            $('#selectedProducts').html(html);
+            $('#selectedProductsInputs').html(inputsHtml); 
+        }
+
+        // Update quantity
+        function updateQuantity(productId, newQuantity) {
+            selectedProducts = selectedProducts.map(p => {
+                if (p.productId === productId) {
+                    p.quantity = parseInt(newQuantity) || 1;
+                }
+                return p;
+            });
+            updateSelectedProducts();
+            calculateTotal();
+            updateDiscountOptions();
+        }
+
+        // Calculate total cost
+        function calculateTotal(discountAmount = 0) {
+            let total = selectedProducts.reduce((sum, product) => sum + (product.salePrice * product.quantity), 0);
+            // Add shipping cost
+            const shippingCost = parseInt($('#shippingType').val()) || 0;
+            total += shippingCost;
+            // Apply discount
+            if (discountAmount != 0) {
+                total *= (100 - discountAmount) / 100;
+            }
+            $('#totalCostlbl').text(formatCurrency(total));
+            $('#totalCost').val(total); // Store total in hidden input
+        }
+
+        // Update discount options based on total cost
+        function updateDiscountOptions() {
+            const totalCost = Number($('#totalCost').val());
+            const currentDate = new Date();
+
+            $('#discountSelect option').each(function() {
+                const minimumAmount = Number($(this).data('minimum-amount'));
+                const status = $(this).data('status');
+                const usageLimit = Number($(this).data('usage-limit'));
+                const applyStart = new Date($(this).data('apply-start'));
+                const applyEnd = new Date($(this).data('apply-end'));
+
+                const isValid = (
+                    totalCost >= minimumAmount &&
+                    status === 'Active' && 
+                    currentDate >= applyStart && 
+                    currentDate <= applyEnd && 
+                    usageLimit > 0 
+                );
+
+                $(this).prop('disabled', !isValid); 
+                $(this).toggle(isValid); 
+            });
+
+            const selectedDiscount = $('#discountSelect').val();
+            if (!selectedDiscount || $('#discountSelect option[value="' + selectedDiscount + '"]').is(':hidden')) {
+                $('#discountSelect').val(''); 
+            }
+            
+            // Select the discount with the highest amount
+            let maxAmount = -Infinity;
+            let $selectedOption = null;
+
+            $('#discountSelect option:enabled').each(function() {
+                let currentAmount = parseFloat($(this).attr("data-discount-amount")) || 0; 
+                if (currentAmount > maxAmount) {
+                    maxAmount = currentAmount;
+                    $selectedOption = $(this); 
+                }
+            });
+
+            if ($selectedOption) {
+                $selectedOption.prop("selected", true);
+                
+                // Update total with discount
+                let discountAmount = parseFloat($selectedOption.attr("data-discount-amount")) || 0;
+                calculateTotal(discountAmount);
+            }
+        }
+
+        $(document).ready(function() {
+            updateSelectedProducts();
+            calculateTotal();
+            updateDiscountOptions();
+
+            $('#productSearch').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                $('.product-item').each(function() {
+                    const productName = $(this).data('product-name').toLowerCase();
+                    if (productName.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            $(document).on('click', '.product-item', function() {
+                const product = {
+                    productId: $(this).data('product-id'),
+                    productName: $(this).data('product-name'),
+                    salePrice: $(this).data('sale-price'),
+                    productStock: $(this).data('product-stock')
+                };
+                addProduct(product);
+            });
+
+            // Add event listener for shipping type change
+            $('#shippingType').on('change', function() {
+                const selectedDiscount = $('#discountSelect option:selected');
+                const discountAmount = selectedDiscount.length ? parseFloat(selectedDiscount.attr('data-discount-amount')) || 0 : 0;
+                calculateTotal(discountAmount);
+            });
+
+            // Add event listener for discount change
+            $('#discountSelect').on('change', function() {
+                const selectedDiscount = $('#discountSelect option:selected');
+                const discountAmount = selectedDiscount.length ? parseFloat(selectedDiscount.attr('data-discount-amount')) || 0 : 0;
+                calculateTotal(discountAmount);
+            });
+
+            $('form').on('submit', function(e) {
+                if (selectedProducts.length === 0) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ít nhất một sản phẩm trước khi lưu đơn hàng!');
+                    return false;
+                }
+                updateSelectedProducts(); // Ensure hidden inputs are updated before submission
+            });
+        });
+    </script>
 </body>
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {

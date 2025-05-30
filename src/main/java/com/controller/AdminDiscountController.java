@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dao.Discount_DAO;
 import com.entity.Discount;
+import com.utils.ValidationUtils;
 
 @Controller
 @RequestMapping("/admin")
@@ -66,6 +67,41 @@ public class AdminDiscountController {
 	
 	@RequestMapping(value = "/discount/add", method= RequestMethod.POST)
 	public String addDiscountPost(@ModelAttribute("discount") Discount discount, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate discount amount (0 < discountAmount <= 100)
+	    if (discount.getDiscountAmount() == null || discount.getDiscountAmount() <= 0 || 
+	        discount.getDiscountAmount() > 100) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền giảm giá phải từ 1% đến 100%!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate minimum amount (positive)
+	    if (discount.getMinimumAmount() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền tối thiểu phải lớn hơn 0!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate usage limit (positive)
+	    if (discount.getUsageLimit() == null || discount.getUsageLimit() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Giới hạn sử dụng phải lớn hơn 0!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate start date (not null and not in the past)
+	    if (discount.getApplyStartDate() == null || !ValidationUtils.isValidDate(discount.getApplyStartDate())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate end date (not null and after start date)
+	    if (discount.getApplyEndDate() == null || !ValidationUtils.isValidDate(discount.getApplyEndDate())||
+	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+	    
+	    
+	    
+		
 		try
 		{
 			if (discount.getStatus() == null) {
@@ -111,6 +147,38 @@ public class AdminDiscountController {
 	
 	@RequestMapping(value = "/discount/edit", method= RequestMethod.POST)
 	public String editDiscountPatch(@ModelAttribute("discount") Discount discount, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate discount amount (0 < discountAmount <= 100)
+	    if (discount.getDiscountAmount() == null || discount.getDiscountAmount() <= 0 || 
+	        discount.getDiscountAmount() > 100) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền giảm giá phải từ 1% đến 100%!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate minimum amount (positive)
+	    if (discount.getMinimumAmount() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số tiền tối thiểu phải lớn hơn 0!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate usage limit (positive)
+	    if (discount.getUsageLimit() == null || discount.getUsageLimit() <= 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Giới hạn sử dụng phải lớn hơn 0!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate start date (not null and not in the past)
+	    if (discount.getApplyStartDate() == null ) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+
+	    // Validate end date (not null and after start date)
+	    if (discount.getApplyEndDate() == null ||
+	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");
+	        return "redirect:/admin/discount/add.htm";
+	    }
+	    
 		try
 		{
 			if (discount.getStatus() == null) {

@@ -33,6 +33,7 @@ import com.entity.Order;
 import com.entity.OrderDetail;
 import com.entity.Product;
 import com.entity.XMailer;
+import com.utils.ValidationUtils;
 
 @Controller
 @RequestMapping("/admin")
@@ -115,7 +116,7 @@ public class AdminOrderController {
 		{
 			model.addAttribute("order", new Order());
 		    
-		    List<Product> products = productDao.getAll();
+		    List<Product> products = productDao.getAllStockLargerThanZero();
 		    List<Discount> discounts = discountDao.getAll();
 		    String nextOrderId = orderDao.generateNextOrderId();
 		    
@@ -138,6 +139,63 @@ public class AdminOrderController {
 	
 	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
 	public String addOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req, RedirectAttributes redirectAttributes, HttpSession session) {
+		// Validate user name
+	    if (!ValidationUtils.isValidName(req.getParameter("userName"))) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Họ tên khách hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+
+	    // Validate user phone
+	    if (!ValidationUtils.isValidPhone(req.getParameter("userPhone"))) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại khách hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+
+	    // Validate user email
+	    if (!ValidationUtils.isValidEmail(order.getUserEmail())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Email khách hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+
+	    // Validate ship address
+	    if (!ValidationUtils.isValidAddress(order.getShipAddress())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ giao hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+		
+	    String shippingType = order.getShippingType();
+	 // Validate shipping type 
+	    if (shippingType == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Loại vận chuyển không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+	    else
+	    {
+	    	switch(shippingType) {
+			  case "20000":
+				  shippingType ="Normal";
+			    break;
+			  case "50000":
+				  shippingType ="Express";
+			    break;
+			  default:
+				  shippingType ="Economy";
+			}
+	    	
+	    	order.setShippingType(shippingType);
+	    }
+
+	    
+    	Discount discount = discountDao.getById(order.getDiscountId());
+
+	    if(discount!=null && discount.getUsageLimit()==0) 
+		{
+	        redirectAttributes.addFlashAttribute("errorMessage", "Số lượng mã giảm giá đã hết");  
+	        return "redirect:/admin/order/add.htm";
+	        
+	    }
+	    
+	    	    
 		try
 		{
 			// Tạo tài khoản khách hàng
@@ -153,9 +211,11 @@ public class AdminOrderController {
 				acc = new Account(order.getUserEmail(), getMD5Hash("1111"), null, "RG002", "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
 				accountDao.add(acc);
 				
-				cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(),  order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
+				cus = new Customer(null, req.getParameter("userName"), order.getUserEmail(), req.getParameter("userPhone"),  order.getShipAddress(), "Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 				customerDao.add(cus); 
 			}
+			
+			
 			
 			
 			
@@ -173,9 +233,16 @@ public class AdminOrderController {
 		    }
 		    
 		   
-
+		    
 		    // Lưu Order vào database
 		    orderDao.add(order);
+		    
+		    if(discount!=null) 
+			{
+				discountDao.discountUsed(acc.getEmail(), order.getDiscountId());
+				discount.setUsageLimit(discount.getUsageLimit()-1);
+				discountDao.update(discount);
+		    }
 
 		    // Lưu chi tiết đơn hàng
 		    if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
@@ -257,7 +324,7 @@ public class AdminOrderController {
 		    order.setOrderDetails(orderDetails); // Gán danh sách chi tiết vào order
 
 		    // Lấy danh sách sản phẩm để thêm
-		    List<Product> products = productDao.getAll();
+		    List<Product> products = productDao.getAllStockLargerThanZero();
 		    
 		    // Lấy danh sách khuyến mãi
 		    List<Discount> discounts = discountDao.getAll();
@@ -284,6 +351,53 @@ public class AdminOrderController {
 	
 	@RequestMapping(value = "/order/edit", method = RequestMethod.POST)
 	public String editOrderPost(@ModelAttribute("order") Order order, HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		// Validate user name
+	    if (!ValidationUtils.isValidName(req.getParameter("userName"))) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Họ tên khách hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+
+	    // Validate user phone
+//	    if (!ValidationUtils.isValidPhone(req.getParameter("userPhone"))) {
+//	        redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại khách hàng không hợp lệ!");
+//	        return "redirect:/admin/order/add.htm";
+//	    }
+
+	    // Validate user email
+	    if (!ValidationUtils.isValidEmail(order.getUserEmail())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Email khách hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+
+	    // Validate ship address
+	    if (!ValidationUtils.isValidAddress(order.getShipAddress())) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ giao hàng không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+		
+	    String shippingType = order.getShippingType();
+	 // Validate shipping type 
+	    if (shippingType == null) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Loại vận chuyển không hợp lệ!");
+	        return "redirect:/admin/order/add.htm";
+	    }
+	    else
+	    {
+	    	switch(shippingType) {
+			  case "20000":
+				  shippingType ="Normal";
+			    break;
+			  case "50000":
+				  shippingType ="Express";
+			    break;
+			  default:
+				  shippingType ="Economy";
+			}
+	    	
+	    	order.setShippingType(shippingType);
+	    }
+
+	    
 		try
 		{
 			// Tìm thông tin khách hàng

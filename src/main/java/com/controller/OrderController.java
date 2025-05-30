@@ -215,96 +215,137 @@ public class OrderController {
 	}
 	
 	@RequestMapping("/order/detail")
-	public String showDetail(HttpServletRequest req) {
-		HttpSession session = req.getSession();
-		Account acc =(Account) session.getAttribute("user");
-		if(acc==null){
-			return "redirect:/login.htm";
+	public String showDetail(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+		try
+		{
+			HttpSession session = req.getSession();
+			Account acc =(Account) session.getAttribute("user");
+			if(acc==null){
+				return "redirect:/login.htm";
+			}
+			
+			String orderId=req.getParameter("orderId");
+			Order order= orderDao.getById(orderId);
+			
+			List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(orderId);
+			
+			req.setAttribute("order", order);
+			req.setAttribute("products", orderDetails);
+			return "orderdetail";
+
 		}
-		
-		String orderId=req.getParameter("orderId");
-		Order order= orderDao.getById(orderId);
-		
-		List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(orderId);
-		
-		req.setAttribute("order", order);
-		req.setAttribute("products", orderDetails);
-		return "orderdetail";
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("message", "Có lỗi khi tải đơn hàng!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/account.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value="/order",method=RequestMethod.GET)// redirect to payment page
 	public String showCart(HttpServletRequest req, RedirectAttributes redirectAttributes) {
-		
-		//check if user logged in
-		HttpSession session = req.getSession();
-		Account acc =(Account) session.getAttribute("user");
-		if(acc == null ) {
-			return "redirect:/login.htm";
-		}
-		
-		//check if user has products in cart
-		//get all product of user
-		Customer cus = customerDao.getByEmail(acc.getEmail());
-		Cart cart= cartDao.getById(cus.getCartId());
-		
-		Map<String,Integer> productsInCart =cart.getProducts();
-		System.out.println(productsInCart);
-
-		
-		String[] pids = new String[productsInCart.size()];
-		
-		pids= productsInCart.keySet().toArray(pids);
-		
-	
-		
-		for(String key : pids) {
-			// remove products that are not selected
-			if(req.getParameter(key)==null) {
-				productsInCart.remove(key);
+		try
+		{
+			//check if user logged in
+			HttpSession session = req.getSession();
+			Account acc =(Account) session.getAttribute("user");
+			if(acc == null ) {
+				return "redirect:/login.htm";
 			}
-		}
-		// show selected products
-		Map<Product,Integer> products= new HashMap<Product, Integer>();
-		for(String key : productsInCart.keySet()) {
-			products.put(productDao.getById(key),productsInCart.get(key));
-		}
-		
-		System.out.println(products);
-		
-		if(products.size() == 0) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng trống");
-			return "redirect:/index.htm";
-		}
-		req.setAttribute("products", products);
-		
-		List<Discount> discounts = discountDao.getByCustomer(acc.getEmail());
-		req.setAttribute("discounts", discounts);
-		req.setAttribute("user", cus);
+			
+			//check if user has products in cart
+			//get all product of user
+			Customer cus = customerDao.getByEmail(acc.getEmail());
+			Cart cart= cartDao.getById(cus.getCartId());
+			
+			Map<String,Integer> productsInCart =cart.getProducts();
+			System.out.println(productsInCart);
 
-		return "order";
+			
+			String[] pids = new String[productsInCart.size()];
+			
+			pids= productsInCart.keySet().toArray(pids);
+			
+		
+			
+			for(String key : pids) {
+				// remove products that are not selected
+				if(req.getParameter(key)==null) {
+					productsInCart.remove(key);
+				}
+			}
+			// show selected products
+			Map<Product,Integer> products= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				products.put(productDao.getById(key),productsInCart.get(key));
+			}
+			
+			System.out.println(products);
+			
+			if(products.size() == 0) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng trống");
+				return "redirect:/index.htm";
+			}
+			req.setAttribute("products", products);
+			
+			List<Discount> discounts = discountDao.getByCustomer(acc.getEmail());
+			req.setAttribute("discounts", discounts);
+			req.setAttribute("user", cus);
+
+			return "order";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("message", "Có lỗi khi tải giao diện đặt đơn hàng!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/index.htm";
+			
+		}
+
+		
 	}
 	
 	@RequestMapping(value ="order/cancel", method = RequestMethod.GET)
-	public String cancel(HttpServletRequest req) throws Exception
+	public String cancel(HttpServletRequest req, RedirectAttributes redirectAttributes) 
 	{
-		String orderId = req.getParameter("orderId");
-		System.out.println(orderId);
-		
-		Order order = orderDao.getById(orderId);
-		for(OrderDetail detail: order.getOrderDetails())
+		try
 		{
-			System.out.println(detail);
-			Product product = productDao.getById(detail.getProductId());
-			System.out.println(product);
-			product.setStock(product.getStock()+detail.getAmount());
-			System.out.println(product);
-			productDao.update(product);
+			String orderId = req.getParameter("orderId");
+			System.out.println(orderId);
+			
+			Order order = orderDao.getById(orderId);
+			for(OrderDetail detail: order.getOrderDetails())
+			{
+				System.out.println(detail);
+				Product product = productDao.getById(detail.getProductId());
+				System.out.println(product);
+				product.setStock(product.getStock()+detail.getAmount());
+				System.out.println(product);
+				productDao.update(product);
+			}
+			order.setDeleted(true);
+			orderDao.update(order);
+			
+			
+			return "redirect:/account.htm";
+
 		}
-		order.setDeleted(true);
-		orderDao.update(order);
-		
-		
-		return "redirect:/account.htm";
+		catch (Exception e)
+		{
+			System.out.println("Test1");
+			redirectAttributes.addFlashAttribute("message", "Có lỗi khi hủy đơn!"); 
+			e.printStackTrace();
+			System.out.println("Test2");
+			return "redirect:/account.htm";
+			
+		}
+	
 	}
 	
 	@RequestMapping(value ="order/edit", method = RequestMethod.GET)
