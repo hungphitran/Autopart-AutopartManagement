@@ -502,6 +502,7 @@ public class AdminController {
         BigDecimal totalIncome = BigDecimal.ZERO;
         BigDecimal totalCost = BigDecimal.ZERO; // Tổng giá nhập của sản phẩm đã bán
         BigDecimal totalImportCost = BigDecimal.ZERO; // Tổng chi phí nhập hàng
+        BigDecimal totalShippingCost = BigDecimal.ZERO; // Tổng phí vận chuyển (doanh thu - giá nhập sản phẩm đã bán)
 
         // Aggregate data by day for chart
         Map<LocalDate, BigDecimal> revenueByDate = new HashMap<>();
@@ -514,16 +515,24 @@ public class AdminController {
             revenueByDate.put(date, BigDecimal.ZERO);
             costByDate.put(date, BigDecimal.ZERO);
         }
-
+        
         // Aggregate revenue and product cost from orders
         for (Order order : orders) {
             List<OrderDetail> orderDetails = orderDetailDao.getAllByOrderId(order.getOrderId());
-            
+            String shippingType = order.getShippingType();
+            if(shippingType.equals("Normal")) {
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(20000));
+			} else if(shippingType.equals("Economy")) {
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(15000));
+			} else  {// shippingType.equals("Express")
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(50000));
+			} 
             // Calculate product cost from order details (giá nhập của sản phẩm đã bán)
             BigDecimal orderProductCost = BigDecimal.ZERO;
             for (OrderDetail detail : orderDetails) {
                 Product product = productDao.getById(detail.getProductId());
                 if (product != null) {
+                	
                     BigDecimal detailCost = BigDecimal.valueOf(detail.getAmount()).multiply(BigDecimal.valueOf(product.getCostPrice()));
                     orderProductCost = orderProductCost.add(detailCost);
                 }
@@ -569,15 +578,17 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         // Calculate profit and profit margin
-        BigDecimal profit = totalIncome.subtract(totalCost); // Doanh thu - Giá nhập sản phẩm đã bán
+        BigDecimal profit = totalIncome.subtract(totalCost);
+        profit = profit.subtract(totalShippingCost);
+       // Doanh thu - Giá nhập sản phẩm đã bán
         BigDecimal shippingCost = totalIncome.subtract(totalCost); // Phí vận chuyển = Doanh thu - Giá nhập sản phẩm
 
         Map<String, BigDecimal> costDetails = new HashMap<>();
         costDetails.put("Lợi nhuận", profit);
         costDetails.put("Tổng chi phí", totalCost); // Tổng giá nhập sản phẩm đã bán
         costDetails.put("Tổng doanh thu", totalIncome);
-        costDetails.put("Tổng phí vận chuyển", shippingCost);
-        costDetails.put("Tổng giá trị hàng bán", totalCost); // Giống với tổng chi phí
+        costDetails.put("Tổng phí vận chuyển", totalShippingCost);
+//        costDetails.put("Tổng giá trị hàng bán", totalCost); // Giống với tổng chi phí
         
         if (totalIncome.compareTo(BigDecimal.ZERO) > 0) {
         	req.setAttribute("profitRate", profit.multiply(BigDecimal.valueOf(100)).divide(totalIncome, 2, RoundingMode.HALF_UP));
@@ -597,7 +608,7 @@ public class AdminController {
         req.setAttribute("totalIncome", totalIncome);
         req.setAttribute("totalCost", totalCost);
         req.setAttribute("profit", profit);
-        req.setAttribute("shippingCost", shippingCost);
+        req.setAttribute("shippingCost", totalShippingCost);
         req.setAttribute("costDetails", costDetails);
         req.setAttribute("fromDate", startDate.toString());
         req.setAttribute("toDate", endDate.toString());
@@ -657,75 +668,7 @@ public class AdminController {
     }
 
     
-    private void createStatisticSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
-        Sheet sheet = workbook.createSheet("Thống kê tổng quan");
-        
-        // Create styles
-        CellStyle headerStyle = createHeaderStyle(workbook);
-        CellStyle titleStyle = createTitleStyle(workbook);
-        CellStyle dataStyle = createDataStyle(workbook);
-        CellStyle currencyStyle = createCurrencyStyle(workbook);
-        
-        int rowNum = 0;
-        
-        // Title
-        Row titleRow = sheet.createRow(rowNum++);
-        Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("BÁO CÁO THỐNG KÊ TỔNG QUAN");
-        titleCell.setCellStyle(titleStyle);
-        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
-        
-        // Date range
-        Row dateRow = sheet.createRow(rowNum++);
-        dateRow.createCell(0).setCellValue("Từ ngày: " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + 
-                                          " đến ngày: " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 3));
-        
-        rowNum++; // Empty row
-        
-        // Get data
-        List<Order> orders = orderDao.getOrdersByDateRangeAndStatus(Date.valueOf(startDate), Date.valueOf(endDate), "Completed");
-        BigDecimal totalIncome = orders.stream()
-                .map(Order::getTotalCost)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        int totalOrders = orders.size();
-        int totalProducts = 0;
-        for (Order order : orders) {
-            List<OrderDetail> details = orderDetailDao.getAllByOrderId(order.getOrderId());
-            totalProducts += details.stream().mapToInt(OrderDetail::getAmount).sum();
-        }
-        
-        // Summary statistics
-        Row headerRow = sheet.createRow(rowNum++);
-        headerRow.createCell(0).setCellValue("Chỉ số");
-        headerRow.createCell(1).setCellValue("Giá trị");
-        headerRow.getCell(0).setCellStyle(headerStyle);
-        headerRow.getCell(1).setCellStyle(headerStyle);
-        
-        Row incomeRow = sheet.createRow(rowNum++);
-        incomeRow.createCell(0).setCellValue("Tổng doanh thu");
-        incomeRow.createCell(1).setCellValue(totalIncome.doubleValue());
-        incomeRow.getCell(0).setCellStyle(dataStyle);
-        incomeRow.getCell(1).setCellStyle(currencyStyle);
-        
-        Row ordersRow = sheet.createRow(rowNum++);
-        ordersRow.createCell(0).setCellValue("Tổng số đơn hàng");
-        ordersRow.createCell(1).setCellValue(totalOrders);
-        ordersRow.getCell(0).setCellStyle(dataStyle);
-        ordersRow.getCell(1).setCellStyle(dataStyle);
-        
-        Row productsRow = sheet.createRow(rowNum++);
-        productsRow.createCell(0).setCellValue("Tổng sản phẩm đã bán");
-        productsRow.createCell(1).setCellValue(totalProducts);
-        productsRow.getCell(0).setCellStyle(dataStyle);
-        productsRow.getCell(1).setCellStyle(dataStyle);
-        
-        // Auto-size columns
-        for (int i = 0; i < 4; i++) {
-            sheet.autoSizeColumn(i);
-        }
-    }
+   
     
     private void createProductReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
         Sheet sheet = workbook.createSheet("Báo cáo sản phẩm");
@@ -844,11 +787,21 @@ public class AdminController {
 
         BigDecimal totalRevenue = BigDecimal.ZERO;
         BigDecimal totalCost = BigDecimal.ZERO;
+        BigDecimal totalShippingCost = BigDecimal.ZERO; // Tổng phí vận chuyển
 
         List<Object[]> detailRows = new ArrayList<>();
 
         for (Order order : orders) {
             List<OrderDetail> details = orderDetailDao.getAllByOrderId(order.getOrderId());
+            
+            String shippingType = order.getShippingType();
+            if (shippingType.equals("Normal")) {
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(20000));
+			} else if (shippingType.equals("Economy")) {
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(15000));
+			} else { // shippingType.equals("Express")
+				totalShippingCost = totalShippingCost.add(BigDecimal.valueOf(50000));
+			}
 
             BigDecimal orderTotal = order.getTotalCost();
             LocalDate orderDate = order.getOrderDate().toLocalDate();
@@ -881,6 +834,7 @@ public class AdminController {
         }
 
         BigDecimal profit = totalRevenue.subtract(totalCost);
+        profit = profit.subtract(totalShippingCost); // Lợi nhuận = Doanh thu - Giá nhập sản phẩm đã bán - Phí vận chuyển
         BigDecimal profitRate = totalRevenue.compareTo(BigDecimal.ZERO) > 0 ?
                 profit.multiply(BigDecimal.valueOf(100)).divide(totalRevenue, 2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 
@@ -892,6 +846,7 @@ public class AdminController {
         Object[][] summary = {
             {"Tổng doanh thu", totalRevenue.doubleValue()},
             {"Tổng chi phí", totalCost.doubleValue()},
+            {"Tổng phí vận chuyển", totalShippingCost.doubleValue()},
             {"Lợi nhuận", profit.doubleValue()},
             {"Tỷ suất lợi nhuận", profitRate.doubleValue()}
         };
