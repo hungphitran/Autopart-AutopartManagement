@@ -89,13 +89,14 @@ public class AdminDiscountController {
 	    }
 
 	    // Validate start date (not null and not in the past)
-	    if (discount.getApplyStartDate() == null || !ValidationUtils.isValidDate(discount.getApplyStartDate())) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");
-	        return "redirect:/admin/discount/add.htm";
-	    }
+	    if (discount.getApplyStartDate() == null || 
+	    	    discount.getApplyStartDate().before(new java.sql.Date(System.currentTimeMillis()))) {
+	    	    redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");
+	    	    return "redirect:/admin/discount/add.htm";
+	    	}
 
 	    // Validate end date (not null and after start date)
-	    if (discount.getApplyEndDate() == null || !ValidationUtils.isValidDate(discount.getApplyEndDate())||
+	    if (discount.getApplyEndDate() == null || 
 	        !discount.getApplyEndDate().after(discount.getApplyStartDate())) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải sau ngày bắt đầu!");
 	        return "redirect:/admin/discount/add.htm";
@@ -175,7 +176,8 @@ public class AdminDiscountController {
 	    }
 
 	    // Validate start date (not null and not in the past)
-	    if (discount.getApplyStartDate() == null ) {
+	    if (discount.getApplyStartDate() == null || 
+	    	    discount.getApplyStartDate().before(new java.sql.Date(System.currentTimeMillis()))) {
 	    	String referer = req.getHeader("Referer");
 			System.out.println(referer);
 	        redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không hợp lệ hoặc không được ở quá khứ!");

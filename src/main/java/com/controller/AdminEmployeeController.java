@@ -162,12 +162,12 @@ public class AdminEmployeeController {
 		}
 		
 		// Validate citizen ID format
-		if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() ) {
+		if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() || ValidationUtils.isValidDigits(emp.getCitizenId()) == false) {
 			redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
 		// Validate address format
-		if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
+		if(emp.getAddress() == null ||emp.getAddress().isEmpty() || ValidationUtils.isValidAddress(emp.getAddress()) == false) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
 			return "redirect:/admin/employee/add.htm";
 		}
@@ -245,18 +245,14 @@ public class AdminEmployeeController {
 				}
 				
 				// Validate citizen ID format
-				if((emp.getCitizenId() == null) || emp.getCitizenId().isEmpty()) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
+				if(emp.getCitizenId() == null ||emp.getCitizenId().isEmpty() || ValidationUtils.isValidDigits(emp.getCitizenId()) == false) {
 					redirectAttributes.addFlashAttribute("errorMessage", "CMND/CCCD không hợp lệ!"); 
-					return "redirect:" + referer;
+					return "redirect:/admin/employee/add.htm";
 				}
 				// Validate address format
-				if(emp.getAddress() == null ||emp.getAddress().isEmpty()) {
-			    	String referer = req.getHeader("Referer");
-					System.out.println(referer);
+				if(emp.getAddress() == null ||emp.getAddress().isEmpty() || ValidationUtils.isValidAddress(emp.getAddress()) == false) {
 					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không hợp lệ!"); 
-					return "redirect:" + referer;
+					return "redirect:/admin/employee/add.htm";
 				}
 				// Validate date of birth format
 				if(emp.getBirthDate() == null || emp.getBirthDate().toString().isEmpty()) {
