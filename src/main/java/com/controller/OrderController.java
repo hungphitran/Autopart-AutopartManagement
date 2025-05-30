@@ -145,31 +145,31 @@ public class OrderController {
 		
 ////				create new order then add it to database
 			Order newOrder = new Order(orderDao.generateNextOrderId(),discountId,acc.getEmail() , shipAddress, shippingType ,BigDecimal.valueOf(totalCost), Date.valueOf( LocalDate.now()), null, "Pending", null, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false);
-//			orderDao.add(newOrder);
-//			if(discount!=null) 
-//			{
-//				discountDao.discountUsed(acc.getEmail(), discountId);
-//				discount.setUsageLimit(discount.getUsageLimit()-1);
-//				discountDao.update(discount);
-//		    }
-//			
-//			//update cart
-//			for(Product p : products.keySet()) {
-//				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
-//				orderDetailDao.add(newOrderDetail);
-//				p.setStock(p.getStock()-products.get(p));
-//				productDao.update(p);
-//			}
-//			for(Product p: products.keySet()) {
-//				productsInCart.remove(p.getProductId());
-//			}
-//			cart.setProducts(productsInCart);
-//			cartDao.update(cart);
-//			Map<Product,Integer> p= new HashMap<Product, Integer>();
-//			for(String key : productsInCart.keySet()) {
-//				p.put(productDao.getById(key),productsInCart.get(key));
-//			}
-//			session.setAttribute("productInCart",p);			
+			orderDao.add(newOrder);
+			if(discount!=null) 
+			{
+				discountDao.discountUsed(acc.getEmail(), discountId);
+				discount.setUsageLimit(discount.getUsageLimit()-1);
+				discountDao.update(discount);
+		    }
+			
+			//update cart
+			for(Product p : products.keySet()) {
+				OrderDetail newOrderDetail = new OrderDetail(newOrder.getOrderId(),p.getProductId(),p.getProductName(),products.get(p),BigDecimal.valueOf( p.getSalePrice()));
+				orderDetailDao.add(newOrderDetail);
+				p.setStock(p.getStock()-products.get(p));
+				productDao.update(p);
+			}
+			for(Product p: products.keySet()) {
+				productsInCart.remove(p.getProductId());
+			}
+			cart.setProducts(productsInCart);
+			cartDao.update(cart);
+			Map<Product,Integer> p= new HashMap<Product, Integer>();
+			for(String key : productsInCart.keySet()) {
+				p.put(productDao.getById(key),productsInCart.get(key));
+			}
+			session.setAttribute("productInCart",p);			
 			
 			String from = "no-reply@autopart.com"; // Địa chỉ email gửi
 	        String to = acc.getEmail(); // Địa chỉ email người nhận

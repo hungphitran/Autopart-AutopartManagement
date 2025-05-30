@@ -137,13 +137,13 @@ public class AccountController {
 
 		    // Validate current password
 		    if (!ValidationUtils.isValidPassword(pass)) {
-		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không được để trống");
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không hợp lệ");
 		        return "redirect:/account.htm";
 		    }
 
 		    // Validate new password
 		    if (!ValidationUtils.isValidPassword(newpass)) {
-		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không được để trống");
+		        redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới không hợp lệ");
 		        return "redirect:/account.htm";
 		    }
 

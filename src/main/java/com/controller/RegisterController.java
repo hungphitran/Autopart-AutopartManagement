@@ -19,6 +19,7 @@ import com.dao.Customer_DAO;
 import com.entity.Account;
 import com.entity.Cart;
 import com.entity.Customer;
+import com.utils.ValidationUtils;
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
@@ -58,8 +59,18 @@ public class RegisterController {
 				req.setAttribute("message", "Vui lòng nhập đầy đủ thông tin");
 				return "register";
 			}
+			if(!ValidationUtils.isValidEmail(email) || !ValidationUtils.isValidPassword(password) || !ValidationUtils.isValidPassword(repassword) || !ValidationUtils.isValidPhone(phone) || !ValidationUtils.isValidAddress(address) || !ValidationUtils.isValidName(fullName)) {
+				req.setAttribute("message", "Vui lòng nhập thông tin hợp lệ");
+				return "register";
+			}
+			
+			if(accountDao.getByEmail(email) != null) {
+				req.setAttribute("message", "Email đã được sử dụng");
+				return "register";
+			}
+			
 			//validate
-			else if(password.equals(repassword)) {
+			if(password.equals(repassword)) {
 				Cart newCart= new Cart(cartDao.generateNextCartId(),null);
 				if(cartDao.add(newCart)) {
 					Account acc =new Account(email,getMD5Hash(password)	,"","RG002","Active", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), false) ;

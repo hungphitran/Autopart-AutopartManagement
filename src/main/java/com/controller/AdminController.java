@@ -963,7 +963,10 @@ public class AdminController {
 			redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không hợp lệ!");
 			return "redirect:/admin/profile.htm";
 		}
-		
+		if(!ValidationUtils.isValidPhone(e.getPhone())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không hợp lệ!");
+			return "redirect:/admin/profile.htm";
+		}
 		try
 		{
 			HttpSession session = req.getSession();
