@@ -57,11 +57,17 @@ public class DashboardController {
 	public String showDashboard(HttpServletRequest req) {
 		try
 		{
+			String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
 			// Fetch top 12 products sorted by stock, including product group name
 			List<Product> proLstFav = productDao.getTopByStock(12);
 			for (Product product : proLstFav) {
 				String img = product.getImageUrls();
-				product.setImageUrls(img != null ? img.split(",")[0] : "");
+				if (img.split(",")[0].startsWith("https")) {
+					product.setImageUrls(img.split(",")[0]);
+	        	}
+	        	else {
+	        		product.setImageUrls(baseUrl + img.split(",")[0]); 	        	
+	        	}	 
 			}
 			req.setAttribute("products", proLstFav);
 
@@ -69,7 +75,12 @@ public class DashboardController {
 			List<Product> proMostOrder = productDao.getTopProductsByOrders(4);
 			for (Product product : proMostOrder) {
 				String img = product.getImageUrls();
-				product.setImageUrls(img != null ? img.split(",")[0] : "");
+				if (img.split(",")[0].startsWith("https")) {
+					product.setImageUrls(img.split(",")[0]);
+	        	}
+	        	else {
+	        		product.setImageUrls(baseUrl + img.split(",")[0]); 	        	
+	        	}	 
 			}
 			req.setAttribute("productOrderMost", proMostOrder);
 

@@ -420,7 +420,7 @@ footer {
                 <div class="col-md-6 product-details">
                     <h2>${product.productName}</h2>
                     <p><strong>Mã sản phẩm: </strong>${product.productId}</p>
-                    <p><strong>Giá bán: </strong><fmt:formatNumber value="${product.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/></p>
+                    <p><strong>Giá bán: </strong><fmt:formatNumber value="${product.salePrice}" pattern="#,##0₫"/></p>
                     <p><strong>Mô tả: </strong>${product.description}.</p>
                     <ul>
                         <c:if test="${not empty brand}">

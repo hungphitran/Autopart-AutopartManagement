@@ -583,7 +583,7 @@ input[type="email"][readonly] {
                         <div class="order-item" data-order="${order}">
                             <p><strong>Mã đơn hàng: </strong>${order.orderId}</p>
                             <p><strong>Ngày: </strong><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy HH:mm"/></p>
-                            <p><strong>Tổng tiền: </strong><fmt:formatNumber value="${order.totalCost}" type="currency" currencySymbol="₫" groupingUsed="true"/></p>
+                            <p><strong>Tổng tiền: </strong><fmt:formatNumber value="${order.totalCost}" pattern="#,##0₫"/></p>
                             <p><strong>Trạng thái: </strong>
                                 <c:choose>
                                     <c:when test="${order.status == 'Pending'}">Chờ xác nhận</c:when>

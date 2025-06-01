@@ -76,7 +76,7 @@
                             </div>
                             <div class="category-content">
                                 <h3>${group.groupName}</h3>
-                                <a class="btn-view" href="/autopart/product/search.htm?groupName=${group.groupName}">Xem thêm <i class="fas fa-arrow-right"></i></a>
+                                <a class="btn-view" href="/autopart/product/search.htm?keyword=${group.groupName}">Xem thêm <i class="fas fa-arrow-right"></i></a>
                             </div>
                         </div>
                     </c:forEach>
@@ -97,7 +97,7 @@
                             <div class="product-badge">Nổi bật</div>
                             <div class="product-img">
                                 <a href="/autopart/product/detailproduct.htm?productId=${product.productId}">
-                                    <img src="${product.imageUrls.split(',')[0]}" alt="${product.productName}">
+                                    <img src="${product.imageUrls}" alt="${product.productName}">
                                 </a>
                             </div>
                             <div class="product-actions">
@@ -118,7 +118,7 @@
                                 </h3>
                                 <div class="product-price">
                                     <span class="current-price">
-                                        <fmt:formatNumber value="${product.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                                        <fmt:formatNumber value="${product.salePrice}" pattern="#,##0₫"/>
                                     </span>
                                     
                                 </div>
@@ -133,64 +133,64 @@
         </div>
 
         <!-- Bestsellers Section -->
-        <div class="bestsellers-section">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Sản phẩm bán chạy</h2>
-                    <p>Những sản phẩm được khách hàng mua nhiều nhất</p>
-                </div>
-                <div class="swiper">
-                    <div class="swiper-wrapper">
-                        <c:if test="${not empty productOrderMost}">
-                            <div class="swiper-slide">
-                                <div class="bestseller-highlight">
-                                    <div class="bestseller-img">
-                                        <img src="${productOrderMost[0].imageUrls.split(',')[0]}" alt="${productOrderMost[0].productName}">
-                                    </div>
-                                    <div class="bestseller-content">
-                                        <span class="bestseller-badge">TOP 1</span>
-                                        <h3>${productOrderMost[0].productName}</h3>
-                                        <p>${productOrderMost[0].description}</p>
-                                        <div class="bestseller-price">
-                                            <span class="price">
-                                                <fmt:formatNumber value="${productOrderMost[0].salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
-                                            </span>
-                                        </div>
-                                        <a class="btn-buy-now" href="/autopart/product/detailproduct.htm?productId=${productOrderMost[0].productId}">Mua ngay</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <c:forEach items="${productOrderMost}" var="item" begin="1">
-                                <div class="swiper-slide">
-                                    <div class="bestseller-item">
-                                        <div class="bestseller-item-img">
-                                            <img src="${item.imageUrls.split(',')[0]}" alt="${item.productName}">
-                                        </div>
-                                        <div class="bestseller-item-info">
-                                            <h4 class="product-title">
-                                                <a href="/autopart/product/detailproduct.htm?productId=${item.productId}">${item.productName}</a>
-                                            </h4>
-                                            <div class="bestseller-item-price">
-                                                <fmt:formatNumber value="${item.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
-                                            </div>
-                                            <div class="bestseller-item-rating">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </c:if>
-                    </div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                </div>
-            </div>
-        </div>
+		<div class="bestsellers-section">
+		    <div class="container">
+		        <div class="section-title">
+		            <h2>Sản phẩm bán chạy</h2>
+		            <p>Những sản phẩm được khách hàng mua nhiều nhất</p>
+		        </div>
+		        
+		        <div class="row">
+		            <c:if test="${not empty productOrderMost}">
+		                <div class="col-md-6">
+		                    <div class="bestseller-highlight">
+		                        <div class="bestseller-img">
+		                            <img src="${productOrderMost[0].imageUrls.split(',')[0]}" alt="${productOrderMost[0].productName}">
+		                        </div>
+		                        <div class="bestseller-content">
+		                            <span class="bestseller-badge">TOP 1</span>
+		                            <h3>${productOrderMost[0].productName}</h3>
+		                            <p>${productOrderMost[0].description}</p>
+		                            <div class="bestseller-price">
+		                                <span class="price">
+		                                    <fmt:formatNumber value="${productOrderMost[0].salePrice}" pattern="#,##0₫"/>
+		                                </span>
+		                            </div>
+		                            <a class="btn-buy-now" href="/autopart/product/detailproduct.htm?productId=${productOrderMost[0].productId}">Mua ngay</a>
+		                        </div>
+		                    </div>
+		                </div>
+		                
+		                <div class="col-md-6">
+		                    <div class="bestseller-list">
+		                        <c:forEach items="${productOrderMost}" var="item" begin="1">
+		                            <div class="bestseller-item">
+		                                <div class="bestseller-item-img">
+		                                    <img src="${item.imageUrls.split(',')[0]}" alt="${item.productName}">
+		                                </div>
+		                                <div class="bestseller-item-info">
+		                                    <h4 class="product-title">
+		                                        <a href="/autopart/product/detailproduct.htm?productId=${item.productId}">${item.productName}</a>
+		                                    </h4>
+		                                    <div class="bestseller-item-price">
+		                                        <fmt:formatNumber value="${item.salePrice}" pattern="#,##0₫"/>
+		                                    </div>
+		                                    <div class="bestseller-item-rating">
+		                                        <i class="fas fa-star"></i>
+		                                        <i class="fas fa-star"></i>
+		                                        <i class="fas fa-star"></i>
+		                                        <i class="fas fa-star"></i>
+		                                        <i class="fas fa-star"></i>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                        </c:forEach>
+		                    </div>
+		                </div>
+		            </c:if>
+		        </div>
+		    </div>
+		</div>
 
         <!-- Call to Action Section -->
         <div class="cta-section">

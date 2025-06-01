@@ -60,6 +60,14 @@ public class ProductController {
 		{
 			Product p = productDao.getById(id);
 			String[] imgUrls = p.getImageUrls().split(",");
+			String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
+			
+			for (int i = 0; i < imgUrls.length; i++) {
+			    if (!imgUrls[i].startsWith("https")) {
+			        imgUrls[i] = baseUrl + imgUrls[i];  
+			    }
+			}
+			
 			Brand brand= brandDao.getById(p.getBrandId());
 			ProductGroup group = pgDao.getById(p.getProductGroupId());
 			req.setAttribute("product", p);
@@ -191,6 +199,7 @@ public class ProductController {
 			else {
 				 key = key.toLowerCase().trim();
 			}
+			String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/resources/img/";
 			String brand = req.getParameter("brandName");
 			String group = req.getParameter("groupName");
 			req.setAttribute("keyword", key);
@@ -206,7 +215,12 @@ public class ProductController {
 			for(int i=0;i<pLst.size();i++) {
 				Product p=pLst.get(i);
 				String img= p.getImageUrls();
-				pLst.get(i).setImageUrls(img.split(",", i)[0]);
+				if (img.split(",", i)[0].startsWith("https")) {
+					pLst.get(i).setImageUrls(img.split(",", i)[0]);
+	        	}
+	        	else {
+	        		pLst.get(i).setImageUrls(baseUrl + img.split(",", i)[0]); 	        	
+	        	}	   
 				//find all product that contain keyword, brand and group)
 				if(p.getProductId().toLowerCase().contains(key) || p.getProductName().toLowerCase().contains(key) || p.getDescription().toLowerCase().contains("key")) {
 					filteredLst.add(p);

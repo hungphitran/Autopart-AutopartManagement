@@ -222,7 +222,7 @@
                 <strong>Địa chỉ:</strong> ${order.shipAddress}
             </p>
             <p>
-                <strong>Tổng:</strong> <fmt:formatNumber value="${order.totalCost}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                <strong>Tổng:</strong> <fmt:formatNumber value="${order.totalCost}" pattern="#,##0₫"/>
             </p>
             <p>
                 <strong>Mã giảm giá:</strong> ${empty order.discountId ? 'Không có' : order.discountId}
@@ -271,7 +271,7 @@
                         <strong>Số lượng:</strong> ${p.amount}
                     </p>
                     <p>
-                        <strong>Đơn giá:</strong> <fmt:formatNumber value="${p.unitPrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                        <strong>Đơn giá:</strong> <fmt:formatNumber value="${p.unitPrice}" pattern="#,##0₫"/>
                     </p>
                     <p>
                         <strong>

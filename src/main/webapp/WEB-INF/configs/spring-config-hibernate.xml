@@ -20,7 +20,7 @@
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433;databaseName = AutoPartsDB;encrypt=true;trustServerCertificate=true;"
 			p:username="sa"
-			p:password="10802">
+			p:password="minhduc63">
 
 
 
