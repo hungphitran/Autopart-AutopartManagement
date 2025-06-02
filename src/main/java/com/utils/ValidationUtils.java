@@ -9,10 +9,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class ValidationUtils {
     
     // Validation patterns
-    private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    private static final String PHONE_PATTERN = "^0\\d{9}$";
-    private static final String NAME_PATTERN = "^[\\p{L} .'-]+$"; // 
-    private static final String DIGITS_PATTERN = "^[0-9]+$";
+	// Kiểm tra định dạng email hợp lệ (chứa @, tên miền, ký tự hợp lệ).
+	private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+
+	// Kiểm tra số điện thoại Việt Nam gồm 10 chữ số và bắt đầu bằng số 0.
+	private static final String PHONE_PATTERN = "^0\\d{9}$";
+
+	// Cho phép tên có chữ cái Unicode, dấu cách, dấu chấm, gạch nối, và dấu nháy đơn.
+	private static final String NAME_PATTERN = "^[\\p{L} .'-]+$";
+
+	// Kiểm tra chuỗi chỉ chứa chữ số.
+	private static final String DIGITS_PATTERN = "^[0-9]+$";
     
     // Minimum length requirements
     private static final int MIN_PASSWORD_LENGTH = 4;
@@ -63,8 +70,8 @@ public class ValidationUtils {
     }
     
     public static boolean isValidAddress(String address) {
-        // Define a regular expression pattern to match a valid address
-        String pattern = "^[a-zA-Z0-9\\s,\\.\\-]{3,}$";
+    	// Cho phép chữ Unicode, số, khoảng trắng, dấu phẩy, chấm, gạch nối; ít nhất 3 ký tự.
+        String pattern = "^[\\p{L}0-9\\s,\\.\\-\\/]{3,}$";
 
         // Use the regular expression to match the input address
         return address.matches(pattern);

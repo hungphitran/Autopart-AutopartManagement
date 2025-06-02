@@ -23,7 +23,7 @@
             message.style.display = 'none';
         } else {
             message.style.display = 'block';
-            message.innerText = 'Passwords do not match!';
+            message.innerText = 'Mật khẩu xác nhận không trùng!';
         }
     }
 </script>

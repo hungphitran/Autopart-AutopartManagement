@@ -54,7 +54,7 @@ public class RegisterController {
 			String phone = req.getParameter("phone");
 			String address = req.getParameter("address");
 			String fullName= req.getParameter("fullName");
-			System.out.println(email+password+fullName+repassword+phone+address);
+			System.out.println(email + " " +password+  " " + fullName+  " "+repassword+  " "+phone+  " "+address);
 			if(email==null || password==null || repassword==null || phone==null || address==null || fullName==null) {
 				req.setAttribute("message", "Vui lòng nhập đầy đủ thông tin");
 				return "register";
