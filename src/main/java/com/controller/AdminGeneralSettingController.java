@@ -47,21 +47,21 @@ public class AdminGeneralSettingController {
 			return "redirect:/admin/generalSettings.htm";
 		}
     	if (formSettings.getWebsiteName().length() > 100) {
-    						redirectAttributes.addFlashAttribute("errorMessage", "Tên website không được quá 100 ký tự!");	
-    									return "redirect:/admin/generalSettings.htm";
+			redirectAttributes.addFlashAttribute("errorMessage", "Tên website không được quá 100 ký tự!");	
+			return "redirect:/admin/generalSettings.htm";
     								
     	}
     	if (formSettings.getAddress() == null || formSettings.getAddress().isEmpty()) {
-    					redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không được để trống!");
-    					return "redirect:/admin/generalSettings.htm";
+			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không được để trống!");
+			return "redirect:/admin/generalSettings.htm";
     	}
     	if (formSettings.getAddress().length() > 200) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không được quá 200 ký tự!");
 			return "redirect:/admin/generalSettings.htm";
 		}
     	if (formSettings.getPhone() == null || formSettings.getPhone().isEmpty()) {
-    					redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không được để trống!");
-    					return "redirect:/admin/generalSettings.htm";
+			redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không được để trống!");
+			return "redirect:/admin/generalSettings.htm";
     	}
     	if (formSettings.getPhone().length() > 20) {
     		redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không được quá 20 ký tự!");

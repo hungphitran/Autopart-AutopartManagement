@@ -143,7 +143,7 @@ public class PermissionFilter implements Filter {
         // Lấy thông tin tài khoản từ session
         Account account = (session != null) ? (Account) session.getAttribute("account") : null;
         List<String> permissions = (session != null) ? (List<String>) session.getAttribute("permissions") : null;
-        System.out.println("Quyền  : "+permissions);
+
         // Tìm quyền yêu cầu cho URL
         String requiredPermission = null;
         for (Map.Entry<String, String> entry : PERMISSION_MAP.entrySet()) {
@@ -154,12 +154,11 @@ public class PermissionFilter implements Filter {
         }
 
         // Nếu không tìm thấy quyền yêu cầu, cho phép truy cập
-        if (requiredPermission == null) {
-            chain.doFilter(request, response);
-            return;
-        }
+//        if (requiredPermission == null) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
 
-        System.out.println("quyền yêu cầu: "+ requiredPermission +" "+ permissions.contains(requiredPermission));
         // Kiểm tra xem người dùng có quyền cần thiết hay không
         if (permissions == null || !permissions.contains(requiredPermission)) {
             httpResponse.sendRedirect(contextPath + "/admin/access-denied.htm");

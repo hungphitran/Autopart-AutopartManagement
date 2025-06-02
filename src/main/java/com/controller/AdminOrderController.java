@@ -164,7 +164,7 @@ public class AdminOrderController {
 	    }
 		
 	    String shippingType = order.getShippingType();
-	 // Validate shipping type 
+	    // Validate shipping type 
 	    if (shippingType == null) {
 	        redirectAttributes.addFlashAttribute("errorMessage", "Loại vận chuyển không hợp lệ!");
 	        return "redirect:/admin/order/add.htm";
@@ -444,14 +444,11 @@ public class AdminOrderController {
 		   if (order.getDiscountId() == null && orderDao.getById(order.getOrderId()).getDiscountId() != null) 
 		   {
 		        // Case 3: Previous discount, remove discount
-				//System.out.println(discount.getUsageLimit());
 			   	Discount orderDiscount = discountDao.getById(orderDao.getById(order.getOrderId()).getDiscountId());
-				System.out.println(orderDiscount.getUsageLimit());
+				
 		        discountDao.deleteDiscountUsed(orderDiscount.getDiscountId(), order.getUserEmail());
 		        orderDiscount.setUsageLimit(orderDiscount.getUsageLimit() + 1);
 		        discountDao.update(orderDiscount);
-				//System.out.println(discount.getUsageLimit());
-				System.out.println(orderDiscount.getUsageLimit());
 		    }
 		   
 		    orderDao.update(order);
@@ -459,7 +456,7 @@ public class AdminOrderController {
 
 		    // Cập nhật chi tiết đơn hàng
 		    if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
-		        // Xóa chi tiết cũ (nếu cần) để tránh trùng lặp
+		        // Xóa chi tiết cũ để tránh trùng lặp
 		    	List<OrderDetail> odList = orderDetailDao.getAllByOrderId(order.getOrderId());
 		    	for (OrderDetail detail : odList) {
 		    		Product product = productDao.getById(detail.getProductId());

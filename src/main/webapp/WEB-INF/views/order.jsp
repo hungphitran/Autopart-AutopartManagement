@@ -376,7 +376,7 @@ body {
                                             <div class="row text-muted">${product.key.productId}</div>
                                             <div class="row">${product.key.productName}</div>
                                             <input type="hidden" class="price" value="${product.key.salePrice}">
-                                            <fmt:formatNumber value="${product.key.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                                            <fmt:formatNumber value="${product.key.salePrice}" pattern="#,##0₫"/>
                                         </div>
                                         <div class="col updateQTY">
                                             <button class="btn-updateQTY" onclick="updateQuantity(this.nextElementSibling, -1)">

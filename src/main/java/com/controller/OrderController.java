@@ -62,10 +62,7 @@ public class OrderController {
 	XMailer xmailer;
 	
 	@RequestMapping(value="/order/create", method = RequestMethod.POST)
-	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {
-		System.out.println("Creating order ------------------------------------------------------------------------------------------------------------------------------------------------");
-		
-		try
+	public String showOrder(HttpServletRequest req,RedirectAttributes redirectAttributes) {try
 		{
 			HttpSession session = req.getSession();
 			Account acc =(Account) session.getAttribute("user");

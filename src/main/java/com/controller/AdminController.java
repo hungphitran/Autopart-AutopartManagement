@@ -164,8 +164,7 @@ public class AdminController {
 			return "redirect:/admin/login.htm";
 		}
         
-        System.out.println(account.getPassword()+ getMD5Hash(password)	);
-        if (account != null && account.getPassword().equals(getMD5Hash(password) ) && employeeDao.getByEmail(email)!=null) {
+        if (account != null && account.getPassword().equals(getMD5Hash(password)) && employeeDao.getByEmail(email)!=null) {
         	session.setAttribute("account", account);
         	session.setAttribute("permissions", rgdao.getById(account.getPermission()).getPermissions());
     		session.setAttribute("name", employeeDao.getByEmail(account.getEmail()).getFullName());
@@ -667,9 +666,6 @@ public class AdminController {
         }
     }
 
-    
-   
-    
     private void createProductReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
         Sheet sheet = workbook.createSheet("Báo cáo sản phẩm");
         
@@ -757,6 +753,7 @@ public class AdminController {
             sheet.autoSizeColumn(i);
         }
     }
+    
     private void createFinancialReportSheet(Workbook workbook, LocalDate startDate, LocalDate endDate) {
         Sheet sheet = workbook.createSheet("Báo cáo tài chính");
 
@@ -903,8 +900,6 @@ public class AdminController {
         }
     }
 
-
-    
     private CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -945,7 +940,8 @@ public class AdminController {
         style.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         return style;
     }
-	@RequestMapping("/profile")
+	
+    @RequestMapping("/profile")
 	public String showProfile(HttpServletRequest req, Model model) {
 		HttpSession session = req.getSession();
 		Account acc = (Account) session.getAttribute("account");
@@ -958,7 +954,6 @@ public class AdminController {
 	
 	@RequestMapping(value="/profile/edit", method=RequestMethod.POST)
 	public String edit(HttpServletRequest req, @ModelAttribute("employee") Employee e, RedirectAttributes redirectAttributes) {
-		
 		// Validate input
 		if(!ValidationUtils.isValidEmail(e.getEmail())) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Email không hợp lệ!");
@@ -1061,13 +1056,12 @@ public class AdminController {
 		
 	}
 
-	@RequestMapping("/logout")
-	public String logout(HttpServletRequest req) {
-		HttpSession session = req.getSession();
-		session.removeAttribute("account");
-		session.removeAttribute("name");
-		return "redirect:/admin/login.htm";
-	}
-	
+//	@RequestMapping("/logout")
+//	public String logout(HttpServletRequest req) {
+//		HttpSession session = req.getSession();
+//		session.removeAttribute("account");
+//		session.removeAttribute("name");
+//		return "redirect:/admin/login.htm";
+//	}
 }
 

@@ -491,6 +491,5 @@ public class AdminProductController {
 		}
 
     }
-	// -- End product -
 
 }

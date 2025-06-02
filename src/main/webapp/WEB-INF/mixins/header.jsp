@@ -76,7 +76,7 @@
                                                     <h5 class="header__cart-item-name">${p.key.productName}</h5>
                                                     <div class="header__cart-item-wrap">
                                                         <span class="header__cart-item-price">
-                                                            <fmt:formatNumber value="${p.key.salePrice}" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                                                            <fmt:formatNumber value="${p.key.salePrice}" pattern="#,##0₫"/>
                                                         </span>
                                                         <span class="header__cart-item-multiply">x</span>
                                                         <span class="header__cart-item-qnt">${p.value}</span>
